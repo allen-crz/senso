@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -168,11 +169,11 @@ const Profile = () => {
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative pt-12">
+    <div className="min-h-screen bg-black text-white relative pt-12">
       <div className="px-6 pb-32">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#212529] text-center">Complete Your Profile</h1>
-          <p className="text-center text-gray-500 mt-2">
+          <h1 className="text-2xl font-bold text-white text-center">Complete Your Profile</h1>
+          <p className="text-center text-white/60 mt-2">
             Let's set up your account
           </p>
         </div>
@@ -180,11 +181,15 @@ const Profile = () => {
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-3">
             <Avatar className="w-24 h-24">
-              <AvatarImage src={avatarUrl || ''} alt="Profile" className="object-cover" />
-              <AvatarFallback>{avatarFallback}</AvatarFallback>
+              <AvatarImage 
+                src={avatarUrl || ''} 
+                alt="Profile" 
+                className="object-cover border-2 border-white/20"
+              />
+              <AvatarFallback className="bg-white/10 text-white">{avatarFallback}</AvatarFallback>
             </Avatar>
             <label 
-              className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer"
+              className="absolute bottom-0 right-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center cursor-pointer"
               htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
@@ -200,39 +205,39 @@ const Profile = () => {
           </div>
           <label 
             htmlFor="avatar-upload"
-            className="text-blue-500 text-sm font-medium cursor-pointer"
+            className="text-white/70 text-sm font-medium cursor-pointer hover:text-white transition-colors"
           >
             Add Profile Photo
           </label>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
+        <div className="bg-white/5 rounded-3xl border border-white/10 shadow-lg p-6 mb-6">
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm text-gray-500 font-medium">Full Name</label>
+              <label className="text-sm text-white/60 font-medium">Full Name</label>
               <Input
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, fullName: e.target.value }));
                 }}
-                className="px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
+                className="px-4 py-3 rounded-xl bg-white/10 text-white border-white/20 focus:border-white/40"
                 placeholder="Enter your full name"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-gray-500 font-medium">Email Address</label>
+              <label className="text-sm text-white/60 font-medium">Email Address</label>
               <Input
                 type="email"
                 value={formData.email}
-                className="px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] opacity-75 cursor-not-allowed"
+                className="px-4 py-3 rounded-xl bg-white/10 text-white/70 border-white/20 cursor-not-allowed opacity-50"
                 readOnly
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-gray-500 font-medium">Phone Number</label>
+              <label className="text-sm text-white/60 font-medium">Phone Number</label>
               <PhoneInput
                 value={formData.phone}
                 onChange={(value) => {
@@ -242,7 +247,7 @@ const Profile = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-gray-500 font-medium">Address</label>
+              <label className="text-sm text-white/60 font-medium">Address</label>
               <AddressInput
                 value={formData.address}
                 onChange={(value) => {
@@ -255,13 +260,13 @@ const Profile = () => {
 
         <Button 
           onClick={handleSubmit}
-          className="w-full py-4 bg-blue-500 text-white rounded-full font-semibold mb-6 hover:bg-blue-600 transition-colors"
+          className="w-full py-4 bg-white/10 text-white border border-white/20 rounded-full font-semibold mb-6 hover:bg-white/20 transition-colors"
           disabled={isLoading || uploading}
         >
           {isLoading ? 'Creating Profile...' : 'Get Started'}
         </Button>
 
-        <p className="text-center text-xs text-gray-400 mb-20">
+        <p className="text-center text-xs text-white/40 mb-20">
           This information helps personalize your experience.
         </p>
       </div>
