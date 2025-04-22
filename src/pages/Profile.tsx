@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -96,63 +97,63 @@ const Profile = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      // Create or ensure the avatars bucket exists
-      try {
-        const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
-        
-        if (bucketError) {
-          // Create the bucket if it doesn't exist
-          const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
-            public: true
-          });
-          
-          if (createBucketError) {
-            console.error('Error creating bucket:', createBucketError);
-            throw new Error('Failed to create storage bucket');
+      // Since we're having issues with the storage bucket, let's use a direct approach
+      // We'll upload the image data to the profile and use a data URL
+      const reader = new FileReader();
+      
+      reader.onload = async (e) => {
+        try {
+          if (!e.target?.result) {
+            throw new Error('Failed to read file');
           }
+          
+          // Convert the file to a data URL
+          const dataUrl = e.target.result as string;
+          
+          // Update profile with the data URL as avatar
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: userId,
+              avatar_url: dataUrl,
+            });
+
+          if (updateError) {
+            console.error('Profile update error:', updateError);
+            throw updateError;
+          }
+
+          // Set the avatar URL in the state
+          setAvatarUrl(dataUrl);
+
+          toast({
+            title: "Success",
+            description: "Avatar uploaded successfully!",
+          });
+        } catch (error) {
+          console.error('Error in reader.onload:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to upload avatar. Please try again.",
+          });
+        } finally {
+          setUploading(false);
         }
-      } catch (bucketError) {
-        console.error('Bucket operation error:', bucketError);
-        // Continue execution, the bucket might already exist
-      }
+      };
 
-      // Upload the file
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          upsert: true,
-          contentType: file.type
+      reader.onerror = () => {
+        console.error('Error reading file');
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to read the selected image. Please try again.",
         });
+        setUploading(false);
+      };
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
-      }
-
-      // Get public URL
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      setAvatarUrl(data.publicUrl);
-
-      // Update profile with new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: userId,
-          avatar_url: data.publicUrl,
-        });
-
-      if (updateError) {
-        console.error('Profile update error:', updateError);
-        throw updateError;
-      }
-
-      toast({
-        title: "Success",
-        description: "Avatar uploaded successfully!",
-      });
+      // Read the file as a data URL
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error in uploadAvatar:', error);
       toast({
@@ -160,7 +161,6 @@ const Profile = () => {
         title: "Error",
         description: "Failed to upload avatar. Please try again.",
       });
-    } finally {
       setUploading(false);
     }
   };
@@ -200,7 +200,7 @@ const Profile = () => {
         duration: 2000,
       });
       
-      navigate('/success');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
