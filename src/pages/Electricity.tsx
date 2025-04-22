@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -17,10 +16,7 @@ const Electricity = () => {
     : 'User';
 
   const handleAddElectricityReading = () => {
-    toast({
-      title: "Add Electricity Reading",
-      description: "Coming soon: take and submit an electric meter photo!",
-    });
+    navigate('/electricity-monitoring');
   };
 
   return (
