@@ -112,17 +112,15 @@ const Electricity = () => {
               </div>
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
-            <button
-              onClick={() => navigate('/electricity-monitoring')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
+            <div 
+              className="flex flex-col items-center gap-1 group cursor-default"
               tabIndex={0}
             >
-              <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Bolt className="text-gray-400 group-hover:text-amber-500" />
+              <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Bolt className="text-amber-500" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
-            </button>
+              <span className="text-xs text-amber-500 transition-colors">Electric</span>
+            </div>
             <button
               onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
