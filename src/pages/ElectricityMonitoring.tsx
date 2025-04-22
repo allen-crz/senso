@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { Bolt, Camera, Info, Home, Droplet, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +31,7 @@ const ElectricityMonitoring: React.FC = () => {
             <div className="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center">
               <Bolt className="text-yellow-400" />
             </div>
-            <h1 className="text-xl font-bold text-[#212529]">Electric Monitoring</h1>
+            <h1 className="text-xl font-bold text-[#212529]">Electricity Monitoring</h1>
           </div>
           <button className="w-10 h-10 rounded-full flex items-center justify-center focus:outline-none">
             <Info className="text-gray-400" />
@@ -132,7 +131,7 @@ const ElectricityMonitoring: React.FC = () => {
               <div className="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center">
                 <Bolt className="text-yellow-400" />
               </div>
-              <span className="text-xs font-medium text-yellow-400">Electric</span>
+              <span className="text-xs font-medium text-yellow-400">Electricity</span>
             </div>
             {/* Settings */}
             <button

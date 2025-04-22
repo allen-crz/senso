@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -15,14 +14,12 @@ const DashboardTabs = () => {
   const location = useLocation();
   const { firstName, avatarUrl, isLoading } = useUserData();
 
-  // Determine selected tab by path (so url stays in sync)
   const tab: TabType = useMemo(() => {
     if (location.pathname === "/water") return "water";
     if (location.pathname === "/electricity") return "electricity";
     return "all"; // default is dashboard
   }, [location.pathname]);
 
-  // Strong memoization of user data to prevent UI flickering
   const userAvatar = useMemo(() => {
     const capitalizedFirstName = firstName 
       ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
@@ -44,7 +41,6 @@ const DashboardTabs = () => {
     );
   }, [firstName, avatarUrl]);
 
-  // Redirect to monitoring pages instead of showing toast
   const handleAddWaterReading = () => {
     navigate('/water-monitoring');
   };
@@ -53,16 +49,13 @@ const DashboardTabs = () => {
     navigate('/electricity-monitoring');
   };
 
-  // NAV: Only "Home" is highlighted, Water/Electric/Electricity always default
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Shared Top Header - Now fully memoized to prevent refreshing */}
         <div className="flex justify-between items-center mb-8 pt-0">
           {userAvatar}
         </div>
 
-        {/* Tabs */}
         <div className="mb-8">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button
@@ -107,14 +100,12 @@ const DashboardTabs = () => {
           </div>
         </div>
 
-        {/* Tabbed Content */}
         <div className="space-y-4">
           {tab === "all" && (
             <>
               <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
               <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
 
-              {/* ...Simple sections exactly as Dashboard... */}
               <div className="bg-white p-6 rounded-3xl shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -257,7 +248,6 @@ const DashboardTabs = () => {
         </div>
       </div>
 
-      {/* Bottom Nav - Home is always highlighted (active), others are always default */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -311,4 +301,3 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
-
