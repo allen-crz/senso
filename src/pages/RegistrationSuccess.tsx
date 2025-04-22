@@ -17,16 +17,16 @@ const RegistrationSuccess = () => {
       {/* Success Message */}
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-[#212529] mb-4">Registration Successful!</h1>
-        <p className="text-gray-500 px-4">Your account has been created successfully. Please log in to continue.</p>
+        <p className="text-gray-500 px-4">Your account has been created successfully. Please create your profile to continue.</p>
       </div>
 
       {/* Action Button */}
       <div className="px-4 w-full max-w-xs">
         <button 
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/profile')}
           className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mb-4"
         >
-          Continue to Login
+          Create Your Profile
         </button>
       </div>
 
@@ -39,4 +39,3 @@ const RegistrationSuccess = () => {
 };
 
 export default RegistrationSuccess;
-
