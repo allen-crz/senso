@@ -9,17 +9,22 @@ const Water = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
 
+  // Capitalize the first letter of the first name
+  const capitalizedFirstName = firstName 
+    ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
+    : 'User';
+
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-8 pt-6">
           <div>
-            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
+            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {capitalizedFirstName} 👋</h1>
             <p className="text-gray-500">Welcome to Senso</p>
           </div>
           <Avatar className="w-12 h-12">
             <AvatarImage src={avatarUrl || ''} alt="Profile" />
-            <AvatarFallback>{firstName?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+            <AvatarFallback>{capitalizedFirstName[0] || '?'}</AvatarFallback>
           </Avatar>
         </div>
 
