@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { firstName, avatarUrl, isLoading } = useUserData();
+  const { firstName, email, phone, address, avatarUrl, isLoading } = useUserData();
 
-  // Capitalize the first letter of the first name
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
@@ -18,44 +18,38 @@ const Settings = () => {
     navigate('/login');
   };
 
-  const ProfileItem = () => (
-    <div 
-      onClick={() => navigate('/edit-profile')} 
-      className="flex items-center justify-between p-4 cursor-pointer"
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-          <i className="fa-solid fa-user text-blue-500"></i>
-        </div>
-        <span className="font-medium">Edit Profile</span>
-      </div>
-      <i className="fa-solid fa-chevron-right text-gray-400"></i>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative">
-      <div className="px-6 pb-32">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8 pt-6">
+    <div className="min-h-screen bg-[#f5f6f7]">
+      <div className="px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-[#212529]">Settings</h1>
           <i className="fa-solid fa-cog text-purple-500 text-xl"></i>
         </div>
 
-        {/* Profile Card */}
-        <div className="bg-white p-6 rounded-3xl shadow-sm mb-6">
-          <div className="flex items-center gap-4 mb-4">
+        {/* Profile Card with Details */}
+        <Card className="p-4 mb-6">
+          <div className="flex items-start gap-4">
             <Avatar className="w-16 h-16">
               <AvatarImage src={avatarUrl || ''} alt="Profile" />
               <AvatarFallback>{capitalizedFirstName[0] || '?'}</AvatarFallback>
             </Avatar>
-            <div>
-              <h3 className="font-semibold text-[#212529]">{capitalizedFirstName}</h3>
-              <p className="text-sm text-gray-500">Email address</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-[#212529] mb-1">{capitalizedFirstName}</h3>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500 truncate">{email}</p>
+                {phone && <p className="text-sm text-gray-500 truncate">{phone}</p>}
+                {address && <p className="text-sm text-gray-500 truncate">{address}</p>}
+              </div>
             </div>
           </div>
-          <ProfileItem />
-        </div>
+          <button 
+            onClick={() => navigate('/edit-profile')}
+            className="w-full mt-4 py-2.5 px-4 bg-gray-50 text-[#212529] rounded-xl flex items-center justify-between hover:bg-gray-100 transition-colors"
+          >
+            <span className="font-medium">Edit Profile</span>
+            <i className="fa-solid fa-chevron-right text-gray-400"></i>
+          </button>
+        </Card>
 
         {/* Preferences Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
@@ -99,7 +93,7 @@ const Settings = () => {
         {/* Logout Button */}
         <button 
           onClick={handleLogout}
-          className="w-full py-4 bg-red-500 text-white rounded-full font-semibold mb-20 hover:bg-red-600 transition-colors shadow-lg"
+          className="w-full py-4 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition-colors shadow-lg"
         >
           Log Out
         </button>
