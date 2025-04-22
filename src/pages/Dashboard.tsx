@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -19,15 +20,24 @@ const Dashboard = () => {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, avatar_url')
+        .select('full_name, avatar_url, phone, address')
         .eq('id', user.id)
         .single();
 
       if (profile) {
+        // If profile is incomplete, redirect to profile page
+        if (!profile.phone || !profile.address) {
+          navigate('/profile');
+          return;
+        }
+        
         // Extract first name from full name
         const firstName = profile.full_name?.split(' ')[0] || 'User';
         setFirstName(firstName);
         setAvatarUrl(profile.avatar_url);
+      } else {
+        // No profile found, redirect to profile page
+        navigate('/profile');
       }
     };
 
