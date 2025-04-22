@@ -1,34 +1,53 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Droplet } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Water = () => {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        const firstName = profile.full_name?.split(' ')[0] || 'User';
+        setFirstName(firstName);
+        setAvatarUrl(profile.avatar_url);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="px-6 pb-32">
         {/* Greeting Section */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 pt-6">
           <div>
-            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, Glyde 👋</h1>
+            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
             <p className="text-gray-500">Welcome to Senso</p>
           </div>
           <Avatar className="w-12 h-12">
-            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="Profile" className="w-full h-full object-cover" />
+            <AvatarImage src={avatarUrl || ''} alt="Profile" />
+            <AvatarFallback>{firstName?.[0]?.toUpperCase() || '?'}</AvatarFallback>
           </Avatar>
         </div>
 
