@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,7 +37,6 @@ const Profile = () => {
         }
 
         setUserId(user.id);
-
         setFormData(prev => ({
           ...prev,
           fullName: user.user_metadata?.full_name || '',
@@ -124,36 +125,26 @@ const Profile = () => {
             });
 
           if (updateError) {
-            console.error('Profile update error:', updateError);
             throw updateError;
           }
 
           setAvatarUrl(dataUrl);
+          setHasChanges(true);
 
           toast({
             title: "Success",
-            description: "Avatar uploaded and resized successfully!",
+            description: "Profile photo updated successfully!",
           });
         } catch (error) {
           console.error('Error processing image:', error);
           toast({
             variant: "destructive",
             title: "Error",
-            description: "Failed to process avatar. Please try again.",
+            description: "Failed to process profile photo. Please try again.",
           });
         } finally {
           setUploading(false);
         }
-      };
-
-      reader.onerror = () => {
-        console.error('Error reading file');
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to read the selected image. Please try again.",
-        });
-        setUploading(false);
       };
 
       reader.readAsDataURL(file);
@@ -162,14 +153,13 @@ const Profile = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to upload avatar. Please try again.",
+        description: "Failed to upload profile photo. Please try again.",
       });
       setUploading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsLoading(true);
     
     try {
@@ -180,7 +170,6 @@ const Profile = () => {
       const profileData = {
         id: userId,
         full_name: formData.fullName,
-        email: formData.email,
         phone: formData.phone,
         address: formData.address,
         avatar_url: avatarUrl,
@@ -191,7 +180,6 @@ const Profile = () => {
         .upsert(profileData);
 
       if (upsertError) {
-        console.error('Profile update error:', upsertError);
         throw upsertError;
       }
 
@@ -201,7 +189,8 @@ const Profile = () => {
         duration: 2000,
       });
       
-      navigate('/success');
+      setHasChanges(false);
+      navigate('/settings');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -214,34 +203,48 @@ const Profile = () => {
     }
   };
 
+  // Get the capitalized first letter of the first name for the avatar fallback
+  const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
+
   return (
-    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-[#212529] mb-2">Create Profile</h1>
-        <p className="text-gray-500">Tell us more about yourself</p>
+    <div className="min-h-screen bg-[#f5f6f7] relative">
+      {/* Status Bar */}
+      <div className="flex justify-between items-center px-6 py-4">
+        <div className="text-sm text-[#212529]">9:41</div>
+        <div className="flex items-center gap-2">
+          <i className="fa-solid fa-signal"></i>
+          <i className="fa-solid fa-wifi"></i>
+          <i className="fa-solid fa-battery-full"></i>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm">
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
-              {avatarUrl ? (
-                <Avatar className="w-full h-full">
-                  <AvatarImage 
-                    src={avatarUrl} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover"
-                  />
-                  <AvatarFallback>
-                    {formData.fullName.charAt(0) || '?'}
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <i className="fa-regular fa-user text-3xl text-gray-400"></i>
-              )}
-            </div>
+      <div className="px-6 pb-32">
+        {/* Header */}
+        <div className="mb-8 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/settings')} className="text-[#212529]">
+              <i className="fa-solid fa-arrow-left text-xl"></i>
+            </button>
+            <h1 className="text-2xl font-bold text-[#212529]">Edit Profile</h1>
+          </div>
+          <button 
+            onClick={handleSubmit}
+            className="text-blue-500 font-semibold" 
+            disabled={!hasChanges || isLoading}
+          >
+            Save
+          </button>
+        </div>
+
+        {/* Profile Image */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="relative mb-3">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={avatarUrl || ''} alt="Profile" className="object-cover" />
+              <AvatarFallback>{avatarFallback}</AvatarFallback>
+            </Avatar>
             <label 
-              className={`absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer ${uploading ? 'opacity-50' : ''}`}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer"
               htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
@@ -254,70 +257,76 @@ const Profile = () => {
                 className="hidden"
               />
             </label>
-            {uploading && (
-              <div className="absolute -bottom-6 w-full text-center text-xs text-gray-500">
-                Uploading...
-              </div>
-            )}
           </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Full Name</label>
-            <Input 
-              type="text" 
-              value={formData.fullName}
-              className="bg-[#f5f6f7] opacity-75 cursor-not-allowed" 
-              readOnly
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Email Address</label>
-            <Input 
-              type="email" 
-              value={formData.email}
-              className="bg-[#f5f6f7] opacity-75 cursor-not-allowed" 
-              readOnly
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Phone Number</label>
-            <PhoneInput
-              value={formData.phone}
-              onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Address</label>
-            <AddressInput
-              value={formData.address}
-              onChange={(value) => setFormData(prev => ({ ...prev, address: value }))}
-            />
-          </div>
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full bg-[#212529] hover:bg-[#2c3238] text-white py-6 rounded-xl font-semibold mt-8"
-          disabled={isLoading || uploading}
-        >
-          {isLoading ? 'Saving Profile...' : 'Save Profile'}
-        </Button>
-      </form>
-
-      <div className="text-center mt-6">
-        <p className="text-gray-500">
-          Want to go back?{" "}
-          <button 
-            onClick={() => navigate('/login')} 
-            className="font-semibold text-[#212529] hover:text-[#2c3238]"
+          <label 
+            htmlFor="avatar-upload"
+            className="text-blue-500 text-sm font-medium cursor-pointer"
           >
-            Return to login
-          </button>
+            Change Photo
+          </label>
+        </div>
+
+        {/* Edit Fields Section */}
+        <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm text-gray-500 font-medium">Full Name</label>
+              <Input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, fullName: e.target.value }));
+                  setHasChanges(true);
+                }}
+                className="px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-gray-500 font-medium">Email Address</label>
+              <Input
+                type="email"
+                value={formData.email}
+                className="px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] opacity-75 cursor-not-allowed"
+                readOnly
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-gray-500 font-medium">Phone Number</label>
+              <PhoneInput
+                value={formData.phone}
+                onChange={(value) => {
+                  setFormData(prev => ({ ...prev, phone: value }));
+                  setHasChanges(true);
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-gray-500 font-medium">Address</label>
+              <AddressInput
+                value={formData.address}
+                onChange={(value) => {
+                  setFormData(prev => ({ ...prev, address: value }));
+                  setHasChanges(true);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Save Button */}
+        <Button 
+          onClick={handleSubmit}
+          className="w-full py-4 bg-blue-500 text-white rounded-full font-semibold mb-6 hover:bg-blue-600 transition-colors"
+          disabled={!hasChanges || isLoading || uploading}
+        >
+          {isLoading ? 'Saving Changes...' : 'Save Changes'}
+        </Button>
+
+        <p className="text-center text-xs text-gray-400 mb-20">
+          Your profile info is used to personalize your experience.
         </p>
       </div>
     </div>
@@ -325,3 +334,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
