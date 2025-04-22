@@ -1,9 +1,21 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -101,15 +113,35 @@ const Settings = () => {
         {/* App Version */}
         <p className="text-center text-sm text-gray-400 mb-6">Version 1.0.0</p>
 
-        {/* Logout Button */}
-        <button 
-          onClick={handleLogout}
-          className="w-full py-4 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 active:bg-red-700 transition-colors shadow-lg mb-8 focus:outline-none focus:ring-2 focus:ring-red-300"
-          type="button"
-          tabIndex={0}
-        >
-          Log Out
-        </button>
+        {/* Logout Button with Confirmation */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              className="w-full py-4 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 active:bg-red-700 transition-colors shadow-lg mb-8 focus:outline-none focus:ring-2 focus:ring-red-300"
+              type="button"
+              tabIndex={0}
+            >
+              Log Out
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Log out</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to log out of your account?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-500 hover:bg-red-600 focus:ring-red-300"
+                onClick={handleLogout}
+              >
+                Log Out
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       {/* Bottom Navigation */}
       <div className="fixed bottom-6 left-6 right-6">
@@ -166,3 +198,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
