@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,7 @@ import HelpFAQ from "./pages/HelpFAQ";
 import SendFeedback from "./pages/SendFeedback";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import WaterMonitoring from "./pages/WaterMonitoring";
+import ElectricityMonitoring from "./pages/ElectricityMonitoring";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +49,7 @@ const App = () => (
             <Route path="/water" element={<Water />} />
             <Route path="/water-monitoring" element={<WaterMonitoring />} />
             <Route path="/electricity" element={<Electricity />} />
+            <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/help" element={<HelpFAQ />} />
