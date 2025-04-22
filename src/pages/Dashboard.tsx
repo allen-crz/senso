@@ -12,7 +12,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Greeting Section */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
@@ -24,7 +23,6 @@ const Dashboard = () => {
           </Avatar>
         </div>
 
-        {/* Utility Toggle */}
         <div className="mb-8">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button className="px-6 py-3 bg-[#212529] text-white rounded-full whitespace-nowrap">All</button>
@@ -35,11 +33,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Replace the old water card with the new WaterSection component */}
         <div className="space-y-4">
           <WaterSection />
 
-          {/* Empty State Cards */}
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -57,7 +53,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Electricity Usage Empty Card */}
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -75,7 +70,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Cost Forecast Empty Card */}
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -94,7 +88,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-6 left-6 right-6">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
