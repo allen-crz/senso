@@ -1,8 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SuccessScreen = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
       {/* Success Animation */}
