@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
@@ -35,12 +36,14 @@ const Login = () => {
           title: "Login failed",
           description: error.message,
         });
+        setIsLoading(false);
         return;
       }
 
       if (user) {
         console.log("User authenticated:", user.id);
         
+        // Check if user has completed profile setup
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('full_name')
@@ -60,12 +63,15 @@ const Login = () => {
 
         console.log("Profile check result:", profile);
 
+        // Determine if the user has a complete profile
+        const hasCompletedProfile = profile && profile.full_name && profile.full_name.trim() !== '';
+        
         toast({
           title: "Login successful",
-          description: "Welcome to Senso",
+          description: hasCompletedProfile ? "Welcome back to Senso" : "Welcome to Senso",
         });
 
-        if (profile && profile.full_name) {
+        if (hasCompletedProfile) {
           console.log("User has profile, redirecting to dashboard");
           navigate("/dashboard");
         } else {

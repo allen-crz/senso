@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -14,23 +13,18 @@ export async function signInWithEmail(email: string, password: string) {
     });
 
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message,
-      });
       return { user: null, error };
     }
 
     return { user: data.user, error: null };
   } catch (error) {
     console.error("Login error:", error);
-    toast({
-      variant: "destructive",
-      title: "Login failed",
-      description: "An unexpected error occurred",
-    });
-    return { user: null, error };
+    return { 
+      user: null, 
+      error: { 
+        message: "An unexpected error occurred during login" 
+      } as AuthError 
+    };
   }
 }
 
