@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const ElectricityMonitoring: React.FC = () => {
   const navigate = useNavigate();
   const [manualDigits, setManualDigits] = useState(Array(5).fill(""));
-
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleDigitChange = (idx: number, value: string) => {
@@ -25,19 +24,9 @@ const ElectricityMonitoring: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><rect width="4" height="15" x="1" y="2" rx="1.5" /><rect width="4" height="12" x="7" y="5" rx="1.5" /><rect width="4" height="9" x="13" y="8" rx="1.5" /></svg>
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2" fill="none" /><circle cx="9" cy="9" r="3" /></svg>
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><rect width="12" height="8" x="3" y="5" rx="3"/><rect width="2" height="4" x="15" y="7" rx="1" /></svg>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
+      {/* Header */}
       <div className="px-6 pb-32">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center">
@@ -89,7 +78,7 @@ const ElectricityMonitoring: React.FC = () => {
         {/* Manual Input Section */}
         <form className="bg-white p-6 rounded-3xl shadow-sm" onSubmit={handleSubmit}>
           <h3 className="text-lg font-semibold text-[#212529] mb-2">Manual Input (Optional)</h3>
-          <p className="text-sm text-gray-500 mb-4">Scroll horizontally to enter all digits</p>
+          <p className="text-sm text-gray-500 mb-4">Enter all digits</p>
           <div className="overflow-x-auto pb-2">
             <div className="flex gap-2 mb-4 min-w-max">
               {[...Array(5)].map((_, idx) => (
@@ -112,45 +101,49 @@ const ElectricityMonitoring: React.FC = () => {
         </form>
       </div>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - replicated dashboard tab hover styles */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4 z-50">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
+            {/* Home */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/dashboard")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Home className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Home className="text-gray-400 group-hover:text-white transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-white font-medium transition-colors">Home</span>
             </button>
+            {/* Water */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/water-monitoring")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Droplet className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Droplet className="text-gray-400 group-hover:text-blue-500 transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Water</span>
+              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
-            <button className="flex flex-col items-center gap-1 relative" type="button">
+            {/* Electric (current page - highlight) */}
+            <div className="flex flex-col items-center gap-1 group cursor-default">
               <div className="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center">
                 <Bolt className="text-yellow-400" />
               </div>
               <span className="text-xs font-medium text-yellow-400">Electric</span>
-            </button>
+            </div>
+            {/* Settings */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/settings")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Settings className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Settings className="text-gray-400 group-hover:text-gray-600 transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Settings</span>
+              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
             </button>
           </div>
         </div>
