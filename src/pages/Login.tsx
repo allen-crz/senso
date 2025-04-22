@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithEmail } from '@/services/auth';
 import { supabase } from "@/integrations/supabase/client";
+import { usePageTransition } from "@/hooks/usePageTransition";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,6 +12,9 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Use page transition hook
+  const { transitionClass, triggerTransition, transitioning } = usePageTransition(300);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +46,16 @@ const Login = () => {
     }
   };
 
+  // Handler for Register link with transition
+  const handleRegisterTransition = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    triggerTransition(() => {
+      navigate("/register");
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
+    <div className={`min-h-screen bg-[#f5f6f7] px-6 py-12 ${transitionClass}`}>
       <div className="mb-12 flex justify-center">
         <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
           <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
@@ -110,10 +122,14 @@ const Login = () => {
 
       <div className="text-center mt-6">
         <p className="text-gray-500">
-          Don't have an account?{" "}
-          <Link to="/register" className="font-semibold text-[#212529]">
+          {"Don't have an account? "}
+          <a
+            href="/register"
+            onClick={handleRegisterTransition}
+            className="font-semibold text-[#212529] cursor-pointer inline-block transition"
+          >
             Create one here
-          </Link>
+          </a>
         </p>
       </div>
 
