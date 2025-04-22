@@ -7,13 +7,17 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Droplet, Camera } from "lucide-react";
 
-// Define the WaterReading type
 interface WaterReading {
   id: string;
   user_id: string;
   reading: number;
   created_at: string;
   updated_at: string;
+}
+
+interface WaterSectionProps {
+  variant?: 'dashboard' | 'water';
+  onAddReading?: () => void;
 }
 
 const fetchWaterData = async (): Promise<WaterReading | null> => {
@@ -23,7 +27,7 @@ const fetchWaterData = async (): Promise<WaterReading | null> => {
   return null;
 };
 
-const WaterSection = ({ variant = 'dashboard' }: { variant?: 'dashboard' | 'water' }) => {
+const WaterSection = ({ variant = 'dashboard', onAddReading }: WaterSectionProps) => {
   const { data: waterData, isLoading, error } = useQuery({
     queryKey: ['water-reading'],
     queryFn: fetchWaterData
@@ -40,7 +44,11 @@ const WaterSection = ({ variant = 'dashboard' }: { variant?: 'dashboard' | 'wate
         <div className="flex flex-col items-center justify-center py-8">
           <Camera className="text-blue-200 w-12 h-12 mb-4" />
           <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
-          <button className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold">
+          <button
+            className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold transition-colors hover:bg-blue-100 hover:text-blue-600 active:scale-95 focus:outline-none"
+            onClick={onAddReading}
+            type="button"
+          >
             Add Reading
           </button>
         </div>
@@ -55,7 +63,11 @@ const WaterSection = ({ variant = 'dashboard' }: { variant?: 'dashboard' | 'wate
         <div className="text-center text-gray-500 py-8">
           <Camera className="text-blue-200 w-12 h-12 mb-4 mx-auto" />
           <p className="mb-4">No water readings available</p>
-          <button className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold">
+          <button
+            className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold transition-colors hover:bg-blue-100 hover:text-blue-600 active:scale-95 focus:outline-none"
+            onClick={onAddReading}
+            type="button"
+          >
             Add Reading
           </button>
         </div>

@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
+import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -15,6 +16,22 @@ const Dashboard = () => {
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
+
+  // Handler for "Add Reading" button for water
+  const handleAddWaterReading = () => {
+    toast({
+      title: "Add Water Reading",
+      description: "Coming soon: take and submit a water meter photo!",
+    });
+  };
+
+  // Handler for "Add Reading" button for electricity
+  const handleAddElectricityReading = () => {
+    toast({
+      title: "Add Electricity Reading",
+      description: "Coming soon: take and submit an electric meter photo!",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
@@ -59,8 +76,8 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          <WaterSection variant="dashboard" />
-          <ElectricitySection variant="dashboard" />
+          <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
+          <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
 
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
@@ -79,6 +96,7 @@ const Dashboard = () => {
                 className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold cursor-pointer transition transform duration-100 hover:bg-blue-100 hover:text-blue-600 active:scale-95 focus:outline-none"
                 type="button"
                 tabIndex={0}
+                onClick={handleAddWaterReading}
               >
                 Add Reading
               </button>
@@ -102,6 +120,7 @@ const Dashboard = () => {
                 className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold cursor-pointer transition transform duration-100 hover:bg-amber-100 hover:text-amber-600 active:scale-95 focus:outline-none"
                 type="button"
                 tabIndex={0}
+                onClick={handleAddElectricityReading}
               >
                 Add Reading
               </button>
@@ -181,4 +200,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
