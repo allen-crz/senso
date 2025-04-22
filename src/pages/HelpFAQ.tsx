@@ -12,7 +12,10 @@ import {
   Wrench,
   ChevronRight,
   ChevronLeft,
-  Home, Droplet, Bolt, Settings as SettingsIcon,
+  Home,
+  Droplet,
+  Bolt,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 const HelpFAQ = () => {
@@ -136,37 +139,15 @@ const HelpFAQ = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
-              tabIndex={0}
-            >
-              <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Droplet className="text-gray-400 group-hover:text-blue-500" />
-              </div>
-              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
-            </button>
-            <button
-              onClick={() => navigate('/electricity')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
-              tabIndex={0}
-            >
-              <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Bolt className="text-gray-400 group-hover:text-amber-500" />
-              </div>
-              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
-            </button>
-            <button
               onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
-                <SettingsIcon className="text-gray-400 group-hover:text-gray-600" />
+                <SettingsIcon className="text-white group-hover:text-gray-600" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
+              <span className="text-xs font-medium text-purple-500 group-hover:text-gray-600 transition-colors">Settings</span>
             </button>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Send, ChevronLeft } from "lucide-react";
@@ -55,28 +54,6 @@ const SendFeedback = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
-              tabIndex={0}
-            >
-              <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Droplet className="text-gray-400 group-hover:text-blue-500" />
-              </div>
-              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
-            </button>
-            <button
-              onClick={() => navigate('/electricity')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
-              tabIndex={0}
-            >
-              <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Bolt className="text-gray-400 group-hover:text-amber-500" />
-              </div>
-              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
-            </button>
-            <button
               onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
@@ -95,4 +72,3 @@ const SendFeedback = () => {
 };
 
 export default SendFeedback;
-
