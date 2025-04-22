@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import WaterSection from '@/components/WaterSection';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -36,7 +37,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
-      {/* Main Content Area */}
       <div className="px-6 pb-32">
         {/* Greeting Section */}
         <div className="flex justify-between items-center mb-8">
@@ -59,9 +59,11 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Empty State Cards */}
+        {/* Replace the old water card with the new WaterSection component */}
         <div className="space-y-4">
-          {/* Water Usage Empty Card */}
+          <WaterSection />
+
+          {/* Empty State Cards */}
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
