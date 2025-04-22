@@ -11,7 +11,8 @@ import {
   Rocket,
   UserCog,
   Wrench,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft  // Add this import
 } from "lucide-react";
 
 const HelpFAQ = () => {
@@ -47,7 +48,15 @@ const HelpFAQ = () => {
     <div className="min-h-screen bg-[#f5f6f7] relative">
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-8 pt-6">
-          <h1 className="text-2xl font-bold text-[#212529]">Help & FAQs</h1>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => navigate('/settings')} 
+              className="p-2 -ml-2"
+            >
+              <ChevronLeft className="text-[#212529] w-6 h-6" />
+            </button>
+            <h1 className="text-2xl font-bold text-[#212529]">Help & FAQs</h1>
+          </div>
           <i className="fa-solid fa-circle-question text-purple-500 text-xl"></i>
         </div>
 
@@ -135,3 +144,4 @@ const HelpFAQ = () => {
 };
 
 export default HelpFAQ;
+
