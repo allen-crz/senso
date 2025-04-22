@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -15,10 +16,7 @@ const Water = () => {
     : 'User';
 
   const handleAddWaterReading = () => {
-    toast({
-      title: "Add Water Reading",
-      description: "Coming soon: take and submit a water meter photo!",
-    });
+    navigate('/water-monitoring');
   };
 
   return (
