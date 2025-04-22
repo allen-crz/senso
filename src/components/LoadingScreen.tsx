@@ -4,16 +4,6 @@ import React from "react";
 const LoadingScreen: React.FC = () => {
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#212529] via-gray-800 to-black">
-      {/* Status Bar Area */}
-      <div className="relative z-10 flex justify-between items-center p-6">
-        <div className="text-sm text-white">9:41</div>
-        <div className="flex items-center gap-2 text-white">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="relative z-10 h-[800px] flex flex-col items-center justify-center px-6">
         {/* App Logo */}
