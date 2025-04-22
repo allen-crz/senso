@@ -21,8 +21,7 @@ import {
   Menu,
   Plus,
   Droplets,
-  Zap,
-  Google
+  Zap
 } from "lucide-react";
 
 export const Icons = {
@@ -48,6 +47,5 @@ export const Icons = {
   menu: Menu,
   add: Plus,
   water: Droplets,
-  electricity: Zap,
-  google: Google
+  electricity: Zap
 };

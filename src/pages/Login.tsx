@@ -172,7 +172,19 @@ const Login = () => {
             </>
           ) : (
             <>
-              <Icons.google className="mr-2 h-4 w-4" />
+              <svg 
+                className="mr-2 h-4 w-4" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12Z" />
+                <path d="M12 7v10M7 12h10" />
+              </svg>
               Google
             </>
           )}
