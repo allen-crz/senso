@@ -206,7 +206,7 @@ const EditProfile = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
-      <div className="px-6 pb-32">
+      <div className="px-6 pb-20">
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
@@ -226,7 +226,7 @@ const EditProfile = () => {
               <AvatarFallback>{avatarFallback}</AvatarFallback>
             </Avatar>
             <label 
-              className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer"
+              className="absolute bottom-0 right-0 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-purple-600 transition-colors"
               htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
@@ -299,7 +299,7 @@ const EditProfile = () => {
 
         <Button 
           onClick={handleSubmit}
-          className="w-full py-4 bg-blue-500 text-white rounded-full font-semibold mb-6 hover:bg-blue-600 transition-colors"
+          className="w-full py-4 bg-purple-500 text-white rounded-full font-semibold mb-6 hover:bg-purple-600 transition-colors"
           disabled={!hasChanges || isLoading || uploading}
         >
           {isLoading ? 'Saving Changes...' : 'Save Changes'}
