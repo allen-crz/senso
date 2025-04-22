@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
@@ -13,11 +12,12 @@ const Register = () => {
     confirmPassword: '',
     termsAccepted: false
   });
+  const navigate = useNavigate();
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement registration logic
     console.log('Registration attempted with:', formData);
+    navigate('/success');
   };
 
   return (
