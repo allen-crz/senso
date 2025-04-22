@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -124,17 +123,17 @@ const Settings = () => {
               Log Out
             </button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-[90%] max-w-md rounded-2xl">
             <AlertDialogHeader>
-              <AlertDialogTitle>Log out</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-center">Log Out</AlertDialogTitle>
+              <AlertDialogDescription className="text-center">
                 Are you sure you want to log out of your account?
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-red-500 hover:bg-red-600 focus:ring-red-300"
+                className="w-full sm:w-auto bg-red-500 hover:bg-red-600 focus:ring-red-300"
                 onClick={handleLogout}
               >
                 Log Out
@@ -198,4 +197,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
