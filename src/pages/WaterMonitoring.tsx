@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import {
   Droplet,
@@ -33,8 +34,7 @@ const WaterMonitoring: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans">
-      {/* Header */}
+    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-12">
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -138,7 +138,11 @@ const WaterMonitoring: React.FC = () => {
               </div>
               <span className="text-xs font-medium text-blue-400">Water</span>
             </button>
-            <button className="flex flex-col items-center gap-1" type="button">
+            <button 
+              className="flex flex-col items-center gap-1" 
+              onClick={() => navigate("/electricity-monitoring")}
+              type="button"
+            >
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <Bolt className="text-gray-400 text-2xl" />
               </div>
