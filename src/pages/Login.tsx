@@ -1,205 +1,125 @@
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
-import { Icons } from "@/components/icons";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { supabase } from "@/integrations/supabase/client";
-import { usePageTransition } from "@/hooks/usePageTransition";
-
-const FormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-});
-
-type LoginFormValues = z.infer<typeof FormSchema>;
+import { Eye, EyeClosed } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const { transitionClass, isTransitioning } = usePageTransition();
-
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  const { mutate: signIn } = useMutation({
-    mutationFn: async (values: LoginFormValues) => {
-      setIsLoading(true);
-      try {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: values.email,
-          password: values.password,
-        });
-        
-        if (error) {
-          throw error;
-        }
-        
-        return { success: true };
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    onSuccess: () => {
-      toast({
-        title: "Login successful!",
-        description: "You have successfully logged in.",
-      });
-      navigate("/dashboard");
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Login failed.",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  function onSubmit(values: LoginFormValues) {
-    signIn(values);
-  }
+  // You can replace this with your real authentication logic
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Perform login logic here
+    // navigate("/dashboard"); // Example navigation after login
+  };
 
   return (
-    <div className="grid h-screen w-screen place-items-center">
-      <div className={`container flex w-full max-w-md flex-col items-center justify-center space-y-4 ${transitionClass}`}>
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <Icons.logo className="h-9 w-9" />
-          <h1 className="text-2xl font-semibold">Welcome back.</h1>
-          <p className="text-muted-foreground text-sm">
-            Enter your email and password to login
-          </p>
+    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 font-sans relative">
+      {/* Status Bar Area */}
+      <div className="flex justify-between items-center mb-12 select-none">
+        <div className="text-sm text-[#212529]">9:41</div>
+        <div className="flex items-center gap-2">
+          <i className="fa-solid fa-signal"></i>
+          <i className="fa-solid fa-wifi"></i>
+          <i className="fa-solid fa-battery-full"></i>
         </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex w-full flex-col space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="mail@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+      </div>
+
+      {/* App Logo */}
+      <div className="mb-12 flex justify-center">
+        <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
+          <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
+        </div>
+      </div>
+
+      {/* Welcome Text */}
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold text-[#212529] mb-2">Welcome to Senso</h1>
+        <p className="text-gray-500">Log in to your account to continue</p>
+      </div>
+
+      {/* Login Form */}
+      <form
+        className="bg-white rounded-3xl p-6 shadow-sm mb-6"
+        onSubmit={handleLogin}
+        autoComplete="off"
+      >
+        <div className="space-y-4">
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] outline-none"
+              placeholder="Enter your email"
+              required
+              autoFocus
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <Label
-                  htmlFor="terms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Remember me
-                </Label>
-              </div>
-              <Link
-                to="/change-password"
-                className="text-sm text-blue-500 hover:underline"
+          </div>
+
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] outline-none pr-12"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+                onClick={() => setShowPassword((show) => !show)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                Forgot password?
-              </Link>
+                {showPassword ? (
+                  <Eye size={20} className="text-gray-400" />
+                ) : (
+                  <EyeClosed size={20} className="text-gray-400" />
+                )}
+              </button>
             </div>
-            <Button disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </>
-              ) : (
-                "Login"
-              )}
-            </Button>
-          </form>
-        </Form>
-        <div className="relative w-full">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
           </div>
         </div>
-        <Button variant="outline" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
-            </>
-          ) : (
-            <>
-              <svg 
-                className="mr-2 h-4 w-4" 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12Z" />
-                <path d="M12 7v10M7 12h10" />
-              </svg>
-              Google
-            </>
-          )}
-        </Button>
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          By continuing, you are setting up a Senso account and agree to our{" "}
-          <Link to="/terms-privacy" className="underline underline-offset-4 hover:text-primary">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/terms-privacy" className="underline underline-offset-4 hover:text-primary">
-            Privacy Policy
+
+        <div className="text-right mt-2 mb-6">
+          <Link
+            to="/change-password"
+            className="text-sm text-[#212529] cursor-pointer hover:underline"
+          >
+            Forgot Password?
           </Link>
-          .
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold transition-colors hover:bg-[#18171d]"
+        >
+          Log In
+        </button>
+      </form>
+
+      {/* Register Prompt */}
+      <div className="text-center mt-6">
+        <p className="text-gray-500">
+          {"Don't have an account? "}
+          <Link
+            to="/register"
+            className="font-semibold text-[#212529] cursor-pointer hover:underline"
+          >
+            Create one here
+          </Link>
         </p>
+      </div>
+
+      {/* Bottom Info */}
+      <div className="fixed bottom-8 left-0 right-0 text-center pointer-events-none z-[10000]">
+        <p className="text-xs text-gray-400">Senso App v1.0.0</p>
       </div>
     </div>
   );
