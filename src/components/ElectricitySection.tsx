@@ -89,7 +89,12 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
         </div>
       </div>
       <Progress value={progress} className="h-2 mb-4" />
-      <button className="text-sm font-semibold text-amber-500">View Details →</button>
+      <button 
+        className="text-sm font-semibold text-amber-500"
+        onClick={onAddReading}
+      >
+        View Details →
+      </button>
     </Card>
   );
 };
