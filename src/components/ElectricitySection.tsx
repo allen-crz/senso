@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
@@ -92,6 +93,7 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
       <button 
         className="text-sm font-semibold text-amber-500"
         onClick={onAddReading}
+        type="button"
       >
         View Details →
       </button>
