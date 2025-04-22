@@ -49,7 +49,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
+    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 relative">
       <div className="mb-12 flex justify-center">
         <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
           <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
