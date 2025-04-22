@@ -25,7 +25,7 @@ const Settings = () => {
           <h1 className="text-2xl font-bold text-[#212529]">Settings</h1>
           <i className="fa-solid fa-cog text-purple-500 text-xl"></i>
         </div>
-        {/* Profile Card with Details */}
+        {/* Profile Card with Details and Change Password */}
         <Card className="p-4 mb-6">
           <div className="flex items-start gap-4">
             <Avatar className="w-16 h-16">
@@ -41,28 +41,23 @@ const Settings = () => {
               </div>
             </div>
           </div>
-          <button 
-            onClick={() => navigate('/edit-profile')}
-            className="w-full mt-4 py-2.5 px-4 bg-gray-50 text-[#212529] rounded-xl flex items-center justify-between hover:bg-gray-100 transition-colors"
-          >
-            <span className="font-medium">Edit Profile</span>
-            <i className="fa-solid fa-chevron-right text-gray-400"></i>
-          </button>
-        </Card>
-
-        {/* Preferences Section with Change Password */}
-        <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
-          <h3 className="px-6 pt-6 pb-2 text-sm font-medium text-gray-500">Preferences</h3>
-          <div className="divide-y divide-gray-100">
+          <div className="space-y-4">
+            <button 
+              onClick={() => navigate('/edit-profile')}
+              className="w-full mt-4 py-2.5 px-4 bg-gray-50 text-[#212529] rounded-xl flex items-center justify-between hover:bg-gray-100 transition-colors"
+            >
+              <span className="font-medium">Edit Profile</span>
+              <i className="fa-solid fa-chevron-right text-gray-400"></i>
+            </button>
             <button 
               onClick={() => navigate('/change-password')}
-              className="w-full flex items-center justify-between px-6 py-4"
+              className="w-full py-2.5 px-4 bg-gray-50 text-[#212529] rounded-xl flex items-center justify-between hover:bg-gray-100 transition-colors"
             >
               <span className="font-medium">Change Password</span>
               <i className="fa-solid fa-chevron-right text-gray-400"></i>
             </button>
           </div>
-        </div>
+        </Card>
 
         {/* Support Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
