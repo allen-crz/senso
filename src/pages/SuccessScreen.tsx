@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,16 +6,6 @@ const SuccessScreen = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
-      {/* Status Bar Area */}
-      <div className="flex justify-between items-center mb-12">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
-
       {/* Success Animation Container */}
       <div className="flex flex-col items-center justify-center mb-12">
         <div className="w-20 h-20 bg-[#212529] rounded-full flex items-center justify-center mb-8">

@@ -14,15 +14,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
-      <div className="flex justify-between items-center mb-12">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
-
       <div className="mb-12 flex justify-center">
         <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
           <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
