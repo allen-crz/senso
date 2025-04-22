@@ -5,14 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Camera } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     // Here you would typically save the profile data
     console.log('Profile saved');
+    toast({
+      title: "Profile Created",
+      description: "Your profile has been created successfully.",
+      duration: 2000,
+    });
+    
+    // Navigate to success screen
+    navigate('/success');
   };
 
   return (
