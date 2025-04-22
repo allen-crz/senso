@@ -39,9 +39,11 @@ const Login = () => {
       }
 
       if (user) {
+        console.log("User authenticated:", user.id);
+        
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('id')
+          .select('full_name')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -52,17 +54,22 @@ const Login = () => {
             title: "Login failed",
             description: "Failed to verify profile information.",
           });
+          setIsLoading(false);
           return;
         }
 
+        console.log("Profile check result:", profile);
+
         toast({
           title: "Login successful",
-          description: "Welcome back to Senso",
+          description: "Welcome to Senso",
         });
 
-        if (profile && profile.id) {
+        if (profile && profile.full_name) {
+          console.log("User has profile, redirecting to dashboard");
           navigate("/dashboard");
         } else {
+          console.log("New user, redirecting to profile creation");
           navigate("/profile");
         }
       }
