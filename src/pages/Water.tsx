@@ -97,14 +97,14 @@ const Water = () => {
             </div>
             <button
               onClick={() => navigate('/water')}
-              className="flex flex-col items-center gap-1 group cursor-default"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
+              type="button"
               tabIndex={0}
-              disabled
             >
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Droplet className="text-blue-500" />
+              <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Droplet className="text-gray-400 group-hover:text-blue-500" />
               </div>
-              <span className="text-xs text-blue-500 transition-colors">Water</span>
+              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
               onClick={() => navigate('/electricity')}
