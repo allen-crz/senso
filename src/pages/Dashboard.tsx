@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
+import { toast } from "@/hooks/use-toast";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
 
 const Dashboard = () => {
@@ -166,7 +167,7 @@ const Dashboard = () => {
               <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
                 <Bolt className="text-gray-400 group-hover:text-amber-500" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electricity</span>
+              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
             <button
               onClick={() => navigate('/settings')}
