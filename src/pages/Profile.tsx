@@ -117,15 +117,16 @@ const Profile = () => {
     setIsLoading(true);
     try {
       if (!userId) throw new Error("User not found");
-      const profileData: Record<string, any> = {
+      
+      // Fixed: Explicitly creating the profile object with the required 'id' field
+      const profileData = {
         id: userId,
         full_name: formData.fullName,
         phone: formData.phone,
         address: formData.address,
+        avatar_url: avatar
       };
-      if (avatar) {
-        profileData.avatar_url = avatar;
-      }
+      
       const { error } = await supabase.from("profiles").upsert(profileData);
       if (error) throw error;
 
