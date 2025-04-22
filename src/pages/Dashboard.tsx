@@ -54,7 +54,9 @@ const Dashboard = () => {
         <div className="mb-8">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button className="px-6 py-3 bg-[#212529] text-white rounded-full whitespace-nowrap">All</button>
-            <button className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-blue-200">Water</button>
+            <button 
+              onClick={() => navigate('/water')}
+              className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-blue-200">Water</button>
             <button className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-amber-200">Electricity</button>
           </div>
         </div>
@@ -128,7 +130,9 @@ const Dashboard = () => {
               </div>
               <span className="text-xs font-medium text-white">Home</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
+            <button 
+              onClick={() => navigate('/water')}
+              className="flex flex-col items-center gap-1">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-droplet text-gray-400 text-2xl"></i>
               </div>

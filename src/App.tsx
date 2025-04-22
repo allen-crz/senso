@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from 'react'; // Add explicit React import
+import React from 'react';
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -13,6 +13,7 @@ import SuccessScreen from "./pages/SuccessScreen";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import RegistrationSuccess from "./pages/RegistrationSuccess";
+import Water from "./pages/Water";
 
 // Create a QueryClient instance outside of the component
 const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/success" element={<SuccessScreen />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/water" element={<Water />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
