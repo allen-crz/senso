@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,12 +62,15 @@ const Profile = () => {
       };
       const { error } = await supabase.from("profiles").upsert(profileData);
       if (error) throw error;
+      
       toast({
         title: "Profile Created",
         description: "Your profile has been created successfully.",
         duration: 2000,
       });
-      navigate("/dashboard");
+      
+      // Redirect to success page
+      navigate("/success");
     } catch (error) {
       toast({
         variant: "destructive",
