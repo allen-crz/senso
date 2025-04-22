@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const RegistrationSuccess = () => {
   const navigate = useNavigate();
+  const { transitionAndNavigate } = usePageTransitionTrigger(300);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] flex flex-col justify-center items-center px-6 py-12">
@@ -23,7 +25,7 @@ const RegistrationSuccess = () => {
       {/* Action Button */}
       <div className="px-4 w-full max-w-xs">
         <button 
-          onClick={() => navigate('/profile')}
+          onClick={() => transitionAndNavigate(() => navigate('/profile'))}
           className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mb-4"
         >
           Create Your Profile

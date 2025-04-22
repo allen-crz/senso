@@ -29,8 +29,12 @@ export function usePageTransition(
 
   function triggerTransition(cb?: () => void) {
     setTransitioning(true);
+    // Adding CSS class for visual transition
+    document.body.classList.add("animate-fade-out");
+    
     setTimeout(() => {
       setTransitioning(false);
+      document.body.classList.remove("animate-fade-out");
       if (cb) cb();
       if (onTransitionEnd) onTransitionEnd();
     }, durationMs);
@@ -46,4 +50,3 @@ export function usePageTransition(
     isTransitioning: transitioning 
   };
 }
-
