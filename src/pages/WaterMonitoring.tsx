@@ -34,7 +34,7 @@ const WaterMonitoring: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-12">
+    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -85,14 +85,15 @@ const WaterMonitoring: React.FC = () => {
           <h3 className="text-lg font-semibold text-[#212529] mb-2">Manual Input (Optional)</h3>
           <p className="text-sm text-gray-500 mb-4">Scroll horizontally to enter all digits</p>
           <div className="overflow-x-auto pb-2">
-            <div className="flex gap-2 mb-4 min-w-max">
+            <div className="flex gap-2 mb-4 min-w-[24rem] sm:min-w-[28rem] md:min-w-[32rem] lg:min-w-[36rem]">
+              {/* The .min-w-[Xrem] ensures scrollable width */}
               {[...Array(5)].map((_, idx) => (
                 <input
                   key={idx}
                   type="text"
                   maxLength={1}
                   ref={el => (inputRefs.current[idx] = el)}
-                  className="w-10 h-12 rounded-lg border text-center text-lg"
+                  className="w-10 h-12 rounded-lg border text-center text-lg focus:ring-2 focus:ring-blue-400 transition"
                   value={manualDigits[idx]}
                   onChange={e => handleDigitChange(idx, e.target.value)}
                   inputMode="numeric"
@@ -105,7 +106,7 @@ const WaterMonitoring: React.FC = () => {
                   type="text"
                   maxLength={1}
                   ref={el => (inputRefs.current[5 + idx] = el)}
-                  className="w-10 h-12 rounded-lg border text-center text-lg"
+                  className="w-10 h-12 rounded-lg border text-center text-lg focus:ring-2 focus:ring-blue-400 transition"
                   value={manualDigits[5 + idx]}
                   onChange={e => handleDigitChange(5 + idx, e.target.value)}
                   inputMode="numeric"
@@ -122,41 +123,45 @@ const WaterMonitoring: React.FC = () => {
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4 z-50">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
+            {/* Home */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/dashboard")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Home className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Home className="text-gray-400 group-hover:text-white transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-white font-medium transition-colors">Home</span>
             </button>
-            <button className="flex flex-col items-center gap-1 relative" type="button">
+            {/* Water */}
+            <button className="flex flex-col items-center gap-1 group cursor-default">
               <div className="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-full flex items-center justify-center">
                 <Droplet className="text-blue-400" />
               </div>
               <span className="text-xs font-medium text-blue-400">Water</span>
             </button>
+            {/* Electric */}
             <button 
-              className="flex flex-col items-center gap-1" 
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/electricity-monitoring")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Bolt className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Bolt className="text-gray-400 group-hover:text-amber-500 transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Electric</span>
+              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
+            {/* Settings */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/settings")}
               type="button"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <SettingsIcon className="text-gray-400 text-2xl" />
+              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
+                <SettingsIcon className="text-gray-400 group-hover:text-gray-600 transition-colors" />
               </div>
-              <span className="text-xs text-gray-400">Settings</span>
+              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
             </button>
           </div>
         </div>
@@ -166,3 +171,4 @@ const WaterMonitoring: React.FC = () => {
 };
 
 export default WaterMonitoring;
+
