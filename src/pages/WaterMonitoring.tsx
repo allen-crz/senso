@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import {
   Droplet,
@@ -35,15 +34,6 @@ const WaterMonitoring: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2 text-gray-500">
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><rect width="4" height="15" x="1" y="2" rx="1.5" /><rect width="4" height="12" x="7" y="5" rx="1.5" /><rect width="4" height="9" x="13" y="8" rx="1.5" /></svg>
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2" fill="none" /><circle cx="9" cy="9" r="3" /></svg>
-          <svg width="18" height="18" fill="currentColor" className="inline-block"><rect width="12" height="8" x="3" y="5" rx="3"/><rect width="2" height="4" x="15" y="7" rx="1" /></svg>
-        </div>
-      </div>
       {/* Header */}
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-6">
