@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -206,15 +205,10 @@ const Profile = () => {
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative pt-12"> {/* Added pt-12 for top padding */}
+    <div className="min-h-screen bg-[#f5f6f7] relative pt-12">
       <div className="px-6 pb-32">
-        <div className="mb-8 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/settings')} className="text-[#212529]">
-              <i className="fa-solid fa-arrow-left text-xl"></i>
-            </button>
-            <h1 className="text-2xl font-bold text-[#212529]">Edit Profile</h1>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-[#212529] text-center">Edit Profile</h1>
         </div>
 
         <div className="flex flex-col items-center mb-8">
