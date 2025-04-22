@@ -11,19 +11,36 @@ export interface UserData {
   avatarUrl: string | null;
 }
 
+// Create a cache to store user data across component instances
+let userDataCache: UserData | null = null;
+let isFetchingUserData = false;
+
 export const useUserData = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState<UserData>({ 
-    firstName: '', 
-    email: '',
-    phone: null,
-    address: null,
-    avatarUrl: null 
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const [userData, setUserData] = useState<UserData>(() => 
+    userDataCache || { 
+      firstName: '', 
+      email: '',
+      phone: null,
+      address: null,
+      avatarUrl: null 
+    }
+  );
+  const [isLoading, setIsLoading] = useState(!userDataCache);
 
   useEffect(() => {
+    // If we already have cached data and aren't currently fetching, return early
+    if (userDataCache && !isFetchingUserData) {
+      setUserData(userDataCache);
+      setIsLoading(false);
+      return;
+    }
+
+    // Prevent multiple simultaneous fetches
+    if (isFetchingUserData) return;
+
     const fetchUserData = async () => {
+      isFetchingUserData = true;
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -40,15 +57,20 @@ export const useUserData = () => {
 
         if (profile) {
           const firstName = profile.full_name?.split(' ')[0] || 'User';
-          setUserData({
+          const newUserData = {
             firstName,
             email: user.email || '',
             phone: profile.phone,
             address: profile.address,
             avatarUrl: profile.avatar_url,
-          });
+          };
+          
+          // Update the cache and state
+          userDataCache = newUserData;
+          setUserData(newUserData);
         }
       } finally {
+        isFetchingUserData = false;
         setIsLoading(false);
       }
     };
