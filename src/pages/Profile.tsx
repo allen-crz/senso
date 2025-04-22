@@ -51,7 +51,7 @@ const Profile = () => {
       }
 
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .upsert({
           id: user.id,
           full_name: formData.fullName,
