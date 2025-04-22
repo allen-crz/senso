@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -51,7 +50,7 @@ const Settings = () => {
           </button>
         </Card>
 
-        {/* Preferences Section */}
+        {/* Preferences Section with Change Password */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <h3 className="px-6 pt-6 pb-2 text-sm font-medium text-gray-500">Preferences</h3>
           <div className="divide-y divide-gray-100">
@@ -89,6 +88,7 @@ const Settings = () => {
             </button>
           </div>
         </div>
+
         {/* Legal Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <div className="divide-y divide-gray-100">
