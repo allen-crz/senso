@@ -206,7 +206,7 @@ const EditProfile = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
-      <div className="px-6 pb-20">
+      <div className="px-6 pb-6">
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
@@ -299,13 +299,13 @@ const EditProfile = () => {
 
         <Button 
           onClick={handleSubmit}
-          className="w-full py-4 bg-purple-500 text-white rounded-full font-semibold mb-6 hover:bg-purple-600 transition-colors"
+          className="w-full py-4 bg-purple-500 text-white rounded-full font-semibold mb-4 hover:bg-purple-600 transition-colors"
           disabled={!hasChanges || isLoading || uploading}
         >
           {isLoading ? 'Saving Changes...' : 'Save Changes'}
         </Button>
 
-        <p className="text-center text-xs text-gray-400 mb-20">
+        <p className="text-center text-xs text-gray-400">
           Your profile info is used to personalize your experience.
         </p>
       </div>
