@@ -3,7 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Camera } from "lucide-react";
+import { Camera } from "lucide-react";
+import { Image } from "image-js";
+import PhoneInput from "@/components/PhoneInput";
+import AddressInput from "@/components/AddressInput";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,6 +17,7 @@ const Profile = () => {
     phone: "",
     address: "",
   });
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -45,6 +49,65 @@ const Profile = () => {
     fetchUserData();
   }, [navigate, toast]);
 
+  // Handle avatar image upload, crop to square and resize to 300x300, store as a data url
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error("You must select an image to upload.");
+      }
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = async (e) => {
+        if (!e.target?.result) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to read file",
+          });
+          setUploading(false);
+          return;
+        }
+
+        try {
+          const img = await Image.load(e.target.result as string);
+          const size = Math.min(img.width, img.height);
+          const croppedImg = img.crop({
+            x: Math.floor((img.width - size) / 2),
+            y: Math.floor((img.height - size) / 2),
+            width: size,
+            height: size,
+          });
+          const resizedImg = croppedImg.resize({ width: 300, height: 300 });
+          const dataUrl = resizedImg.toDataURL();
+          setAvatar(dataUrl);
+          toast({
+            title: "Profile photo ready!",
+            description: "Image cropped and ready to save.",
+            duration: 1800,
+          });
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to process profile photo. Please try again.",
+          });
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to upload profile photo. Please try again.",
+      });
+      setUploading(false);
+    }
+  };
+
   const handleChange = (key: string, val: string) => {
     setFormData((prev) => ({ ...prev, [key]: val }));
   };
@@ -54,21 +117,24 @@ const Profile = () => {
     setIsLoading(true);
     try {
       if (!userId) throw new Error("User not found");
-      const profileData = {
+      const profileData: Record<string, any> = {
         id: userId,
         full_name: formData.fullName,
         phone: formData.phone,
         address: formData.address,
       };
+      if (avatar) {
+        profileData.avatar_url = avatar;
+      }
       const { error } = await supabase.from("profiles").upsert(profileData);
       if (error) throw error;
-      
+
       toast({
         title: "Profile Created",
         description: "Your profile has been created successfully.",
         duration: 2000,
       });
-      
+
       // Redirect to success page
       navigate("/success");
     } catch (error) {
@@ -82,6 +148,9 @@ const Profile = () => {
     }
   };
 
+  // We'll use the first letter of the name if no avatar
+  const avatarFallback = formData.fullName.charAt(0).toUpperCase() || "?";
+
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 font-inter">
       {/* Header */}
@@ -91,7 +160,6 @@ const Profile = () => {
         </h1>
         <p className="text-gray-500">Tell us more about yourself</p>
       </div>
-      
       {/* Profile Form */}
       <form
         onSubmit={handleSubmit}
@@ -99,20 +167,36 @@ const Profile = () => {
         autoComplete="off"
         style={{ fontFamily: "inherit" }}
       >
-        {/* Profile Image Upload (static for now) */}
+        {/* Avatar Upload */}
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center">
-              <User className="w-10 h-10 text-gray-400" />
+            <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span className="text-3xl text-gray-400 font-bold">
+                  {avatarFallback}
+                </span>
+              )}
             </div>
-            <button
-              type="button"
-              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center"
-              tabIndex={-1}
-              disabled
+            <label
+              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer"
+              htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
-            </button>
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                onChange={uploadAvatar}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
           </div>
         </div>
         <div className="space-y-4">
@@ -144,27 +228,22 @@ const Profile = () => {
               required
             />
           </div>
+          {/* Use PhoneInput for phone number */}
           <div className="form-group">
             <label className="block text-sm text-[#212529] mb-2">
               Phone Number
             </label>
-            <input
-              type="tel"
-              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] font-inter"
-              style={{ fontFamily: "inherit" }}
-              placeholder="Enter your phone number"
+            <PhoneInput
               value={formData.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
+              onChange={(val: string) => handleChange("phone", val)}
             />
           </div>
+          {/* Use AddressInput for address */}
           <div className="form-group">
             <label className="block text-sm text-[#212529] mb-2">Address</label>
-            <textarea
-              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] resize-none h-24 font-inter"
-              style={{ fontFamily: "inherit" }}
-              placeholder="Enter your complete address"
+            <AddressInput
               value={formData.address}
-              onChange={(e) => handleChange("address", e.target.value)}
+              onChange={(val: string) => handleChange("address", val)}
             />
           </div>
         </div>
