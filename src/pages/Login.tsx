@@ -1,9 +1,9 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
 import { signInWithEmail } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       toast({
         variant: "destructive",
@@ -23,12 +23,12 @@ const Login = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       const { user, error } = await signInWithEmail(email, password);
-      
+
       if (error) {
         toast({
           variant: "destructive",
@@ -37,13 +37,34 @@ const Login = () => {
         });
         return;
       }
-      
+
       if (user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Profile lookup error:", profileError);
+          toast({
+            variant: "destructive",
+            title: "Login failed",
+            description: "Failed to verify profile information.",
+          });
+          return;
+        }
+
         toast({
           title: "Login successful",
           description: "Welcome back to Senso",
         });
-        navigate("/dashboard");
+
+        if (profile && profile.id) {
+          navigate("/dashboard");
+        } else {
+          navigate("/profile");
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
