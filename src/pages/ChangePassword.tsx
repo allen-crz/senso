@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -62,9 +63,9 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative">
-      <div className="px-6 pb-32">
-        <div className="mb-8 flex items-center gap-4 pt-6">
+    <div className="h-screen flex flex-col overflow-hidden bg-[#f5f6f7]">
+      <div className="px-6 pt-6 pb-4">
+        <div className="mb-4 flex items-center gap-4">
           <button 
             onClick={() => navigate('/settings')}
             className="text-[#212529]"
@@ -73,7 +74,9 @@ const ChangePassword = () => {
           </button>
           <h1 className="text-2xl font-bold text-[#212529]">Change Password</h1>
         </div>
+      </div>
 
+      <div className="flex-grow overflow-auto px-6 pb-6">
         <form onSubmit={handlePasswordUpdate} className="space-y-6">
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="space-y-4">
@@ -178,3 +181,4 @@ const ChangePassword = () => {
 };
 
 export default ChangePassword;
+
