@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
@@ -45,11 +44,7 @@ const Register = () => {
     setIsLoading(false);
 
     if (user && !error) {
-      toast({
-        title: "Account Created",
-        description: "Please log in with your new account"
-      });
-      navigate('/login');
+      navigate('/registration-success');
     }
   };
 
