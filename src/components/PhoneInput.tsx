@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Globe } from "lucide-react";
+import { Flag } from "lucide-react";
 
 const countryCodes = [
   { code: '+1', country: 'United States' },
@@ -49,17 +49,26 @@ const PhoneInput = ({ value, onChange }: PhoneInputProps) => {
     onChange(fullNumber);
   }, [countryCode, localNumber, onChange]);
 
+  const selectedCountry = countryCodes.find(c => c.code === countryCode)?.country || '';
+
   return (
     <div className="flex gap-2">
       <Select value={countryCode} onValueChange={setCountryCode}>
-        <SelectTrigger className="w-[140px]">
-          <Globe className="mr-2 h-4 w-4" />
-          <SelectValue placeholder="Select country" />
+        <SelectTrigger className="w-[180px]">
+          <div className="flex items-center gap-2">
+            <Flag className="h-4 w-4" />
+            <SelectValue placeholder="Select country">
+              {selectedCountry} ({countryCode})
+            </SelectValue>
+          </div>
         </SelectTrigger>
         <SelectContent>
           {countryCodes.map((country) => (
             <SelectItem key={country.code} value={country.code}>
-              {country.country} ({country.code})
+              <div className="flex items-center gap-2">
+                <Flag className="h-4 w-4" />
+                {country.country} ({country.code})
+              </div>
             </SelectItem>
           ))}
         </SelectContent>
