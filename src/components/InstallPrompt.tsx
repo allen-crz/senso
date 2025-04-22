@@ -22,7 +22,7 @@ const InstallPrompt: React.FC = () => {
             Please install Senso to your home screen to access the full experience.
           </p>
           
-          {/* Installation Instructions */}
+          {/* Installation Instructions - iOS Only */}
           <div className="space-y-4">
             <div className="rounded-lg bg-white/5 p-4">
               <h3 className="font-medium mb-2">iOS Installation:</h3>
@@ -30,15 +30,6 @@ const InstallPrompt: React.FC = () => {
                 <li>Tap the share icon <i className="fa-solid fa-share-from-square"></i></li>
                 <li>Scroll down and tap "Add to Home Screen"</li>
                 <li>Tap "Add" to confirm</li>
-              </ol>
-            </div>
-            
-            <div className="rounded-lg bg-white/5 p-4">
-              <h3 className="font-medium mb-2">Android Installation:</h3>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-white/70">
-                <li>Tap the menu <i className="fa-solid fa-ellipsis-vertical"></i></li>
-                <li>Tap "Install App" or "Add to Home Screen"</li>
-                <li>Tap "Install" to confirm</li>
               </ol>
             </div>
           </div>

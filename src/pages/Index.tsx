@@ -39,12 +39,12 @@ const Index = () => {
     return <LoadingScreen />;
   }
 
-  // If not mobile or not iOS, show mobile only screen
-  if (!isMobile || !isIOS) {
+  // If not iOS (regardless of mobile or not), show iOS only screen
+  if (!isIOS) {
     return <MobileOnlyScreen />;
   }
 
-  // If mobile iOS but not installed, show install prompt
+  // If iOS but not installed, show install prompt
   if (!isInstalled) {
     return <InstallPrompt />;
   }
