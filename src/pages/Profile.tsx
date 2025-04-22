@@ -8,6 +8,7 @@ import { Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -21,42 +22,63 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate('/login');
-        return;
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          navigate('/login');
+          return;
+        }
 
-      // Pre-populate with user's registration data
-      setFormData(prev => ({
-        ...prev,
-        fullName: user.user_metadata?.full_name || '',
-        email: user.email || '',
-      }));
+        setUserId(user.id);
 
-      // Fetch existing avatar URL
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('avatar_url')
-        .eq('id', user.id)
-        .single();
+        // Pre-populate with user's registration data
+        setFormData(prev => ({
+          ...prev,
+          fullName: user.user_metadata?.full_name || '',
+          email: user.email || '',
+        }));
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
+        // Fetch existing profile data including avatar URL
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url, phone, address')
+          .eq('id', user.id)
+          .single();
 
-      if (data?.avatar_url) {
-        setAvatarUrl(data.avatar_url);
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+
+        // If profile data exists, update the form
+        if (data) {
+          setFormData(prev => ({
+            ...prev,
+            phone: data.phone || '',
+            address: data.address || '',
+          }));
+          
+          if (data.avatar_url) {
+            setAvatarUrl(data.avatar_url);
+          }
+        }
+      } catch (error) {
+        console.error('Error in fetchUserData:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load profile data. Please try again.",
+        });
       }
     };
 
     fetchUserData();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -66,26 +88,46 @@ const Profile = () => {
         throw new Error('You must select an image to upload.');
       }
 
+      if (!userId) {
+        throw new Error('User is not authenticated');
+      }
+
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const { data: { user } } = await supabase.auth.getUser();
+      const fileName = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+      // Ensure the avatars bucket exists
+      const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
       
-      if (!user) throw new Error('No user found');
+      if (bucketError && bucketError.message.includes('does not exist')) {
+        // Create the bucket if it doesn't exist
+        const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
+          public: true
+        });
+        
+        if (createBucketError) {
+          console.error('Error creating bucket:', createBucketError);
+          throw new Error('Failed to create storage bucket');
+        }
+      }
 
-      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
-
+      // Upload the file
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          upsert: true,
+          contentType: file.type
+        });
 
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         throw uploadError;
       }
 
       // Get public URL
       const { data } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setAvatarUrl(data.publicUrl);
 
@@ -93,21 +135,25 @@ const Profile = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .upsert({
-          id: user.id,
+          id: userId,
           avatar_url: data.publicUrl,
         });
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
+      }
 
       toast({
         title: "Success",
         description: "Avatar uploaded successfully!",
       });
     } catch (error) {
+      console.error('Error in uploadAvatar:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Error uploading avatar.",
+        description: "Failed to upload avatar. Please try again.",
       });
     } finally {
       setUploading(false);
@@ -119,33 +165,51 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('No user found');
+      if (!userId) {
+        throw new Error('User is not authenticated');
       }
 
-      const { error } = await supabase
+      // First, check if profile exists
+      const { data: existingProfile, error: fetchError } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          avatar_url: avatarUrl,
-        });
+        .select('id')
+        .eq('id', userId)
+        .single();
 
-      if (error) throw error;
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching profile:', fetchError);
+        throw new Error('Failed to check if profile exists');
+      }
+
+      // Prepare profile data
+      const profileData = {
+        id: userId,
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        avatar_url: avatarUrl,
+      };
+
+      // Upsert the profile
+      const { error: upsertError } = await supabase
+        .from('profiles')
+        .upsert(profileData);
+
+      if (upsertError) {
+        console.error('Profile update error:', upsertError);
+        throw upsertError;
+      }
 
       toast({
-        title: "Profile Created",
-        description: "Your profile has been created successfully.",
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
         duration: 2000,
       });
       
       navigate('/success');
     } catch (error) {
+      console.error('Error in handleSubmit:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -171,17 +235,22 @@ const Profile = () => {
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
               {avatarUrl ? (
-                <img 
-                  src={avatarUrl} 
-                  alt="Profile" 
-                  className="w-full h-full object-cover"
-                />
+                <Avatar className="w-full h-full">
+                  <AvatarImage 
+                    src={avatarUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                  <AvatarFallback>
+                    {formData.fullName.charAt(0) || '?'}
+                  </AvatarFallback>
+                </Avatar>
               ) : (
                 <i className="fa-regular fa-user text-3xl text-gray-400"></i>
               )}
             </div>
             <label 
-              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer"
+              className={`absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer ${uploading ? 'opacity-50' : ''}`}
               htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
@@ -194,6 +263,11 @@ const Profile = () => {
                 className="hidden"
               />
             </label>
+            {uploading && (
+              <div className="absolute -bottom-6 w-full text-center text-xs text-gray-500">
+                Uploading...
+              </div>
+            )}
           </div>
         </div>
 
@@ -266,4 +340,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
