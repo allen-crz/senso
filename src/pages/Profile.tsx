@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -38,14 +39,19 @@ const Profile = () => {
       }));
 
       // Fetch existing avatar URL
-      const { data: profile } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('avatar_url')
         .eq('id', user.id)
         .single();
 
-      if (profile?.avatar_url) {
-        setAvatarUrl(profile.avatar_url);
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url);
       }
     };
 
@@ -260,3 +266,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
