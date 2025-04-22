@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Apple } from "lucide-react";
 
 const InstallPrompt: React.FC = () => {
   return (
@@ -8,7 +9,7 @@ const InstallPrompt: React.FC = () => {
         {/* App Logo */}
         <div className="mb-8">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-lg">
-            <i className="fa-solid fa-bolt-lightning text-[#212529] text-4xl"></i>
+            <Apple className="h-12 w-12 text-[#212529]" />
           </div>
         </div>
 
@@ -17,19 +18,26 @@ const InstallPrompt: React.FC = () => {
         
         {/* Installation Card */}
         <div className="w-full max-w-md p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg mb-6">
-          <h2 className="text-xl font-semibold mb-4">Install to Continue</h2>
           <p className="text-white/80 mb-6">
-            Please install Senso to your home screen to access the full experience.
+            To use Senso, add it to your home screen:
           </p>
           
-          {/* Installation Instructions - iOS Only */}
           <div className="space-y-4">
             <div className="rounded-lg bg-white/5 p-4">
-              <h3 className="font-medium mb-2">iOS Installation:</h3>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-white/70">
-                <li>Tap the share icon <i className="fa-solid fa-share-from-square"></i></li>
-                <li>Scroll down and tap "Add to Home Screen"</li>
-                <li>Tap "Add" to confirm</li>
+              <ol className="list-decimal list-inside space-y-3 text-sm text-white/90">
+                <li className="flex items-center gap-2">
+                  Tap <span className="px-2 py-1 bg-white/10 rounded">
+                    <svg className="w-5 h-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  Select <span className="px-2 py-1 bg-white/10 rounded">Add to Home Screen</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  Tap <span className="px-2 py-1 bg-white/10 rounded">Add</span> to finish
+                </li>
               </ol>
             </div>
           </div>
@@ -37,7 +45,7 @@ const InstallPrompt: React.FC = () => {
 
         {/* Help Text */}
         <p className="text-white/60 text-sm text-center">
-          After installation, please open Senso from your home screen.
+          After installation, please open Senso from your home screen
         </p>
       </div>
     </div>
@@ -45,3 +53,4 @@ const InstallPrompt: React.FC = () => {
 };
 
 export default InstallPrompt;
+
