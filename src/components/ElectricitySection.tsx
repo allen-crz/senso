@@ -21,7 +21,7 @@ const fetchElectricityData = async (): Promise<ElectricityReading | null> => {
 
   const { data, error } = await supabase
     .from('electricity_readings')
-    .select()
+    .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -32,7 +32,7 @@ const fetchElectricityData = async (): Promise<ElectricityReading | null> => {
     return null;
   }
   
-  return data;
+  return data as ElectricityReading | null;
 };
 
 const ElectricitySection = ({ variant = 'dashboard' }: { variant?: 'dashboard' | 'electricity' }) => {
@@ -71,7 +71,7 @@ const ElectricitySection = ({ variant = 'dashboard' }: { variant?: 'dashboard' |
           <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Usage</h3>
           <p className="text-2xl font-bold text-[#212529]">{currentUsage} kWh</p>
           <p className="text-sm text-gray-500">
-            Last updated {new Date(electricityData?.created_at || '').toLocaleDateString()}
+            Last updated {electricityData?.created_at ? new Date(electricityData.created_at).toLocaleDateString() : 'N/A'}
           </p>
         </div>
         <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
