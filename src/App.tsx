@@ -47,6 +47,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/help" element={<HelpFAQ />} />
+            <Route path="/send-feedback" element={<React.lazy(() => import("./pages/SendFeedback")) />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
