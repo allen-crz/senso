@@ -16,6 +16,9 @@ const Login = () => {
   // Use page transition hook
   const { transitionClass, triggerTransition, transitioning } = usePageTransition(300);
 
+  // Visual effect for button click (shrink and fade quickly)
+  const [buttonActive, setButtonActive] = useState(false);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,20 +32,26 @@ const Login = () => {
           .from('profiles')
           .select('phone, address, created_at')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         // If profile exists and has required fields, go to dashboard
         if (profile?.phone || profile?.address) {
-          navigate('/dashboard');
+          // Add page exit effect before navigating to /dashboard
+          triggerTransition(() => {
+            navigate('/dashboard');
+          });
         } else {
           // If no profile or incomplete, go to profile page for new users
-          navigate('/profile');
+          triggerTransition(() => {
+            navigate('/profile');
+          });
         }
       }
     } catch (error) {
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
+      setButtonActive(false); // Reset click effect
     }
   };
 
@@ -55,7 +64,7 @@ const Login = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-[#f5f6f7] px-6 py-12 ${transitionClass}`}>
+    <div className={`min-h-screen bg-[#f5f6f7] px-6 py-12 transition-opacity duration-300 ${transitionClass}`}>
       <div className="mb-12 flex justify-center">
         <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
           <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
@@ -67,13 +76,18 @@ const Login = () => {
         <p className="text-gray-500">Log in to your account to continue</p>
       </div>
 
-      <form onSubmit={handleLogin} className="bg-white rounded-3xl p-6 shadow-sm mb-6">
+      <form 
+        onSubmit={handleLogin} 
+        className="bg-white rounded-3xl p-6 shadow-sm mb-6"
+        autoComplete="off"
+      >
         <div className="space-y-4">
           <div className="form-group">
             <label className="block text-sm text-[#212529] mb-2">Email Address</label>
             <input
               type="email"
               value={email}
+              autoComplete="username"
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
               placeholder="Enter your email"
@@ -87,6 +101,7 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
+                autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
                 placeholder="Enter your password"
@@ -95,6 +110,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
                 className="absolute right-4 top-1/2 -translate-y-1/2"
               >
                 {showPassword ? (
@@ -108,16 +124,28 @@ const Login = () => {
         </div>
 
         <div className="text-right mt-2 mb-6">
-          <span className="text-sm text-[#212529] cursor-pointer">Forgot Password?</span>
+          <span className="text-sm text-[#212529] cursor-pointer select-none">Forgot Password?</span>
         </div>
 
         <button 
           type="submit" 
-          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold 
-            hover:bg-[#3a3f44] transition-colors duration-300 
+          className={`
+            w-full bg-[#212529] text-white py-4 font-semibold transition 
+            duration-200 ease-in-out
+            rounded-xl
+            hover:bg-[#33373a] 
+            hover:scale-105
+            active:scale-95
             disabled:opacity-50 
-            active:scale-[0.98]" 
+            disabled:cursor-not-allowed
+            focus:outline-none
+            ${buttonActive ? 'scale-95 opacity-75' : ''}
+          `}
+          style={{transitionProperty: 'background, transform, opacity'}}
           disabled={isLoading}
+          onMouseDown={() => setButtonActive(true)}
+          onMouseUp={() => setButtonActive(false)}
+          onMouseLeave={() => setButtonActive(false)}
         >
           {isLoading ? 'Logging in...' : 'Log In'}
         </button>
@@ -129,15 +157,17 @@ const Login = () => {
           <a
             href="/register"
             onClick={handleRegisterTransition}
-            className="font-semibold text-[#212529] cursor-pointer inline-block transition"
+            className="font-semibold text-[#212529] cursor-pointer inline-block transition story-link"
           >
             Create one here
           </a>
         </p>
       </div>
 
-      <div className="fixed bottom-8 left-0 right-0 text-center">
-        <p className="text-xs text-gray-400">Senso App v1.0.0</p>
+      <div className="w-full pt-8 text-center">
+        <p className="text-xs text-gray-400 bg-transparent">
+          Senso App v1.0.0
+        </p>
       </div>
     </div>
   );
