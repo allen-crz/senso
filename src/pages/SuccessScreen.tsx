@@ -30,7 +30,7 @@ const SuccessScreen = () => {
       {/* Start Scanning Button */}
       <div className="relative">
         <button 
-          onClick={() => console.log('Start scanning')} 
+          onClick={() => navigate('/dashboard')} 
           className="w-full bg-[#212529] text-white py-6 rounded-2xl font-bold text-xl relative overflow-hidden group"
         >
           <div className="absolute inset-0 flex items-center justify-center">
