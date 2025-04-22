@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -6,6 +5,7 @@ import { useUserData } from '@/hooks/useUserData';
 import ElectricitySection from '@/components/ElectricitySection';
 import { Card } from "@/components/ui/card";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 
 const Electricity = () => {
   const navigate = useNavigate();
@@ -16,7 +16,10 @@ const Electricity = () => {
     : 'User';
 
   const handleAddElectricityReading = () => {
-    console.log('Navigating to electricity monitoring page');
+    toast({
+      title: "Add Electricity Reading",
+      description: "Coming soon: take and submit an electric meter photo!",
+    });
     navigate('/electricity-monitoring');
   };
 

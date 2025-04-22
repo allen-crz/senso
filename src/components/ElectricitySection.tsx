@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Bolt, Camera } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface ElectricityReading {
   id: string;
@@ -31,6 +31,17 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
     queryFn: fetchElectricityData
   });
 
+  const handleAddReading = () => {
+    toast({
+      title: "Add Electricity Reading",
+      description: "Coming soon: take and submit an electric meter photo!",
+    });
+    
+    if (onAddReading) {
+      onAddReading();
+    }
+  };
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -43,7 +54,7 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
           <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
           <button
             className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold transition-colors hover:bg-amber-100 hover:text-amber-600 active:scale-95 focus:outline-none"
-            onClick={onAddReading}
+            onClick={handleAddReading}
             type="button"
           >
             Add Reading
@@ -61,7 +72,7 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
           <p className="mb-4">No electricity readings available</p>
           <button
             className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold transition-colors hover:bg-amber-100 hover:text-amber-600 active:scale-95 focus:outline-none"
-            onClick={onAddReading}
+            onClick={handleAddReading}
             type="button"
           >
             Add Reading
@@ -92,7 +103,7 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
       <Progress value={progress} className="h-2 mb-4" />
       <button 
         className="text-sm font-semibold text-amber-500"
-        onClick={onAddReading}
+        onClick={handleAddReading}
         type="button"
       >
         View Details →
