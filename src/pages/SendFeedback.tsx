@@ -1,17 +1,10 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Send, ChevronLeft } from "lucide-react";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
-import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const SendFeedback = () => {
   const navigate = useNavigate();
-  const { transitionAndNavigate } = usePageTransitionTrigger();
-
-  const handleNavigation = (path: string) => {
-    transitionAndNavigate(() => navigate(path));
-  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
@@ -20,7 +13,7 @@ const SendFeedback = () => {
         <div className="flex items-center gap-2">
           <button
             aria-label="Back to Settings"
-            onClick={() => handleNavigation("/settings")}
+            onClick={() => navigate("/settings")}
             className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-purple-200 outline-none"
             tabIndex={0}
           >
@@ -50,7 +43,7 @@ const SendFeedback = () => {
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
             <button
-              onClick={() => handleNavigation('/dashboard')}
+              onClick={() => navigate('/dashboard')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -61,7 +54,7 @@ const SendFeedback = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => handleNavigation('/water-monitoring')}
+              onClick={() => navigate('/water-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -72,7 +65,7 @@ const SendFeedback = () => {
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
-              onClick={() => handleNavigation('/electricity-monitoring')}
+              onClick={() => navigate('/electricity-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -83,7 +76,7 @@ const SendFeedback = () => {
               <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
             <button
-              onClick={() => handleNavigation('/settings')}
+              onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}

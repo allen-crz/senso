@@ -1,16 +1,9 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Home, Droplet, Bolt, Settings as SettingsIcon } from "lucide-react";
-import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const TermsPrivacy: React.FC = () => {
   const navigate = useNavigate();
-  const { transitionAndNavigate } = usePageTransitionTrigger();
-
-  const handleNavigation = (path: string) => {
-    transitionAndNavigate(() => navigate(path));
-  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] flex flex-col">
@@ -30,7 +23,7 @@ const TermsPrivacy: React.FC = () => {
           <button
             className="text-[#212529] p-1 -ml-1 flex items-center"
             aria-label="Back"
-            onClick={() => handleNavigation("/settings")}
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft size={24} />
           </button>
@@ -117,7 +110,7 @@ const TermsPrivacy: React.FC = () => {
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
             <button
-              onClick={() => handleNavigation('/dashboard')}
+              onClick={() => navigate('/dashboard')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -128,7 +121,7 @@ const TermsPrivacy: React.FC = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => handleNavigation('/water-monitoring')}
+              onClick={() => navigate('/water-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -139,7 +132,7 @@ const TermsPrivacy: React.FC = () => {
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
-              onClick={() => handleNavigation('/electricity-monitoring')}
+              onClick={() => navigate('/electricity-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -150,7 +143,7 @@ const TermsPrivacy: React.FC = () => {
               <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
             <button
-              onClick={() => handleNavigation('/settings')}
+              onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}

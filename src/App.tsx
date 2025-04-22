@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from 'react';
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -36,42 +36,33 @@ const queryClient = new QueryClient({
   },
 });
 
-// Routes wrapper with transitions
-const RoutesWithTransition = () => {
-  const location = useLocation();
-  
-  return (
-    <PageTransition key={location.pathname}>
-      <Routes location={location}>
-        <Route path="/" element={<Index />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/registration-success" element={<RegistrationSuccess />} />
-        <Route path="/success" element={<SuccessScreen />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/dashboard" element={<DashboardTabs />} />
-        <Route path="/water" element={<DashboardTabs />} />
-        <Route path="/electricity" element={<DashboardTabs />} />
-        <Route path="/water-monitoring" element={<WaterMonitoring />} />
-        <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/help" element={<HelpFAQ />} />
-        <Route path="/send-feedback" element={<SendFeedback />} />
-        <Route path="/terms-privacy" element={<TermsPrivacy />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </PageTransition>
-  );
-};
-
 const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <RoutesWithTransition />
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/registration-success" element={<RegistrationSuccess />} />
+              <Route path="/success" element={<SuccessScreen />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/dashboard" element={<DashboardTabs />} />
+              <Route path="/water" element={<DashboardTabs />} />
+              <Route path="/electricity" element={<DashboardTabs />} />
+              <Route path="/water-monitoring" element={<WaterMonitoring />} />
+              <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+              <Route path="/help" element={<HelpFAQ />} />
+              <Route path="/send-feedback" element={<SendFeedback />} />
+              <Route path="/terms-privacy" element={<TermsPrivacy />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
           <Toaster />
           <Sonner />
         </BrowserRouter>
