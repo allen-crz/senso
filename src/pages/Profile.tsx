@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -50,8 +49,9 @@ const Profile = () => {
           .eq('id', user.id)
           .single();
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           console.error('Error fetching profile:', error);
+          // Continue execution even if there's an error - we'll create the profile later
           return;
         }
 
@@ -96,19 +96,24 @@ const Profile = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      // Ensure the avatars bucket exists
-      const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
-      
-      if (bucketError && bucketError.message.includes('does not exist')) {
-        // Create the bucket if it doesn't exist
-        const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
-          public: true
-        });
+      // Create or ensure the avatars bucket exists
+      try {
+        const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('avatars');
         
-        if (createBucketError) {
-          console.error('Error creating bucket:', createBucketError);
-          throw new Error('Failed to create storage bucket');
+        if (bucketError) {
+          // Create the bucket if it doesn't exist
+          const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
+            public: true
+          });
+          
+          if (createBucketError) {
+            console.error('Error creating bucket:', createBucketError);
+            throw new Error('Failed to create storage bucket');
+          }
         }
+      } catch (bucketError) {
+        console.error('Bucket operation error:', bucketError);
+        // Continue execution, the bucket might already exist
       }
 
       // Upload the file
@@ -169,18 +174,6 @@ const Profile = () => {
         throw new Error('User is not authenticated');
       }
 
-      // First, check if profile exists
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', userId)
-        .single();
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('Error fetching profile:', fetchError);
-        throw new Error('Failed to check if profile exists');
-      }
-
       // Prepare profile data
       const profileData = {
         id: userId,
@@ -191,7 +184,7 @@ const Profile = () => {
         avatar_url: avatarUrl,
       };
 
-      // Upsert the profile
+      // Upsert the profile - this will create it if it doesn't exist
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert(profileData);
