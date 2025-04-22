@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
@@ -7,7 +6,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  // You can replace this with your real authentication logic
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Perform login logic here
