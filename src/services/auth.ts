@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+// Removed: import { toast } from "@/hooks/use-toast";
 
 export interface AuthError {
   message: string;
@@ -41,35 +41,22 @@ export async function signUpWithEmail(email: string, password: string, fullName:
       },
     });
 
+    // Removed toast code here, just return error for the caller to handle toast
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: error.message,
-      });
       return { user: null, error };
     }
 
     return { user: data.user, error: null };
   } catch (error) {
     console.error("Registration error:", error);
-    toast({
-      variant: "destructive",
-      title: "Registration failed",
-      description: "An unexpected error occurred",
-    });
-    return { user: null, error };
+    // Removed toast code here, just return error for the caller to handle toast
+    return { user: null, error: { message: "An unexpected error occurred" } };
   }
 }
 
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
-  if (error) {
-    toast({
-      variant: "destructive",
-      title: "Sign out failed",
-      description: error.message,
-    });
-  }
+  // Removed toast code here as well
   return { error };
 }
+
