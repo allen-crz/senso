@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
@@ -13,13 +12,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // For login transition effect
   const [loginTransitioning, setLoginTransitioning] = useState(false);
 
-  // Use page transition hook for transitioning between pages (register)
   const { transitionClass, triggerTransition, transitioning } = usePageTransition(300);
 
-  // Handler for the login submission
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,14 +25,12 @@ const Login = () => {
       const { user, error } = await signInWithEmail(email, password);
       
       if (user && !error) {
-        // For existing users, check if they have a profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('phone, address, created_at')
           .eq('id', user.id)
           .single();
 
-        // Animate fade-out, then navigate
         setTimeout(() => {
           if (profile?.phone || profile?.address) {
             navigate('/dashboard');
@@ -47,13 +41,12 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setLoginTransitioning(false); // Remove transition in case of error
+      setLoginTransitioning(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handler for Register link with transition
   const handleRegisterTransition = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     triggerTransition(() => {
@@ -61,10 +54,9 @@ const Login = () => {
     });
   };
 
-  // Classes for the login transition
   const mainTransitionClass = loginTransitioning 
     ? "opacity-0 pointer-events-none transition-opacity duration-300"
-    : transitionClass; // fallback to regular transition logic
+    : transitionClass;
 
   return (
     <div className={`min-h-screen bg-[#f5f6f7] px-6 py-12 ${mainTransitionClass}`}>
@@ -160,9 +152,7 @@ const Login = () => {
         </p>
       </div>
 
-      {/* Fixed footer at bottom with rounded/corner popup style */}
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-[#212529] text-white px-5 py-2 rounded-full shadow-lg text-xs z-50
-        w-auto max-w-xs text-center opacity-90 select-none">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#212529] text-white py-2 text-xs text-center z-50 select-none">
         <span>Senso App v1.0.0</span>
       </div>
     </div>
@@ -170,4 +160,3 @@ const Login = () => {
 };
 
 export default Login;
-
