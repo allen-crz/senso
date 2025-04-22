@@ -1,26 +1,30 @@
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
 import MobileOnlyScreen from "../components/MobileOnlyScreen";
-import HomeContent from "../components/HomeContent";
 import { isMobileDevice } from "../utils/deviceDetection";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if it's a mobile device
-    setIsMobile(isMobileDevice());
+    const mobile = isMobileDevice();
+    setIsMobile(mobile);
     
-    // Simulate loading
+    // Simulate loading and redirect to login
     const timer = setTimeout(() => {
       setLoading(false);
-      setIsReady(true);
+      if (mobile) {
+        navigate('/login');
+      }
     }, 2500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
 
   // If still loading, show loading screen
   if (loading) {
@@ -32,10 +36,7 @@ const Index = () => {
     return <MobileOnlyScreen />;
   }
 
-  // Main app content (shown only on mobile after loading)
-  return (
-    <HomeContent />
-  );
+  return null;
 };
 
 export default Index;
