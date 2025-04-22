@@ -16,17 +16,11 @@ const Dashboard = () => {
     : 'User';
 
   const handleAddWaterReading = () => {
-    toast({
-      title: "Add Water Reading",
-      description: "Coming soon: take and submit a water meter photo!",
-    });
+    navigate('/water-monitoring');
   };
 
   const handleAddElectricityReading = () => {
-    toast({
-      title: "Add Electricity Reading",
-      description: "Coming soon: take and submit an electric meter photo!",
-    });
+    navigate('/electricity-monitoring');
   };
 
   return (
