@@ -1,40 +1,13 @@
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Droplet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import WaterSection from '@/components/WaterSection';
+import { useUserData } from '@/hooks/useUserData';
 
 const Water = () => {
   const navigate = useNavigate();
-  const [firstName, setFirstName] = useState<string>('');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        const firstName = profile.full_name?.split(' ')[0] || 'User';
-        setFirstName(firstName);
-        setAvatarUrl(profile.avatar_url);
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
+  const { firstName, avatarUrl, isLoading } = useUserData();
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
