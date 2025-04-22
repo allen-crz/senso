@@ -31,7 +31,7 @@ const Login = () => {
         if (profile?.phone || profile?.address) {
           navigate('/dashboard');
         } else {
-          // If no profile or incomplete, go to profile page
+          // If no profile or incomplete, go to profile page for new users
           navigate('/profile');
         }
       }

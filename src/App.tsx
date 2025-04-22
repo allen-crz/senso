@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import SuccessScreen from "./pages/SuccessScreen";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import Dashboard from "./pages/Dashboard";
 import RegistrationSuccess from "./pages/RegistrationSuccess";
 import Water from "./pages/Water";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/registration-success" element={<RegistrationSuccess />} />
             <Route path="/success" element={<SuccessScreen />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/water" element={<Water />} />
             <Route path="/electricity" element={<Electricity />} />

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,6 +17,21 @@ const Settings = () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
+
+  const ProfileItem = () => (
+    <div 
+      onClick={() => navigate('/edit-profile')} 
+      className="flex items-center justify-between p-4 cursor-pointer"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+          <i className="fa-solid fa-user text-blue-500"></i>
+        </div>
+        <span className="font-medium">Edit Profile</span>
+      </div>
+      <i className="fa-solid fa-chevron-right text-gray-400"></i>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
@@ -40,12 +54,7 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Email address</p>
             </div>
           </div>
-          <button 
-            onClick={() => navigate('/profile')}
-            className="px-6 py-2 bg-blue-500 text-white rounded-full text-sm font-medium ml-auto block hover:bg-blue-600 transition-colors"
-          >
-            Edit Profile
-          </button>
+          <ProfileItem />
         </div>
 
         {/* Preferences Section */}

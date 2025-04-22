@@ -11,7 +11,7 @@ import { Image } from 'image-js';
 import PhoneInput from '@/components/PhoneInput';
 import AddressInput from '@/components/AddressInput';
 
-const Profile = () => {
+const EditProfile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -24,6 +24,7 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -41,6 +42,29 @@ const Profile = () => {
           fullName: user.user_metadata?.full_name || '',
           email: user.email || '',
         }));
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url, phone, address')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+
+        if (data) {
+          setFormData(prev => ({
+            ...prev,
+            phone: data.phone || '',
+            address: data.address || '',
+          }));
+          
+          if (data.avatar_url) {
+            setAvatarUrl(data.avatar_url);
+          }
+        }
       } catch (error) {
         console.error('Error in fetchUserData:', error);
         toast({
@@ -93,11 +117,23 @@ const Profile = () => {
           
           const dataUrl = resizedImg.toDataURL();
           
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: userId,
+              avatar_url: dataUrl,
+            });
+
+          if (updateError) {
+            throw updateError;
+          }
+
           setAvatarUrl(dataUrl);
+          setHasChanges(true);
 
           toast({
             title: "Success",
-            description: "Profile photo uploaded successfully!",
+            description: "Profile photo updated successfully!",
           });
         } catch (error) {
           console.error('Error processing image:', error);
@@ -148,12 +184,13 @@ const Profile = () => {
       }
 
       toast({
-        title: "Profile Created",
-        description: "Your profile has been created successfully.",
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
         duration: 2000,
       });
       
-      navigate('/dashboard');
+      setHasChanges(false);
+      navigate('/settings');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({
@@ -172,10 +209,7 @@ const Profile = () => {
     <div className="min-h-screen bg-[#f5f6f7] relative pt-12">
       <div className="px-6 pb-32">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#212529] text-center">Complete Your Profile</h1>
-          <p className="text-center text-gray-500 mt-2">
-            Let's set up your account
-          </p>
+          <h1 className="text-2xl font-bold text-[#212529] text-center">Edit Profile</h1>
         </div>
 
         <div className="flex flex-col items-center mb-8">
@@ -203,7 +237,7 @@ const Profile = () => {
             htmlFor="avatar-upload"
             className="text-blue-500 text-sm font-medium cursor-pointer"
           >
-            Add Profile Photo
+            Change Photo
           </label>
         </div>
 
@@ -216,9 +250,9 @@ const Profile = () => {
                 value={formData.fullName}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, fullName: e.target.value }));
+                  setHasChanges(true);
                 }}
                 className="px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
-                placeholder="Enter your full name"
               />
             </div>
 
@@ -238,8 +272,8 @@ const Profile = () => {
                 value={formData.phone}
                 onChange={(value) => {
                   setFormData(prev => ({ ...prev, phone: value }));
+                  setHasChanges(true);
                 }}
-                placeholder="Enter your phone number"
               />
             </div>
 
@@ -249,8 +283,8 @@ const Profile = () => {
                 value={formData.address}
                 onChange={(value) => {
                   setFormData(prev => ({ ...prev, address: value }));
+                  setHasChanges(true);
                 }}
-                placeholder="Enter your address"
               />
             </div>
           </div>
@@ -259,17 +293,17 @@ const Profile = () => {
         <Button 
           onClick={handleSubmit}
           className="w-full py-4 bg-blue-500 text-white rounded-full font-semibold mb-6 hover:bg-blue-600 transition-colors"
-          disabled={isLoading || uploading}
+          disabled={!hasChanges || isLoading || uploading}
         >
-          {isLoading ? 'Creating Profile...' : 'Get Started'}
+          {isLoading ? 'Saving Changes...' : 'Save Changes'}
         </Button>
 
         <p className="text-center text-xs text-gray-400 mb-20">
-          This information helps personalize your experience.
+          Your profile info is used to personalize your experience.
         </p>
       </div>
     </div>
   );
 };
 
-export default Profile;
+export default EditProfile;
