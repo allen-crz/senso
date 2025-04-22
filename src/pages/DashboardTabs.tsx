@@ -212,7 +212,7 @@ const DashboardTabs = () => {
               <ElectricitySection variant="electricity" onAddReading={handleAddElectricityReading} />
               <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
                 <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center transition-colors duration-150">
                     <i className="fa-solid fa-triangle-exclamation text-white" />
                   </div>
                   <div className="flex-1">
@@ -280,7 +280,7 @@ const DashboardTabs = () => {
               <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
                 <Bolt className="text-gray-400 group-hover:text-amber-500" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
+              <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electricity</span>
             </button>
             <button
               onClick={() => navigate('/settings')}
