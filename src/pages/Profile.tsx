@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Image } from 'image-js';
-import PhoneInput from '@/components/PhoneInput';
-import AddressInput from '@/components/AddressInput';
+import ProfileHeader from '@/components/profile/ProfileHeader';
+import ProfileAvatar from '@/components/profile/ProfileAvatar';
+import ProfileForm from '@/components/profile/ProfileForm';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -170,104 +167,25 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-black text-white relative pt-12">
       <div className="px-6 pb-32">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white text-center">Complete Your Profile</h1>
-          <p className="text-center text-white/60 mt-2">
-            Let's set up your account
-          </p>
-        </div>
+        <ProfileHeader 
+          title="Complete Your Profile"
+          subtitle="Let's set up your account"
+        />
+        
+        <ProfileAvatar 
+          avatarUrl={avatarUrl}
+          avatarFallback={avatarFallback}
+          uploading={uploading}
+          onUpload={uploadAvatar}
+        />
 
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative mb-3">
-            <Avatar className="w-24 h-24">
-              <AvatarImage 
-                src={avatarUrl || ''} 
-                alt="Profile" 
-                className="object-cover border-2 border-white/20"
-              />
-              <AvatarFallback className="bg-white/10 text-white">{avatarFallback}</AvatarFallback>
-            </Avatar>
-            <label 
-              className="absolute bottom-0 right-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center cursor-pointer"
-              htmlFor="avatar-upload"
-            >
-              <Camera className="h-4 w-4 text-white" />
-              <input
-                type="file"
-                id="avatar-upload"
-                accept="image/*"
-                onChange={uploadAvatar}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
-          <label 
-            htmlFor="avatar-upload"
-            className="text-white/70 text-sm font-medium cursor-pointer hover:text-white transition-colors"
-          >
-            Add Profile Photo
-          </label>
-        </div>
-
-        <div className="bg-black border border-white/20 rounded-3xl p-6 mb-6">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm text-white/60 font-medium">Full Name</label>
-              <Input
-                type="text"
-                value={formData.fullName}
-                onChange={(e) => {
-                  setFormData(prev => ({ ...prev, fullName: e.target.value }));
-                }}
-                className="px-4 py-3 rounded-xl bg-black text-white border border-white/20 focus:border-white/40"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-white/60 font-medium">Email Address</label>
-              <Input
-                type="email"
-                value={formData.email}
-                className="px-4 py-3 rounded-xl bg-black text-white/70 border border-white/20 cursor-not-allowed opacity-50"
-                readOnly
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-white/60 font-medium">Phone Number</label>
-              <PhoneInput
-                value={formData.phone}
-                onChange={(value) => {
-                  setFormData(prev => ({ ...prev, phone: value }));
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-white/60 font-medium">Address</label>
-              <AddressInput
-                value={formData.address}
-                onChange={(value) => {
-                  setFormData(prev => ({ ...prev, address: value }));
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Button 
-          onClick={handleSubmit}
-          className="w-full py-4 bg-white text-black rounded-full font-semibold mb-6 hover:bg-white/90 transition-colors"
-          disabled={isLoading || uploading}
-        >
-          {isLoading ? 'Creating Profile...' : 'Get Started'}
-        </Button>
-
-        <p className="text-center text-xs text-white/40 mb-20">
-          This information helps personalize your experience.
-        </p>
+        <ProfileForm 
+          formData={formData}
+          isLoading={isLoading}
+          uploading={uploading}
+          onSubmit={handleSubmit}
+          onFormDataChange={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+        />
       </div>
     </div>
   );
