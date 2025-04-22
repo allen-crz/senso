@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
+import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
 
 const Dashboard = () => {
@@ -29,12 +30,15 @@ const Dashboard = () => {
             <button 
               onClick={() => navigate('/water')}
               className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-blue-200">Water</button>
-            <button className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-amber-200">Electricity</button>
+            <button 
+              onClick={() => navigate('/electricity')}
+              className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-amber-200">Electricity</button>
           </div>
         </div>
 
         <div className="space-y-4">
           <WaterSection variant="dashboard" />
+          <ElectricitySection variant="dashboard" />
 
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
@@ -105,7 +109,9 @@ const Dashboard = () => {
               </div>
               <span className="text-xs text-gray-400">Water</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
+            <button 
+              onClick={() => navigate('/electricity')}
+              className="flex flex-col items-center gap-1">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
               </div>

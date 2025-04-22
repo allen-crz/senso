@@ -30,14 +30,14 @@ const Water = () => {
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button onClick={() => navigate('/dashboard')} className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap">All</button>
             <button className="px-6 py-3 bg-[#212529] text-white rounded-full whitespace-nowrap">Water</button>
-            <button className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-amber-200">Electricity</button>
+            <button onClick={() => navigate('/electricity')} className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap border-2 border-amber-200">Electricity</button>
           </div>
         </div>
 
         {/* Cards Section */}
         <div className="space-y-4">
           {/* Current Usage Card - Replace with WaterSection component */}
-          <WaterSection />
+          <WaterSection variant="water" />
 
           {/* Anomaly Card */}
           <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
@@ -94,7 +94,7 @@ const Water = () => {
               </div>
               <span className="text-xs text-gray-400">Water</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
+            <button onClick={() => navigate('/electricity')} className="flex flex-col items-center gap-1">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
               </div>
