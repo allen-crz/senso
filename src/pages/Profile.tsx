@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Image } from 'image-js';
+import PhoneInput from '@/components/PhoneInput';
+import AddressInput from '@/components/AddressInput';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -285,22 +285,17 @@ const Profile = () => {
 
           <div className="form-group">
             <label className="block text-sm text-[#212529] mb-2">Phone Number</label>
-            <Input 
-              type="tel" 
+            <PhoneInput
               value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-              className="bg-[#f5f6f7]" 
-              placeholder="Enter your phone number"
+              onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
             />
           </div>
 
           <div className="form-group">
             <label className="block text-sm text-[#212529] mb-2">Address</label>
-            <Textarea 
+            <AddressInput
               value={formData.address}
-              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-              className="bg-[#f5f6f7] resize-none h-24" 
-              placeholder="Enter your complete address"
+              onChange={(value) => setFormData(prev => ({ ...prev, address: value }))}
             />
           </div>
         </div>
