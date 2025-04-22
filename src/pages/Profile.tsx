@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -239,7 +238,6 @@ const Profile = () => {
                 onChange={(value) => {
                   setFormData(prev => ({ ...prev, phone: value }));
                 }}
-                placeholder="Enter your phone number"
               />
             </div>
 
@@ -250,7 +248,6 @@ const Profile = () => {
                 onChange={(value) => {
                   setFormData(prev => ({ ...prev, address: value }));
                 }}
-                placeholder="Enter your address"
               />
             </div>
           </div>
