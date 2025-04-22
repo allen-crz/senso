@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -211,7 +210,7 @@ const Profile = () => {
           </label>
         </div>
 
-        <div className="bg-white/5 rounded-3xl border border-white/10 shadow-lg p-6 mb-6">
+        <div className="bg-black border border-white/20 rounded-3xl p-6 mb-6">
           <div className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm text-white/60 font-medium">Full Name</label>
@@ -221,7 +220,7 @@ const Profile = () => {
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, fullName: e.target.value }));
                 }}
-                className="px-4 py-3 rounded-xl bg-white/10 text-white border-white/20 focus:border-white/40"
+                className="px-4 py-3 rounded-xl bg-black text-white border border-white/20 focus:border-white/40"
                 placeholder="Enter your full name"
               />
             </div>
@@ -231,7 +230,7 @@ const Profile = () => {
               <Input
                 type="email"
                 value={formData.email}
-                className="px-4 py-3 rounded-xl bg-white/10 text-white/70 border-white/20 cursor-not-allowed opacity-50"
+                className="px-4 py-3 rounded-xl bg-black text-white/70 border border-white/20 cursor-not-allowed opacity-50"
                 readOnly
               />
             </div>
@@ -260,7 +259,7 @@ const Profile = () => {
 
         <Button 
           onClick={handleSubmit}
-          className="w-full py-4 bg-white/10 text-white border border-white/20 rounded-full font-semibold mb-6 hover:bg-white/20 transition-colors"
+          className="w-full py-4 bg-white text-black rounded-full font-semibold mb-6 hover:bg-white/90 transition-colors"
           disabled={isLoading || uploading}
         >
           {isLoading ? 'Creating Profile...' : 'Get Started'}
