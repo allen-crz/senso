@@ -1,6 +1,5 @@
 
 import React from "react";
-import { Apple } from "lucide-react";
 
 const InstallPrompt: React.FC = () => {
   return (
@@ -9,7 +8,7 @@ const InstallPrompt: React.FC = () => {
         {/* App Logo */}
         <div className="mb-8">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-lg">
-            <Apple className="h-12 w-12 text-[#212529]" />
+            <i className="fa-solid fa-bolt-lightning text-[#212529] text-4xl"></i>
           </div>
         </div>
 
