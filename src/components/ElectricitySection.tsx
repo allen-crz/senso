@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
@@ -21,8 +20,6 @@ interface ElectricitySectionProps {
 }
 
 const fetchElectricityData = async (): Promise<ElectricityReading | null> => {
-  // Handling the error from console logs - the table doesn't exist yet
-  // So we'll return null to simulate no data
   console.log('Attempting to fetch electricity data');
   return null;
 };
@@ -37,7 +34,6 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
     return <LoadingState />;
   }
 
-  // If no electricity readings and on dashboard, show "Add Reading" card
   if (!electricityData && variant === 'dashboard') {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">
@@ -56,7 +52,6 @@ const ElectricitySection = ({ variant = 'dashboard', onAddReading }: Electricity
     );
   }
 
-  // If no electricity readings and on electricity page, show "No readings" message
   if (!electricityData) {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">

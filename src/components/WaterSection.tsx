@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
@@ -21,8 +20,6 @@ interface WaterSectionProps {
 }
 
 const fetchWaterData = async (): Promise<WaterReading | null> => {
-  // Handling the error from console logs - the table doesn't exist yet
-  // So we'll return null to simulate no data
   console.log('Attempting to fetch water data');
   return null;
 };
@@ -37,7 +34,6 @@ const WaterSection = ({ variant = 'dashboard', onAddReading }: WaterSectionProps
     return <LoadingState />;
   }
 
-  // If no water readings and on dashboard, show "Add Reading" card
   if (!waterData && variant === 'dashboard') {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">
@@ -56,7 +52,6 @@ const WaterSection = ({ variant = 'dashboard', onAddReading }: WaterSectionProps
     );
   }
 
-  // If no water readings and on water page, show "No readings" message
   if (!waterData) {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">

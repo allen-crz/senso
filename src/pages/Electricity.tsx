@@ -1,19 +1,25 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
 import ElectricitySection from '@/components/ElectricitySection';
 import { Card } from "@/components/ui/card";
+import { toast } from "@/hooks/use-toast";
 
 const Electricity = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
 
-  // Capitalize the first letter of the first name
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
+
+  const handleAddElectricityReading = () => {
+    toast({
+      title: "Add Electricity Reading",
+      description: "Coming soon: take and submit an electric meter photo!",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
@@ -38,7 +44,10 @@ const Electricity = () => {
         </div>
 
         <div className="space-y-4">
-          <ElectricitySection variant="electricity" />
+          <ElectricitySection 
+            variant="electricity" 
+            onAddReading={handleAddElectricityReading} 
+          />
 
           <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
             <div className="flex gap-4 items-center">

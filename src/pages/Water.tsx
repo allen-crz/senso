@@ -1,18 +1,24 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
 import { useUserData } from '@/hooks/useUserData';
+import { toast } from "@/hooks/use-toast";
 
 const Water = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
 
-  // Capitalize the first letter of the first name
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
+
+  const handleAddWaterReading = () => {
+    toast({
+      title: "Add Water Reading",
+      description: "Coming soon: take and submit a water meter photo!",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
@@ -37,7 +43,10 @@ const Water = () => {
         </div>
 
         <div className="space-y-4">
-          <WaterSection variant="water" />
+          <WaterSection 
+            variant="water" 
+            onAddReading={handleAddWaterReading} 
+          />
 
           <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
             <div className="flex gap-4 items-center">
