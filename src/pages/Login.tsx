@@ -2,15 +2,59 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
+import { signInWithEmail } from "@/services/auth";
+import { toast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Perform login logic here
-    // navigate("/dashboard"); // Example navigation after login
+    
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: "Please enter both email and password",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const { user, error } = await signInWithEmail(email, password);
+      
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+        return;
+      }
+      
+      if (user) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back to Senso",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: "An unexpected error occurred",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,6 +89,8 @@ const Login = () => {
               placeholder="Enter your email"
               required
               autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -58,6 +104,8 @@ const Login = () => {
                 className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] outline-none pr-12"
                 placeholder="Enter your password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -79,8 +127,9 @@ const Login = () => {
         <button
           type="submit"
           className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mt-6 transition-colors hover:bg-[#18171d]"
+          disabled={isLoading}
         >
-          Log In
+          {isLoading ? "Logging in..." : "Log In"}
         </button>
       </form>
 
