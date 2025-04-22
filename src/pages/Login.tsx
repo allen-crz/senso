@@ -151,7 +151,7 @@ const Login = () => {
         </button>
       </form>
 
-      <div className="text-center mt-6">
+      <div className="text-center mt-4">
         <p className="text-gray-500">
           {"Don't have an account? "}
           <a
@@ -164,7 +164,7 @@ const Login = () => {
         </p>
       </div>
 
-      <div className="w-full pt-8 text-center">
+      <div className="w-full text-center pt-2">
         <p className="text-xs text-gray-400 bg-transparent">
           Senso App v1.0.0
         </p>
