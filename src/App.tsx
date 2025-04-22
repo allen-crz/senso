@@ -22,6 +22,7 @@ import SendFeedback from "./pages/SendFeedback";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import WaterMonitoring from "./pages/WaterMonitoring";
 import ElectricityMonitoring from "./pages/ElectricityMonitoring";
+import DashboardTabs from "./pages/DashboardTabs";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,10 +46,10 @@ const App = () => (
             <Route path="/success" element={<SuccessScreen />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/water" element={<Water />} />
+            <Route path="/dashboard" element={<DashboardTabs />} />
+            <Route path="/water" element={<DashboardTabs />} />
+            <Route path="/electricity" element={<DashboardTabs />} />
             <Route path="/water-monitoring" element={<WaterMonitoring />} />
-            <Route path="/electricity" element={<Electricity />} />
             <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-password" element={<ChangePassword />} />
