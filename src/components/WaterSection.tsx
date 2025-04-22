@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Droplet } from "lucide-react";
+import { Droplet, Camera } from "lucide-react";
 
 // Define the WaterReading type
 interface WaterReading {
@@ -20,9 +20,8 @@ const fetchWaterData = async (): Promise<WaterReading | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No user found');
 
-  // Since 'water_readings' is not in the generated types yet, we use a type assertion
   const { data, error } = await supabase
-    .from('water_readings' as any)
+    .from('water_readings')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -34,11 +33,10 @@ const fetchWaterData = async (): Promise<WaterReading | null> => {
     return null;
   }
   
-  // Return null if no data, otherwise use the data as WaterReading
   return data as WaterReading | null;
 };
 
-const WaterSection = () => {
+const WaterSection = ({ variant = 'dashboard' }: { variant?: 'dashboard' | 'water' }) => {
   const { data: waterData, isLoading, error } = useQuery({
     queryKey: ['water-reading'],
     queryFn: fetchWaterData
@@ -48,7 +46,23 @@ const WaterSection = () => {
     return <LoadingState />;
   }
 
-  if (error || !waterData) {
+  // If no water readings and on dashboard, show "Add Reading" card
+  if (!waterData && variant === 'dashboard') {
+    return (
+      <Card className="bg-white p-6 rounded-3xl shadow-sm">
+        <div className="flex flex-col items-center justify-center py-8">
+          <Camera className="text-blue-200 w-12 h-12 mb-4" />
+          <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
+          <button className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold">
+            Add Reading
+          </button>
+        </div>
+      </Card>
+    );
+  }
+
+  // If no water readings and on water page, show "No readings" message
+  if (!waterData) {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">
         <div className="text-center text-gray-500">

@@ -34,7 +34,7 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          <WaterSection />
+          <WaterSection variant="dashboard" />
 
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
