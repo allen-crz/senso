@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
@@ -165,7 +166,7 @@ const Profile = () => {
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-black text-white relative pt-12">
+    <div className="min-h-screen bg-white text-black relative pt-12">
       <div className="px-6 pb-32">
         <ProfileHeader 
           title="Complete Your Profile"

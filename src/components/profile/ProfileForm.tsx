@@ -29,31 +29,31 @@ const ProfileForm = ({
 }: ProfileFormProps) => {
   return (
     <>
-      <div className="bg-black border border-white/20 rounded-3xl p-6 mb-6">
+      <div className="bg-white border border-black/20 rounded-3xl p-6 mb-6">
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm text-white/60 font-medium">Full Name</label>
+            <label className="text-sm text-black/60 font-medium">Full Name</label>
             <Input
               type="text"
               value={formData.fullName}
               onChange={(e) => onFormDataChange({ fullName: e.target.value })}
-              className="px-4 py-3 rounded-xl bg-black text-white border border-white/20 focus:border-white/40"
+              className="px-4 py-3 rounded-xl bg-white text-black border border-black/20 focus:border-black/40"
               placeholder="Enter your full name"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm text-white/60 font-medium">Email Address</label>
+            <label className="text-sm text-black/60 font-medium">Email Address</label>
             <Input
               type="email"
               value={formData.email}
-              className="px-4 py-3 rounded-xl bg-black text-white/70 border border-white/20 cursor-not-allowed opacity-50"
+              className="px-4 py-3 rounded-xl bg-white text-black/70 border border-black/20 cursor-not-allowed opacity-50"
               readOnly
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm text-white/60 font-medium">Phone Number</label>
+            <label className="text-sm text-black/60 font-medium">Phone Number</label>
             <PhoneInput
               value={formData.phone}
               onChange={(value) => onFormDataChange({ phone: value })}
@@ -61,7 +61,7 @@ const ProfileForm = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm text-white/60 font-medium">Address</label>
+            <label className="text-sm text-black/60 font-medium">Address</label>
             <AddressInput
               value={formData.address}
               onChange={(value) => onFormDataChange({ address: value })}
@@ -72,13 +72,13 @@ const ProfileForm = ({
 
       <Button 
         onClick={onSubmit}
-        className="w-full py-4 bg-white text-black rounded-full font-semibold mb-6 hover:bg-white/90 transition-colors"
+        className="w-full py-4 bg-black text-white rounded-full font-semibold mb-6 hover:bg-black/90 transition-colors"
         disabled={isLoading || uploading}
       >
         {isLoading ? 'Creating Profile...' : 'Get Started'}
       </Button>
 
-      <p className="text-center text-xs text-white/40 mb-20">
+      <p className="text-center text-xs text-black/40 mb-20">
         This information helps personalize your experience.
       </p>
     </>

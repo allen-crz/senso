@@ -18,15 +18,15 @@ const ProfileAvatar = ({ avatarUrl, avatarFallback, uploading, onUpload }: Profi
           <AvatarImage 
             src={avatarUrl || ''} 
             alt="Profile" 
-            className="object-cover border-2 border-white/20"
+            className="object-cover border-2 border-black/20"
           />
-          <AvatarFallback className="bg-white/10 text-white">{avatarFallback}</AvatarFallback>
+          <AvatarFallback className="bg-black/10 text-black">{avatarFallback}</AvatarFallback>
         </Avatar>
         <label 
-          className="absolute bottom-0 right-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center cursor-pointer"
+          className="absolute bottom-0 right-0 w-8 h-8 bg-black/10 rounded-full flex items-center justify-center cursor-pointer"
           htmlFor="avatar-upload"
         >
-          <Camera className="h-4 w-4 text-white" />
+          <Camera className="h-4 w-4 text-black" />
           <input
             type="file"
             id="avatar-upload"
@@ -39,7 +39,7 @@ const ProfileAvatar = ({ avatarUrl, avatarFallback, uploading, onUpload }: Profi
       </div>
       <label 
         htmlFor="avatar-upload"
-        className="text-white/70 text-sm font-medium cursor-pointer hover:text-white transition-colors"
+        className="text-black/70 text-sm font-medium cursor-pointer hover:text-black transition-colors"
       >
         Add Profile Photo
       </label>
