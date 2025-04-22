@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { signUpWithEmail } from '@/services/auth';
+import { useToast } from "@/hooks/use-toast";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,17 +17,26 @@ const Register = () => {
     termsAccepted: false
   });
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      console.error('Passwords do not match');
+      toast({
+        variant: "destructive",
+        title: "Registration Error",
+        description: "Passwords do not match"
+      });
       return;
     }
 
     if (!formData.termsAccepted) {
-      console.error('Please accept the terms and conditions');
+      toast({
+        variant: "destructive",
+        title: "Terms and Conditions",
+        description: "Please accept the terms and conditions"
+      });
       return;
     }
 
@@ -35,7 +45,11 @@ const Register = () => {
     setIsLoading(false);
 
     if (user && !error) {
-      navigate('/success');
+      toast({
+        title: "Account Created",
+        description: "Please log in with your new account"
+      });
+      navigate('/login');
     }
   };
 
