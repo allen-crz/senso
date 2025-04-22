@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithEmail } from '@/services/auth';
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,11 +18,24 @@ const Login = () => {
 
     const { user, error } = await signInWithEmail(email, password);
     
-    setIsLoading(false);
-    
     if (user && !error) {
-      navigate('/profile');
+      // Check if user has a complete profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('phone, address')
+        .eq('id', user.id)
+        .single();
+
+      // Only redirect to profile if profile is missing or incomplete
+      if (!profile || !profile.phone || !profile.address) {
+        navigate('/profile');
+      } else {
+        // Profile is complete, go to dashboard
+        navigate('/dashboard');
+      }
     }
+    
+    setIsLoading(false);
   };
 
   return (
