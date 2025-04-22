@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import Electricity from "./pages/Electricity";
 import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
 import HelpFAQ from "./pages/HelpFAQ";
+import SendFeedback from "./pages/SendFeedback";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +49,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/help" element={<HelpFAQ />} />
-            <Route path="/send-feedback" element={<React.lazy(() => import("./pages/SendFeedback")) />} />
+            <Route path="/send-feedback" element={<SendFeedback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
