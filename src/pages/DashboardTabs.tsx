@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -5,7 +6,6 @@ import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
 import { Card } from "@/components/ui/card";
-import { toast } from "@/hooks/use-toast";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
 
 type TabType = "all" | "water" | "electricity";
@@ -44,18 +44,13 @@ const DashboardTabs = () => {
     );
   }, [firstName, avatarUrl]);
 
+  // Redirect to monitoring pages instead of showing toast
   const handleAddWaterReading = () => {
-    toast({
-      title: "Add Water Reading",
-      description: "Coming soon: take and submit a water meter photo!",
-    });
+    navigate('/water-monitoring');
   };
-  
+
   const handleAddElectricityReading = () => {
-    toast({
-      title: "Add Electricity Reading",
-      description: "Coming soon: take and submit an electric meter photo!",
-    });
+    navigate('/electricity-monitoring');
   };
 
   // NAV: Only "Home" is highlighted, Water/Electric/Electricity always default
@@ -316,3 +311,4 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
+
