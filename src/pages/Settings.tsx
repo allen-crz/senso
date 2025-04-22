@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -20,7 +19,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] pb-16">
+    <div className="min-h-screen bg-[#f5f6f7] pb-20">
       <div className="px-6 py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-[#212529]">Settings</h1>
@@ -94,7 +93,7 @@ const Settings = () => {
         {/* Logout Button */}
         <button 
           onClick={handleLogout}
-          className="w-full py-4 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition-colors shadow-lg mb-6"
+          className="w-full py-4 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition-colors shadow-lg mb-8"
         >
           Log Out
         </button>
