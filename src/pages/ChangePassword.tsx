@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -173,38 +172,6 @@ const ChangePassword = () => {
             {isSubmitting ? 'Updating...' : 'Update Password'}
           </button>
         </form>
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-6 left-6 right-6">
-        <div className="bg-[#212529] rounded-full px-8 py-4">
-          <div className="flex justify-between items-center">
-            <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-house text-gray-400 text-2xl"></i>
-              </div>
-              <span className="text-xs text-gray-400">Home</span>
-            </button>
-            <button onClick={() => navigate('/water')} className="flex flex-col items-center gap-1">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-droplet text-gray-400 text-2xl"></i>
-              </div>
-              <span className="text-xs text-gray-400">Water</span>
-            </button>
-            <button onClick={() => navigate('/electricity')} className="flex flex-col items-center gap-1">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
-              </div>
-              <span className="text-xs text-gray-400">Electric</span>
-            </button>
-            <button onClick={() => navigate('/settings')} className="flex flex-col items-center gap-1">
-              <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-gear text-white text-2xl"></i>
-              </div>
-              <span className="text-xs font-medium text-purple-500">Settings</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
