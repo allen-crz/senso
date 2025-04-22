@@ -47,11 +47,13 @@ const HelpFAQ = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
       <div className="px-6 pb-32">
+        {/* Header with back button */}
         <div className="flex justify-between items-center mb-8 pt-6">
           <div className="flex items-center gap-2">
+            {/* Back button */}
             <button 
               onClick={() => navigate('/settings')} 
-              className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110"
+              className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-purple-200 outline-none"
               aria-label="Back to Settings"
             >
               <ChevronLeft className="text-[#212529] w-6 h-6" />
@@ -74,6 +76,7 @@ const HelpFAQ = () => {
           </div>
         </div>
 
+        {/* Popular Topics */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Popular Topics</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -82,7 +85,7 @@ const HelpFAQ = () => {
               return (
                 <button
                   key={index}
-                  className="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-3 transition hover:bg-purple-50 hover:scale-105 hover:shadow-md group focus:outline-none"
+                  className="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-3 transition hover:bg-purple-50 hover:scale-105 hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-purple-100"
                   type="button"
                 >
                   <TopicIcon className="text-purple-500 w-5 h-5 group-hover:text-purple-600 transition" />
@@ -93,13 +96,14 @@ const HelpFAQ = () => {
           </div>
         </div>
 
+        {/* FAQ Sections */}
         <div className="space-y-4">
           {faqSections.map((section, index) => {
             const SectionIcon = section.icon;
             return (
               <div key={index} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <button
-                  className="w-full flex items-center justify-between p-6 transition hover:bg-purple-50 hover:scale-[1.03] group"
+                  className="w-full flex items-center justify-between p-6 transition hover:bg-purple-50 hover:scale-[1.03] hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-purple-100"
                   type="button"
                 >
                   <div className="flex items-center gap-4">
@@ -117,48 +121,49 @@ const HelpFAQ = () => {
         </div>
       </div>
 
+      {/* Bottom nav */}
       <div className="fixed bottom-6 left-6 right-6">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex flex-col items-center gap-1 group transition hover:scale-105"
+              className="flex flex-col items-center gap-1 group transition hover:scale-105 active:scale-95"
               type="button"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center transition group-hover:bg-gray-800">
                 <i className="fa-solid fa-house text-gray-400 text-2xl group-hover:text-purple-400 transition" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-purple-400 transition">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-purple-400 transition underline decoration-transparent group-hover:decoration-purple-400 group-hover:underline-offset-2">Home</span>
             </button>
             <button
               onClick={() => navigate('/water')}
-              className="flex flex-col items-center gap-1 group transition hover:scale-105"
+              className="flex flex-col items-center gap-1 group transition hover:scale-105 active:scale-95"
               type="button"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center transition group-hover:bg-blue-50">
                 <i className="fa-solid fa-droplet text-gray-400 text-2xl group-hover:text-blue-500 transition" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition">Water</span>
+              <span className="text-xs text-gray-400 group-hover:text-blue-500 transition underline decoration-transparent group-hover:decoration-blue-400 group-hover:underline-offset-2">Water</span>
             </button>
             <button
               onClick={() => navigate('/electricity')}
-              className="flex flex-col items-center gap-1 group transition hover:scale-105"
+              className="flex flex-col items-center gap-1 group transition hover:scale-105 active:scale-95"
               type="button"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center transition group-hover:bg-yellow-100">
                 <i className="fa-solid fa-bolt text-gray-400 text-2xl group-hover:text-yellow-500 transition" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-yellow-600 transition">Electric</span>
+              <span className="text-xs text-gray-400 group-hover:text-yellow-600 transition underline decoration-transparent group-hover:decoration-yellow-500 group-hover:underline-offset-2">Electric</span>
             </button>
             <button
               onClick={() => navigate('/settings')}
-              className="flex flex-col items-center gap-1 group transition hover:scale-105"
+              className="flex flex-col items-center gap-1 group transition hover:scale-105 active:scale-95"
               type="button"
             >
               <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center group-hover:bg-purple-600 transition">
                 <i className="fa-solid fa-gear text-white text-2xl transition" />
               </div>
-              <span className="text-xs font-medium text-purple-500 group-hover:text-purple-700 transition">Settings</span>
+              <span className="text-xs font-medium text-purple-500 group-hover:text-purple-700 transition underline decoration-transparent group-hover:decoration-purple-700 group-hover:underline-offset-2">Settings</span>
             </button>
           </div>
         </div>
