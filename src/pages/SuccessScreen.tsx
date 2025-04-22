@@ -1,9 +1,16 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useUserData } from '@/hooks/useUserData';
 
 const SuccessScreen = () => {
   const navigate = useNavigate();
+  const { firstName, avatarUrl, isLoading } = useUserData();
+  
+  const capitalizedFirstName = firstName ? 
+    firstName.charAt(0).toUpperCase() + firstName.slice(1) : 
+    'User';
   
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
@@ -19,11 +26,23 @@ const SuccessScreen = () => {
       {/* Welcome Card */}
       <div className="bg-white rounded-3xl p-6 shadow-sm mb-8">
         <div className="flex flex-col items-center text-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-[#f5f6f7] flex items-center justify-center">
-            <i className="fa-regular fa-user text-2xl text-gray-400"></i>
+          <div className="w-16 h-16 overflow-hidden rounded-full">
+            {!isLoading && (
+              <Avatar className="w-full h-full">
+                <AvatarImage 
+                  src={avatarUrl || undefined} 
+                  alt={capitalizedFirstName} 
+                />
+                <AvatarFallback className="bg-[#f5f6f7]">
+                  {capitalizedFirstName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-[#212529]">Welcome aboard!</h2>
+            <h2 className="text-xl font-semibold text-[#212529]">
+              Welcome aboard, {capitalizedFirstName}!
+            </h2>
             <p className="text-gray-500">Let's start monitoring your utilities</p>
           </div>
         </div>
