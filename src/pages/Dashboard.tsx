@@ -1,21 +1,53 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        // Extract first name from full name
+        const firstName = profile.full_name?.split(' ')[0] || 'User';
+        setFirstName(firstName);
+        setAvatarUrl(profile.avatar_url);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative">
+    <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       {/* Main Content Area */}
       <div className="px-6 pb-32">
         {/* Greeting Section */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, Glyde 👋</h1>
+            <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
             <p className="text-gray-500">Welcome to Senso</p>
           </div>
-          <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="Profile" className="w-12 h-12 rounded-full" />
+          <Avatar className="w-12 h-12">
+            <AvatarImage src={avatarUrl || ''} alt="Profile" />
+            <AvatarFallback>{firstName?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+          </Avatar>
         </div>
 
         {/* Utility Toggle */}
