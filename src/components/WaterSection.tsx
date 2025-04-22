@@ -20,7 +20,7 @@ const fetchWaterData = async (): Promise<WaterReading | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No user found');
 
-  // Use a more generic approach since the type is not defined in Supabase types
+  // We need to cast this since the water_readings table might not be in the types yet
   const { data, error } = await supabase
     .from('water_readings')
     .select('*')

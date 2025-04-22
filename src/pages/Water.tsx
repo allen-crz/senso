@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Droplet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import WaterSection from '@/components/WaterSection';
 
 const Water = () => {
   const navigate = useNavigate();
@@ -62,23 +63,8 @@ const Water = () => {
 
         {/* Cards Section */}
         <div className="space-y-4">
-          {/* Current Usage Card */}
-          <div className="bg-white p-6 rounded-3xl shadow-sm">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Usage</h3>
-                <p className="text-2xl font-bold text-[#212529]">42 liters</p>
-                <p className="text-sm text-gray-500">Last updated 5 mins ago</p>
-              </div>
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                <Droplet className="text-blue-400 h-5 w-5" />
-              </div>
-            </div>
-            <div className="h-2 w-full bg-blue-50 rounded-full mb-4">
-              <div className="h-full w-3/4 bg-blue-400 rounded-full"></div>
-            </div>
-            <button className="text-sm font-semibold text-blue-500">View Details →</button>
-          </div>
+          {/* Current Usage Card - Replace with WaterSection component */}
+          <WaterSection />
 
           {/* Anomaly Card */}
           <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
