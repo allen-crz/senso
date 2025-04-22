@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,8 +13,8 @@ import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import RegistrationSuccess from "./pages/RegistrationSuccess";
 import Water from "./pages/Water";
+import Electricity from "./pages/Electricity";
 
-// Create a QueryClient instance outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -39,6 +38,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/water" element={<Water />} />
+            <Route path="/electricity" element={<Electricity />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
