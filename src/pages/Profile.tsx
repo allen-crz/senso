@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Image } from 'image-js';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -36,14 +36,12 @@ const Profile = () => {
 
         setUserId(user.id);
 
-        // Pre-populate with user's registration data
         setFormData(prev => ({
           ...prev,
           fullName: user.user_metadata?.full_name || '',
           email: user.email || '',
         }));
 
-        // Fetch existing profile data including avatar URL
         const { data, error } = await supabase
           .from('profiles')
           .select('avatar_url, phone, address')
@@ -52,11 +50,9 @@ const Profile = () => {
 
         if (error) {
           console.error('Error fetching profile:', error);
-          // Continue execution even if there's an error - we'll create the profile later
           return;
         }
 
-        // If profile data exists, update the form
         if (data) {
           setFormData(prev => ({
             ...prev,
@@ -94,11 +90,7 @@ const Profile = () => {
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-      // Since we're having issues with the storage bucket, let's use a direct approach
-      // We'll upload the image data to the profile and use a data URL
+      
       const reader = new FileReader();
       
       reader.onload = async (e) => {
@@ -107,10 +99,23 @@ const Profile = () => {
             throw new Error('Failed to read file');
           }
           
-          // Convert the file to a data URL
-          const dataUrl = e.target.result as string;
+          const img = await Image.load(e.target.result as string);
           
-          // Update profile with the data URL as avatar
+          const size = Math.min(img.width, img.height);
+          const croppedImg = img.crop({
+            x: Math.floor((img.width - size) / 2),
+            y: Math.floor((img.height - size) / 2),
+            width: size,
+            height: size
+          });
+          
+          const resizedImg = croppedImg.resize({
+            width: 300,
+            height: 300
+          });
+          
+          const dataUrl = resizedImg.toDataURL();
+          
           const { error: updateError } = await supabase
             .from('profiles')
             .upsert({
@@ -123,19 +128,18 @@ const Profile = () => {
             throw updateError;
           }
 
-          // Set the avatar URL in the state
           setAvatarUrl(dataUrl);
 
           toast({
             title: "Success",
-            description: "Avatar uploaded successfully!",
+            description: "Avatar uploaded and resized successfully!",
           });
         } catch (error) {
-          console.error('Error in reader.onload:', error);
+          console.error('Error processing image:', error);
           toast({
             variant: "destructive",
             title: "Error",
-            description: "Failed to upload avatar. Please try again.",
+            description: "Failed to process avatar. Please try again.",
           });
         } finally {
           setUploading(false);
@@ -152,7 +156,6 @@ const Profile = () => {
         setUploading(false);
       };
 
-      // Read the file as a data URL
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error in uploadAvatar:', error);
@@ -174,7 +177,6 @@ const Profile = () => {
         throw new Error('User is not authenticated');
       }
 
-      // Prepare profile data
       const profileData = {
         id: userId,
         full_name: formData.fullName,
@@ -184,7 +186,6 @@ const Profile = () => {
         avatar_url: avatarUrl,
       };
 
-      // Upsert the profile - this will create it if it doesn't exist
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert(profileData);
@@ -215,15 +216,12 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
-      {/* Header Text */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-[#212529] mb-2">Create Profile</h1>
         <p className="text-gray-500">Tell us more about yourself</p>
       </div>
 
-      {/* Profile Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm">
-        {/* Profile Image Upload */}
         <div className="flex justify-center mb-8">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
@@ -316,7 +314,6 @@ const Profile = () => {
         </Button>
       </form>
 
-      {/* Return to Login */}
       <div className="text-center mt-6">
         <p className="text-gray-500">
           Want to go back?{" "}
