@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera } from 'lucide-react';
+import { Camera, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -206,10 +205,18 @@ const EditProfile = () => {
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative pt-12">
+    <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#212529] text-center">Edit Profile</h1>
+        <div className="flex items-center mb-8">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate('/settings')}
+            className="mr-auto"
+          >
+            <ArrowLeft className="h-6 w-6 text-[#212529]" />
+          </Button>
+          <h1 className="text-2xl font-bold text-[#212529] mr-auto">Edit Profile</h1>
         </div>
 
         <div className="flex flex-col items-center mb-8">
