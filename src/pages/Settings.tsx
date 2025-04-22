@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -5,6 +6,7 @@ import { useUserData } from '@/hooks/useUserData';
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Home, Droplet, Bolt, Settings as SettingsIcon } from 'lucide-react';
+import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -20,6 +22,7 @@ import {
 const Settings = () => {
   const navigate = useNavigate();
   const { firstName, email, phone, address, avatarUrl, isLoading } = useUserData();
+  const { transitionAndNavigate } = usePageTransitionTrigger();
 
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
@@ -28,6 +31,10 @@ const Settings = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
+  };
+
+  const handleNavigation = (path: string) => {
+    transitionAndNavigate(() => navigate(path));
   };
 
   return (
@@ -142,7 +149,7 @@ const Settings = () => {
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => handleNavigation('/dashboard')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -153,7 +160,7 @@ const Settings = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water-monitoring')}
+              onClick={() => handleNavigation('/water-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -164,7 +171,7 @@ const Settings = () => {
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
-              onClick={() => navigate('/electricity-monitoring')}
+              onClick={() => handleNavigation('/electricity-monitoring')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
