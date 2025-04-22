@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
@@ -75,18 +76,9 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="text-right mt-2 mb-6">
-          <Link
-            to="/change-password"
-            className="text-sm text-[#212529] cursor-pointer hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </div>
-
         <button
           type="submit"
-          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold transition-colors hover:bg-[#18171d]"
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mt-6 transition-colors hover:bg-[#18171d]"
         >
           Log In
         </button>
