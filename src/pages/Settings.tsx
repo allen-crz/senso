@@ -87,8 +87,12 @@ const Settings = () => {
         {/* Legal Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <div className="divide-y divide-gray-100">
-            <button className="w-full flex items-center justify-between px-6 py-4">
-              <span className="font-medium">Terms & Privacy Policy</span>
+            <button
+              onClick={() => navigate('/terms-privacy')}
+              className="w-full flex items-center justify-between px-6 py-4 transition-colors hover:bg-purple-50 active:bg-purple-100 group focus:outline-none focus:ring-2 focus:ring-purple-100"
+              type="button"
+            >
+              <span className="font-medium group-hover:text-purple-700 transition-colors">Terms &amp; Privacy Policy</span>
               <i className="fa-solid fa-chevron-right text-gray-400"></i>
             </button>
           </div>

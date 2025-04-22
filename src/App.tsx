@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
 import HelpFAQ from "./pages/HelpFAQ";
 import SendFeedback from "./pages/SendFeedback";
+import TermsPrivacy from "./pages/TermsPrivacy";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/help" element={<HelpFAQ />} />
             <Route path="/send-feedback" element={<SendFeedback />} />
+            <Route path="/terms-privacy" element={<TermsPrivacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
