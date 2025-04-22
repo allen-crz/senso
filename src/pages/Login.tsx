@@ -4,6 +4,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { signInWithEmail } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { transitionAndNavigate } = usePageTransitionTrigger(300);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ const Login = () => {
 
       if (user) {
         console.log("User authenticated:", user.id);
-        
+
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('full_name')
@@ -69,10 +71,10 @@ const Login = () => {
 
         if (hasCompletedProfile) {
           console.log("User has profile, redirecting to dashboard");
-          navigate("/dashboard");
+          transitionAndNavigate(() => navigate("/dashboard"));
         } else {
           console.log("New user or incomplete profile, redirecting to profile creation");
-          navigate("/profile");
+          transitionAndNavigate(() => navigate("/profile"));
         }
       }
     } catch (error) {

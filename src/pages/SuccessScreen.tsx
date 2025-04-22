@@ -3,10 +3,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
+import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const SuccessScreen = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
+  const { transitionAndNavigate } = usePageTransitionTrigger(300);
   
   const capitalizedFirstName = firstName ? 
     firstName.charAt(0).toUpperCase() + firstName.slice(1) : 
@@ -51,7 +53,7 @@ const SuccessScreen = () => {
       {/* Start Scanning Button */}
       <div className="relative">
         <button 
-          onClick={() => navigate('/dashboard')} 
+          onClick={() => transitionAndNavigate(() => navigate('/dashboard'))} 
           className="w-full bg-[#212529] text-white py-6 rounded-2xl font-bold text-xl relative overflow-hidden group"
         >
           <div className="absolute inset-0 flex items-center justify-center">
@@ -76,3 +78,4 @@ const SuccessScreen = () => {
 };
 
 export default SuccessScreen;
+
