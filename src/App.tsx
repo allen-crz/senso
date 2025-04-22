@@ -23,6 +23,7 @@ import TermsPrivacy from "./pages/TermsPrivacy";
 import WaterMonitoring from "./pages/WaterMonitoring";
 import ElectricityMonitoring from "./pages/ElectricityMonitoring";
 import DashboardTabs from "./pages/DashboardTabs";
+import PageTransition from "@/components/PageTransition";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,26 +39,28 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/registration-success" element={<RegistrationSuccess />} />
-            <Route path="/success" element={<SuccessScreen />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/dashboard" element={<DashboardTabs />} />
-            <Route path="/water" element={<DashboardTabs />} />
-            <Route path="/electricity" element={<DashboardTabs />} />
-            <Route path="/water-monitoring" element={<WaterMonitoring />} />
-            <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-            <Route path="/help" element={<HelpFAQ />} />
-            <Route path="/send-feedback" element={<SendFeedback />} />
-            <Route path="/terms-privacy" element={<TermsPrivacy />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/registration-success" element={<RegistrationSuccess />} />
+              <Route path="/success" element={<SuccessScreen />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/dashboard" element={<DashboardTabs />} />
+              <Route path="/water" element={<DashboardTabs />} />
+              <Route path="/electricity" element={<DashboardTabs />} />
+              <Route path="/water-monitoring" element={<WaterMonitoring />} />
+              <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+              <Route path="/help" element={<HelpFAQ />} />
+              <Route path="/send-feedback" element={<SendFeedback />} />
+              <Route path="/terms-privacy" element={<TermsPrivacy />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
           <Toaster />
           <Sonner />
         </BrowserRouter>
