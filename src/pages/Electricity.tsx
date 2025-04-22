@@ -98,7 +98,7 @@ const Electricity = () => {
               </div>
               <span className="text-xs text-gray-400">Electric</span>
             </button>
-            <button className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed">
+            <button onClick={() => navigate('/settings')} className="flex flex-col items-center gap-1">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-gear text-gray-400 text-2xl"></i>
               </div>
