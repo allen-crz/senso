@@ -13,6 +13,15 @@ export const isMobileDevice = (): boolean => {
 };
 
 /**
+ * Check if the device is an iOS device
+ * @returns {boolean} true if the device is iOS, false otherwise
+ */
+export const isIOSDevice = (): boolean => {
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  return /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+};
+
+/**
  * Checks if the app is running in standalone mode (PWA installed)
  * @returns {boolean} true if the app is in standalone mode
  */
