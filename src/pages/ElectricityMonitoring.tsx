@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from "react";
-import { Bolt, Camera, Info, Home, Droplet, Gear } from "lucide-react";
+import { Bolt, Camera, Info, Home, Droplet, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ElectricityMonitoring: React.FC = () => {
@@ -148,7 +148,7 @@ const ElectricityMonitoring: React.FC = () => {
               type="button"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <Gear className="text-gray-400 text-2xl" />
+                <Settings className="text-gray-400 text-2xl" />
               </div>
               <span className="text-xs text-gray-400">Settings</span>
             </button>
