@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
@@ -166,28 +165,26 @@ const Profile = () => {
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="min-h-screen bg-white text-black relative pt-12">
-      <div className="px-6 pb-32">
-        <ProfileHeader 
-          title="Complete Your Profile"
-          subtitle="Let's set up your account"
-        />
-        
-        <ProfileAvatar 
-          avatarUrl={avatarUrl}
-          avatarFallback={avatarFallback}
-          uploading={uploading}
-          onUpload={uploadAvatar}
-        />
+    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
+      <ProfileHeader 
+        title="Create Profile"
+        subtitle="Tell us more about yourself"
+      />
+      
+      <ProfileAvatar 
+        avatarUrl={avatarUrl}
+        avatarFallback={avatarFallback}
+        uploading={uploading}
+        onUpload={uploadAvatar}
+      />
 
-        <ProfileForm 
-          formData={formData}
-          isLoading={isLoading}
-          uploading={uploading}
-          onSubmit={handleSubmit}
-          onFormDataChange={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
-        />
-      </div>
+      <ProfileForm 
+        formData={formData}
+        isLoading={isLoading}
+        uploading={uploading}
+        onSubmit={handleSubmit}
+        onFormDataChange={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+      />
     </div>
   );
 };

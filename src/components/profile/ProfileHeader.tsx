@@ -8,12 +8,21 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ title, subtitle }: ProfileHeaderProps) => {
   return (
-    <div className="mb-8">
-      <h1 className="text-2xl font-bold text-black text-center">{title}</h1>
-      <p className="text-center text-black/60 mt-2">
-        {subtitle}
-      </p>
-    </div>
+    <>
+      <div className="flex justify-between items-center mb-8">
+        <div className="text-sm text-[#212529]">9:41</div>
+        <div className="flex items-center gap-2 text-[#212529]">
+          <i className="fa-solid fa-signal"></i>
+          <i className="fa-solid fa-wifi"></i>
+          <i className="fa-solid fa-battery-full"></i>
+        </div>
+      </div>
+      
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold text-[#212529] mb-2">{title}</h1>
+        <p className="text-gray-500">{subtitle}</p>
+      </div>
+    </>
   );
 };
 

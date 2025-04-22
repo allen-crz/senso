@@ -2,8 +2,8 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import PhoneInput from '@/components/PhoneInput';
-import AddressInput from '@/components/AddressInput';
+import { Textarea } from "@/components/ui/textarea";
+import { Link } from 'react-router-dom';
 
 interface FormData {
   fullName: string;
@@ -23,64 +23,74 @@ interface ProfileFormProps {
 const ProfileForm = ({ 
   formData, 
   isLoading, 
-  uploading, 
   onSubmit, 
   onFormDataChange 
 }: ProfileFormProps) => {
   return (
     <>
-      <div className="bg-white border border-black/20 rounded-3xl p-6 mb-6">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm text-black/60 font-medium">Full Name</label>
+      <div className="bg-white rounded-3xl p-6 shadow-sm">
+        <div className="space-y-4">
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">Full Name</label>
             <Input
               type="text"
               value={formData.fullName}
               onChange={(e) => onFormDataChange({ fullName: e.target.value })}
-              className="px-4 py-3 rounded-xl bg-white text-black border border-black/20 focus:border-black/40"
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] border-none"
               placeholder="Enter your full name"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm text-black/60 font-medium">Email Address</label>
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">Email Address</label>
             <Input
               type="email"
               value={formData.email}
-              className="px-4 py-3 rounded-xl bg-white text-black/70 border border-black/20 cursor-not-allowed opacity-50"
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]/70 border-none cursor-not-allowed"
+              placeholder="Enter your email"
               readOnly
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm text-black/60 font-medium">Phone Number</label>
-            <PhoneInput
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">Phone Number</label>
+            <Input
+              type="tel"
               value={formData.phone}
-              onChange={(value) => onFormDataChange({ phone: value })}
+              onChange={(e) => onFormDataChange({ phone: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] border-none"
+              placeholder="Enter your phone number"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm text-black/60 font-medium">Address</label>
-            <AddressInput
+          <div className="form-group">
+            <label className="block text-sm text-[#212529] mb-2">Address</label>
+            <Textarea
               value={formData.address}
-              onChange={(value) => onFormDataChange({ address: value })}
+              onChange={(e) => onFormDataChange({ address: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] resize-none h-24 border-none"
+              placeholder="Enter your complete address"
             />
           </div>
         </div>
+
+        <Button 
+          onClick={onSubmit}
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mt-8 h-auto"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Saving Profile...' : 'Save Profile'}
+        </Button>
       </div>
 
-      <Button 
-        onClick={onSubmit}
-        className="w-full py-4 bg-black text-white rounded-full font-semibold mb-6 hover:bg-black/90 transition-colors"
-        disabled={isLoading || uploading}
-      >
-        {isLoading ? 'Creating Profile...' : 'Get Started'}
-      </Button>
-
-      <p className="text-center text-xs text-black/40 mb-20">
-        This information helps personalize your experience.
-      </p>
+      <div className="text-center mt-6">
+        <p className="text-gray-500">
+          Want to go back?{' '}
+          <Link to="/login" className="font-semibold text-[#212529] cursor-pointer">
+            Return to login
+          </Link>
+        </p>
+      </div>
     </>
   );
 };
