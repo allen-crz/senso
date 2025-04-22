@@ -24,7 +24,6 @@ const ElectricityMonitoring: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
-      {/* Header */}
       <div className="px-6 pb-32">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -38,14 +37,12 @@ const ElectricityMonitoring: React.FC = () => {
           </button>
         </div>
 
-        {/* Progress Bars */}
         <div className="mb-6 flex gap-2">
           <div className="h-1.5 flex-1 bg-yellow-500 rounded-full"></div>
           <div className="h-1.5 flex-1 bg-gray-200 rounded-full"></div>
           <div className="h-1.5 flex-1 bg-gray-200 rounded-full"></div>
         </div>
 
-        {/* Current Electric Prices */}
         <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 p-6 rounded-3xl shadow-sm mb-4">
           <div className="text-center">
             <h3 className="text-lg font-semibold text-white mb-2">Current Electric Price</h3>
@@ -57,7 +54,6 @@ const ElectricityMonitoring: React.FC = () => {
           </div>
         </div>
 
-        {/* Meter Scan Section */}
         <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 p-8 rounded-3xl shadow-lg mb-6 transform hover:scale-[1.02] transition-transform">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4 animate-pulse">
@@ -74,7 +70,6 @@ const ElectricityMonitoring: React.FC = () => {
           </div>
         </div>
 
-        {/* Manual Input Section */}
         <form className="bg-white p-6 rounded-3xl shadow-sm" onSubmit={handleSubmit}>
           <h3 className="text-lg font-semibold text-[#212529] mb-2">Manual Input (Optional)</h3>
           <p className="text-sm text-gray-500 mb-4">Enter all digits</p>
@@ -100,11 +95,9 @@ const ElectricityMonitoring: React.FC = () => {
         </form>
       </div>
 
-      {/* Bottom Navigation - replicated dashboard tab hover styles */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4 z-50">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
-            {/* Home */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/dashboard")}
@@ -115,7 +108,6 @@ const ElectricityMonitoring: React.FC = () => {
               </div>
               <span className="text-xs text-gray-400 group-hover:text-white font-medium transition-colors">Home</span>
             </button>
-            {/* Water */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/water-monitoring")}
@@ -126,14 +118,12 @@ const ElectricityMonitoring: React.FC = () => {
               </div>
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
-            {/* Electric (current page - highlight) */}
             <div className="flex flex-col items-center gap-1 group cursor-default">
               <div className="w-10 h-10 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center">
                 <Bolt className="text-yellow-400" />
               </div>
               <span className="text-xs font-medium text-yellow-400">Electricity</span>
             </div>
-            {/* Settings */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/settings")}
