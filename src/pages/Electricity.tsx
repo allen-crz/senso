@@ -12,7 +12,6 @@ const Electricity = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
       <div className="px-6 pb-32">
-        {/* Greeting Section */}
         <div className="flex justify-between items-center mb-8 pt-6">
           <div>
             <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
@@ -24,7 +23,6 @@ const Electricity = () => {
           </Avatar>
         </div>
 
-        {/* Utility Toggle */}
         <div className="mb-8">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button onClick={() => navigate('/dashboard')} className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap">All</button>
@@ -33,11 +31,9 @@ const Electricity = () => {
           </div>
         </div>
 
-        {/* Cards Section */}
         <div className="space-y-4">
           <ElectricitySection variant="electricity" />
 
-          {/* Anomaly Card */}
           <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
             <div className="flex gap-4 items-center">
               <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -50,7 +46,6 @@ const Electricity = () => {
             </div>
           </Card>
 
-          {/* Electricity Prices Card */}
           <Card className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -76,29 +71,28 @@ const Electricity = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-6 left-6 right-6">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
-            <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1 relative">
-              <div className="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-house text-white"></i>
+            <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-house text-gray-400 text-2xl"></i>
               </div>
-              <span className="text-xs font-medium text-white">Home</span>
+              <span className="text-xs text-gray-400">Home</span>
             </button>
-            <button onClick={() => navigate('/water')} className="flex flex-col items-center gap-1">
+            <button className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-droplet text-gray-400 text-2xl"></i>
               </div>
               <span className="text-xs text-gray-400">Water</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
+            <button className="flex flex-col items-center gap-1 relative">
+              <div className="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-bolt text-white"></i>
               </div>
-              <span className="text-xs text-gray-400">Electric</span>
+              <span className="text-xs font-medium text-white">Electric</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
+            <button className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-gear text-gray-400 text-2xl"></i>
               </div>

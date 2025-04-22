@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
 import WaterSection from '@/components/WaterSection';
 import { useUserData } from '@/hooks/useUserData';
 
@@ -11,9 +10,7 @@ const Water = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
-      {/* Main Content */}
       <div className="px-6 pb-32">
-        {/* Greeting Section */}
         <div className="flex justify-between items-center mb-8 pt-6">
           <div>
             <h1 className="text-2xl font-bold text-[#212529] mb-1">Hi, {firstName} 👋</h1>
@@ -25,7 +22,6 @@ const Water = () => {
           </Avatar>
         </div>
 
-        {/* Utility Toggle */}
         <div className="mb-8">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             <button onClick={() => navigate('/dashboard')} className="px-6 py-3 bg-white text-[#212529] rounded-full whitespace-nowrap">All</button>
@@ -34,12 +30,9 @@ const Water = () => {
           </div>
         </div>
 
-        {/* Cards Section */}
         <div className="space-y-4">
-          {/* Current Usage Card - Replace with WaterSection component */}
           <WaterSection variant="water" />
 
-          {/* Anomaly Card */}
           <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
             <div className="flex gap-4 items-center">
               <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -52,7 +45,6 @@ const Water = () => {
             </div>
           </div>
 
-          {/* Water Prices Card */}
           <div className="bg-white p-6 rounded-3xl shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -78,29 +70,28 @@ const Water = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-6 left-6 right-6">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
-            <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1 relative">
-              <div className="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-house text-white"></i>
-              </div>
-              <span className="text-xs font-medium text-white">Home</span>
-            </button>
-            <button className="flex flex-col items-center gap-1">
+            <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-droplet text-gray-400 text-2xl"></i>
+                <i className="fa-solid fa-house text-gray-400 text-2xl"></i>
               </div>
-              <span className="text-xs text-gray-400">Water</span>
+              <span className="text-xs text-gray-400">Home</span>
             </button>
-            <button onClick={() => navigate('/electricity')} className="flex flex-col items-center gap-1">
+            <button className="flex flex-col items-center gap-1 relative">
+              <div className="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-droplet text-white"></i>
+              </div>
+              <span className="text-xs font-medium text-white">Water</span>
+            </button>
+            <button className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
               </div>
               <span className="text-xs text-gray-400">Electric</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
+            <button className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed">
               <div className="w-10 h-10 rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-gear text-gray-400 text-2xl"></i>
               </div>
