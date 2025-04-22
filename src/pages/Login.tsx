@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -29,13 +30,15 @@ const FormSchema = z.object({
   }),
 });
 
+type LoginFormValues = z.infer<typeof FormSchema>;
+
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const { transitionClass, isTransitioning } = usePageTransition();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<LoginFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
@@ -43,38 +46,41 @@ const Login = () => {
     },
   });
 
-  const { mutate: signIn } = useMutation(
-    async (values: z.infer<typeof FormSchema>) => {
+  const { mutate: signIn } = useMutation({
+    mutationFn: async (values: LoginFormValues) => {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-      setIsLoading(false);
-
-      if (error) {
-        throw error;
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: values.email,
+          password: values.password,
+        });
+        
+        if (error) {
+          throw error;
+        }
+        
+        return { success: true };
+      } finally {
+        setIsLoading(false);
       }
     },
-    {
-      onSuccess: () => {
-        toast({
-          title: "Login successful!",
-          description: "You have successfully logged in.",
-        });
-        navigate("/dashboard");
-      },
-      onError: (error: Error) => {
-        toast({
-          title: "Login failed.",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    }
-  );
+    onSuccess: () => {
+      toast({
+        title: "Login successful!",
+        description: "You have successfully logged in.",
+      });
+      navigate("/dashboard");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Login failed.",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
-  function onSubmit(values: z.infer<typeof FormSchema>) {
+  function onSubmit(values: LoginFormValues) {
     signIn(values);
   }
 
