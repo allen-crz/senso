@@ -86,28 +86,28 @@ const Water = () => {
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
-              type="button"
-              tabIndex={0}
-            >
-              <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Home className="text-white group-hover:text-white/80" />
-              </div>
-              <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
-            </button>
-            <div 
+            <div
               className="flex flex-col items-center gap-1 group cursor-default"
               tabIndex={0}
+            >
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Home className="text-white" />
+              </div>
+              <span className="text-xs font-medium text-white">Home</span>
+            </div>
+            <button
+              onClick={() => navigate('/water')}
+              className="flex flex-col items-center gap-1 group cursor-default"
+              tabIndex={0}
+              disabled
             >
               <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
                 <Droplet className="text-blue-500" />
               </div>
               <span className="text-xs text-blue-500 transition-colors">Water</span>
-            </div>
+            </button>
             <button
-              onClick={() => navigate('/electricity-monitoring')}
+              onClick={() => navigate('/electricity')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
