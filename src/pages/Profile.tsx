@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Camera, Wifi, Signal, BatteryFull } from "lucide-react";
+import { User, Camera } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -81,15 +80,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 font-inter">
-      {/* Status Bar Mockup */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2">
-          <Signal className="w-4 h-4 text-[#212529]" />
-          <Wifi className="w-4 h-4 text-[#212529]" />
-          <BatteryFull className="w-4 h-4 text-[#212529]" />
-        </div>
-      </div>
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-[#212529] mb-2">
@@ -97,6 +87,7 @@ const Profile = () => {
         </h1>
         <p className="text-gray-500">Tell us more about yourself</p>
       </div>
+      
       {/* Profile Form */}
       <form
         onSubmit={handleSubmit}
@@ -182,6 +173,7 @@ const Profile = () => {
           {isLoading ? "Saving Profile..." : "Save Profile"}
         </button>
       </form>
+
       {/* Return to Login */}
       <div className="text-center mt-6">
         <p className="text-gray-500">
