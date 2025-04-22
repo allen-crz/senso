@@ -43,7 +43,7 @@ const Login = () => {
       if (user) {
         console.log("User authenticated:", user.id);
         
-        // Check if user has completed profile setup
+        // Check if user has a profile with a full_name set
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('full_name')
@@ -63,9 +63,11 @@ const Login = () => {
 
         console.log("Profile check result:", profile);
 
-        // Determine if the user has a complete profile
-        const hasCompletedProfile = profile && profile.full_name && profile.full_name.trim() !== '';
+        // Check specifically if the profile exists AND has a non-empty full_name
+        const hasCompletedProfile = !!(profile && profile.full_name && profile.full_name.trim() !== '');
         
+        console.log("Has completed profile:", hasCompletedProfile);
+
         toast({
           title: "Login successful",
           description: hasCompletedProfile ? "Welcome back to Senso" : "Welcome to Senso",
@@ -75,7 +77,7 @@ const Login = () => {
           console.log("User has profile, redirecting to dashboard");
           navigate("/dashboard");
         } else {
-          console.log("New user, redirecting to profile creation");
+          console.log("New user or incomplete profile, redirecting to profile creation");
           navigate("/profile");
         }
       }
