@@ -6,7 +6,7 @@ const RegistrationSuccess = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
+    <div className="min-h-screen bg-[#f5f6f7] flex flex-col justify-center items-center px-6 py-12">
       {/* Success Animation Container */}
       <div className="flex flex-col items-center justify-center mb-12">
         <div className="w-20 h-20 bg-[#212529] rounded-full flex items-center justify-center mb-8">
@@ -21,7 +21,7 @@ const RegistrationSuccess = () => {
       </div>
 
       {/* Action Button */}
-      <div className="px-4">
+      <div className="px-4 w-full max-w-xs">
         <button 
           onClick={() => navigate('/login')}
           className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mb-4"
@@ -39,3 +39,4 @@ const RegistrationSuccess = () => {
 };
 
 export default RegistrationSuccess;
+
