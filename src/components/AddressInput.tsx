@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";

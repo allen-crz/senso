@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -27,11 +27,11 @@ interface PhoneInputProps {
 }
 
 const PhoneInput = ({ value, onChange }: PhoneInputProps) => {
-  const [countryCode, setCountryCode] = React.useState('+63');
-  const [localNumber, setLocalNumber] = React.useState('');
+  const [countryCode, setCountryCode] = useState('+63');
+  const [localNumber, setLocalNumber] = useState('');
 
-  React.useEffect(() => {
-    // Parse initial value if exists
+  // Initial setup on mount - parse the value into country code and local number
+  useEffect(() => {
     if (value) {
       const code = countryCodes.find(c => value.startsWith(c.code));
       if (code) {
@@ -43,8 +43,8 @@ const PhoneInput = ({ value, onChange }: PhoneInputProps) => {
     }
   }, []);
 
-  React.useEffect(() => {
-    // Combine country code and local number
+  // Update the combined value whenever country code or local number changes
+  useEffect(() => {
     const fullNumber = `${countryCode}${localNumber}`;
     onChange(fullNumber);
   }, [countryCode, localNumber, onChange]);
