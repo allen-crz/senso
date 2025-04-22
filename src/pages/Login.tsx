@@ -1,17 +1,27 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { signInWithEmail } from '@/services/auth';
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempted with:', { email, password });
-    navigate('/profile');
+    setIsLoading(true);
+
+    const { user, error } = await signInWithEmail(email, password);
+    
+    setIsLoading(false);
+    
+    if (user && !error) {
+      navigate('/profile');
+    }
   };
 
   return (
@@ -37,6 +47,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
               placeholder="Enter your email"
+              required
             />
           </div>
           
@@ -49,6 +60,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
                 placeholder="Enter your password"
+                required
               />
               <button
                 type="button"
@@ -69,8 +81,12 @@ const Login = () => {
           <span className="text-sm text-[#212529] cursor-pointer">Forgot Password?</span>
         </div>
 
-        <button type="submit" className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold">
-          Log In
+        <button 
+          type="submit" 
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold disabled:opacity-50"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
 
