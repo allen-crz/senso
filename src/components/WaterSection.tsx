@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Droplet } from "lucide-react";
 
-// Define the WaterReading type
+// Define the WaterReading type with an 'as any' for the database query
+// This is a temporary workaround until the water_readings table is properly defined in the database types
 interface WaterReading {
   id: string;
   user_id: string;
@@ -20,9 +21,9 @@ const fetchWaterData = async (): Promise<WaterReading | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No user found');
 
-  // We need to cast this since the water_readings table might not be in the types yet
+  // Using 'as any' to bypass TypeScript's type checking since water_readings is not in the types yet
   const { data, error } = await supabase
-    .from('water_readings')
+    .from('water_readings' as any)
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
