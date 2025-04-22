@@ -147,7 +147,6 @@ const Dashboard = () => {
           <div className="flex justify-between items-center">
             <div 
               className="flex flex-col items-center gap-1 group cursor-default"
-              type="button"
               tabIndex={0}
             >
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
