@@ -113,7 +113,10 @@ const Login = () => {
 
         <button 
           type="submit" 
-          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold disabled:opacity-50"
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold 
+            hover:bg-[#3a3f44] transition-colors duration-300 
+            disabled:opacity-50 
+            active:scale-[0.98]" 
           disabled={isLoading}
         >
           {isLoading ? 'Logging in...' : 'Log In'}
