@@ -201,7 +201,7 @@ const Profile = () => {
         duration: 2000,
       });
       
-      navigate('/dashboard');
+      navigate('/success');
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast({

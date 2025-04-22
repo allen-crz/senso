@@ -20,19 +20,19 @@ const Login = () => {
       const { user, error } = await signInWithEmail(email, password);
       
       if (user && !error) {
-        // Check if user has a complete profile
+        // For existing users, check if they have a profile
         const { data: profile } = await supabase
           .from('profiles')
-          .select('phone, address')
+          .select('phone, address, created_at')
           .eq('id', user.id)
           .single();
 
-        // Only redirect to profile if profile is missing or incomplete
-        if (!profile || (!profile.phone && !profile.address)) {
-          navigate('/profile');
-        } else {
-          // Profile is complete, go to dashboard
+        // If profile exists and has required fields, go to dashboard
+        if (profile?.phone || profile?.address) {
           navigate('/dashboard');
+        } else {
+          // If no profile or incomplete, go to profile page
+          navigate('/profile');
         }
       }
     } catch (error) {
