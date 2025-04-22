@@ -5,11 +5,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Droplet } from "lucide-react";
 
-const fetchWaterData = async () => {
+// Define the WaterReading type
+interface WaterReading {
+  id: string;
+  user_id: string;
+  reading: number;
+  created_at: string;
+  updated_at: string;
+}
+
+const fetchWaterData = async (): Promise<WaterReading | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No user found');
 
+  // Since the type is not defined in Supabase types yet, we'll use a more generic approach
   const { data, error } = await supabase
     .from('water_readings')
     .select('*')
@@ -18,8 +29,12 @@ const fetchWaterData = async () => {
     .limit(1)
     .single();
 
-  if (error) throw error;
-  return data;
+  if (error) {
+    console.error('Error fetching water data:', error);
+    return null;
+  }
+  
+  return data as WaterReading;
 };
 
 const WaterSection = () => {
@@ -32,7 +47,7 @@ const WaterSection = () => {
     return <LoadingState />;
   }
 
-  if (error) {
+  if (error || !waterData) {
     return (
       <Card className="bg-white p-6 rounded-3xl shadow-sm">
         <div className="text-center text-gray-500">
@@ -42,7 +57,7 @@ const WaterSection = () => {
     );
   }
 
-  const currentUsage = waterData?.reading || 0;
+  const currentUsage = waterData.reading || 0;
   const maxUsage = 100; // Example threshold
   const progress = (currentUsage / maxUsage) * 100;
 
@@ -53,11 +68,11 @@ const WaterSection = () => {
           <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Usage</h3>
           <p className="text-2xl font-bold text-[#212529]">{currentUsage} liters</p>
           <p className="text-sm text-gray-500">
-            Last updated {new Date(waterData?.created_at).toLocaleDateString()}
+            Last updated {new Date(waterData.created_at).toLocaleDateString()}
           </p>
         </div>
         <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-          <i className="fa-solid fa-droplet text-blue-400"></i>
+          <Droplet className="text-blue-400 h-5 w-5" />
         </div>
       </div>
       <Progress value={progress} className="h-2 mb-4" />
