@@ -1,10 +1,13 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { signUpWithEmail } from '@/services/auth';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,10 +17,26 @@ const Register = () => {
   });
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Registration attempted with:', formData);
-    navigate('/success');
+    
+    if (formData.password !== formData.confirmPassword) {
+      console.error('Passwords do not match');
+      return;
+    }
+
+    if (!formData.termsAccepted) {
+      console.error('Please accept the terms and conditions');
+      return;
+    }
+
+    setIsLoading(true);
+    const { user, error } = await signUpWithEmail(formData.email, formData.password, formData.fullName);
+    setIsLoading(false);
+
+    if (user && !error) {
+      navigate('/success');
+    }
   };
 
   return (
@@ -43,6 +62,7 @@ const Register = () => {
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
               placeholder="Enter your full name"
+              required
             />
           </div>
 
@@ -54,6 +74,7 @@ const Register = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
               placeholder="Enter your email"
+              required
             />
           </div>
           
@@ -66,6 +87,7 @@ const Register = () => {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
                 placeholder="Create a password"
+                required
               />
               <button
                 type="button"
@@ -90,6 +112,7 @@ const Register = () => {
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
                 placeholder="Confirm your password"
+                required
               />
               <button
                 type="button"
@@ -111,6 +134,7 @@ const Register = () => {
               checked={formData.termsAccepted}
               onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
               className="mt-1"
+              required
             />
             <p className="text-sm text-gray-500">
               I agree to the <span className="font-semibold text-[#212529] cursor-pointer">Terms and Conditions</span>
@@ -118,8 +142,12 @@ const Register = () => {
           </div>
         </div>
 
-        <button type="submit" className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mt-6">
-          Sign Up
+        <button 
+          type="submit" 
+          className="w-full bg-[#212529] text-white py-4 rounded-xl font-semibold mt-6 disabled:opacity-50"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Creating Account...' : 'Sign Up'}
         </button>
       </form>
 
