@@ -15,6 +15,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { Home, Droplet, Bolt, Settings as SettingsIcon } from 'lucide-react';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -36,7 +37,6 @@ const Settings = () => {
           <h1 className="text-2xl font-bold text-[#212529]">Settings</h1>
           <i className="fa-solid fa-cog text-purple-500 text-xl"></i>
         </div>
-        {/* Profile Card with Details and Change Password */}
         <Card className="p-4 mb-6">
           <div className="flex items-start gap-4">
             <Avatar className="w-16 h-16">
@@ -70,7 +70,6 @@ const Settings = () => {
           </div>
         </Card>
 
-        {/* Support Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <h3 className="px-6 pt-6 pb-2 text-sm font-medium text-gray-500">Support</h3>
           <div className="divide-y divide-gray-100">
@@ -95,7 +94,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Legal Section */}
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <div className="divide-y divide-gray-100">
             <button
@@ -109,10 +107,8 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* App Version */}
         <p className="text-center text-sm text-gray-400 mb-6">Version 1.0.0</p>
 
-        {/* Logout Button with Confirmation */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button
@@ -142,7 +138,6 @@ const Settings = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-      {/* Bottom Navigation, dashboard-style */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -153,7 +148,7 @@ const Settings = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-house text-white group-hover:text-white/80" /></span>
+                <Home className="text-white group-hover:text-white/80" />
               </div>
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
@@ -164,7 +159,7 @@ const Settings = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-droplet text-gray-400 group-hover:text-blue-500" /></span>
+                <Droplet className="text-gray-400 group-hover:text-blue-500" />
               </div>
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
@@ -175,7 +170,7 @@ const Settings = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-bolt text-gray-400 group-hover:text-amber-500" /></span>
+                <Bolt className="text-gray-400 group-hover:text-amber-500" />
               </div>
               <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
@@ -185,7 +180,7 @@ const Settings = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150 bg-purple-500">
-                <span><i className="fa-solid fa-gear text-white group-hover:text-gray-600" /></span>
+                <SettingsIcon className="text-white group-hover:text-gray-600" />
               </div>
               <span className="text-xs font-medium text-purple-500 group-hover:text-gray-600 transition-colors">Settings</span>
             </button>

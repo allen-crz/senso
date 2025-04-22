@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home, Droplet, Bolt, Settings as SettingsIcon } from "lucide-react";
 
 const TermsPrivacy: React.FC = () => {
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ const TermsPrivacy: React.FC = () => {
         </div>
       </div>
 
-      {/* Fixed footer nav bar, dashboard-style */}
+      {/* Fixed footer nav bar, Dashboard-style */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -116,7 +116,7 @@ const TermsPrivacy: React.FC = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-house text-white group-hover:text-white/80" /></span>
+                <Home className="text-white group-hover:text-white/80" />
               </div>
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
@@ -127,7 +127,7 @@ const TermsPrivacy: React.FC = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-blue-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-droplet text-gray-400 group-hover:text-blue-500" /></span>
+                <Droplet className="text-gray-400 group-hover:text-blue-500" />
               </div>
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
@@ -138,19 +138,20 @@ const TermsPrivacy: React.FC = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-amber-50 rounded-full flex items-center justify-center transition-colors duration-150">
-                <span><i className="fa-solid fa-bolt text-gray-400 group-hover:text-amber-500" /></span>
+                <Bolt className="text-gray-400 group-hover:text-amber-500" />
               </div>
               <span className="text-xs text-gray-400 group-hover:text-amber-500 transition-colors">Electric</span>
             </button>
             <button
+              onClick={() => navigate('/settings')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
             >
-              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150 bg-purple-500">
-                <span><i className="fa-solid fa-gear text-white group-hover:text-gray-600" /></span>
+              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
+                <SettingsIcon className="text-gray-400 group-hover:text-gray-600" />
               </div>
-              <span className="text-xs font-medium text-purple-500 group-hover:text-gray-600 transition-colors">Settings</span>
+              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
             </button>
           </div>
         </div>
