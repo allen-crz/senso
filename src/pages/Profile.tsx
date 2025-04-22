@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -203,23 +202,11 @@ const Profile = () => {
     }
   };
 
-  // Get the capitalized first letter of the first name for the avatar fallback
   const avatarFallback = formData.fullName.charAt(0).toUpperCase() || '?';
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-sm text-[#212529]">9:41</div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
-
       <div className="px-6 pb-32">
-        {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <button onClick={() => navigate('/settings')} className="text-[#212529]">
@@ -227,16 +214,8 @@ const Profile = () => {
             </button>
             <h1 className="text-2xl font-bold text-[#212529]">Edit Profile</h1>
           </div>
-          <button 
-            onClick={handleSubmit}
-            className="text-blue-500 font-semibold" 
-            disabled={!hasChanges || isLoading}
-          >
-            Save
-          </button>
         </div>
 
-        {/* Profile Image */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-3">
             <Avatar className="w-24 h-24">
@@ -266,7 +245,6 @@ const Profile = () => {
           </label>
         </div>
 
-        {/* Edit Fields Section */}
         <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
           <div className="space-y-6">
             <div className="space-y-2">
@@ -316,7 +294,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Save Button */}
         <Button 
           onClick={handleSubmit}
           className="w-full py-4 bg-blue-500 text-white rounded-full font-semibold mb-6 hover:bg-blue-600 transition-colors"
@@ -329,9 +306,23 @@ const Profile = () => {
           Your profile info is used to personalize your experience.
         </p>
       </div>
+
+      <div id="bottom-nav" className="fixed bottom-6 left-6 right-6 z-50">
+        <div className="flex justify-between items-center">
+          <button onClick={() => navigate('/settings')} className="text-[#212529]">
+            <i className="fa-solid fa-arrow-left text-xl"></i>
+          </button>
+          <button 
+            onClick={handleSubmit}
+            className="text-blue-500 font-semibold" 
+            disabled={!hasChanges || isLoading}
+          >
+            Save
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Profile;
-
