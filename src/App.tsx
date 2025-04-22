@@ -17,6 +17,7 @@ import Water from "./pages/Water";
 import Electricity from "./pages/Electricity";
 import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
+import HelpFAQ from "./pages/HelpFAQ";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/electricity" element={<Electricity />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/help" element={<HelpFAQ />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

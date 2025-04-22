@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -69,7 +70,10 @@ const Settings = () => {
         <div className="bg-white rounded-3xl shadow-sm mb-6 overflow-hidden">
           <h3 className="px-6 pt-6 pb-2 text-sm font-medium text-gray-500">Support</h3>
           <div className="divide-y divide-gray-100">
-            <button className="w-full flex items-center justify-between px-6 py-4">
+            <button 
+              onClick={() => navigate('/help')}
+              className="w-full flex items-center justify-between px-6 py-4"
+            >
               <span className="font-medium">Help & FAQs</span>
               <i className="fa-solid fa-chevron-right text-gray-400"></i>
             </button>
