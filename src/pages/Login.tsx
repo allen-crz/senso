@@ -44,7 +44,7 @@ const Login = () => {
         console.log("User authenticated:", user.id);
         
         // Check if user has a profile with a full_name set
-        const { data: profile, error: profileError } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('full_name')
           .eq('id', user.id)
@@ -61,18 +61,22 @@ const Login = () => {
           return;
         }
 
-        console.log("Profile check result:", profile);
+        console.log("Profile check result:", profileData);
 
-        // Check specifically if the profile exists AND has a non-empty full_name
-        const hasCompletedProfile = !!(profile && profile.full_name && profile.full_name.trim() !== '');
+        // Force profile creation if profile is missing or full_name is empty/null
+        const hasCompletedProfile = profileData && 
+                                   profileData.full_name && 
+                                   profileData.full_name.trim() !== '';
         
         console.log("Has completed profile:", hasCompletedProfile);
 
+        // Always show a toast but with different messages
         toast({
           title: "Login successful",
           description: hasCompletedProfile ? "Welcome back to Senso" : "Welcome to Senso",
         });
 
+        // Redirect based on profile status
         if (hasCompletedProfile) {
           console.log("User has profile, redirecting to dashboard");
           navigate("/dashboard");
