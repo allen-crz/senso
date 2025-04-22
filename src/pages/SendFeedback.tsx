@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { PaperPlane, ChevronLeft } from "lucide-react";
+import { Send, ChevronLeft } from "lucide-react";
 
 const navItems = [
   {
@@ -50,7 +50,7 @@ const SendFeedback = () => {
           </button>
           <h1 className="text-2xl font-bold text-[#212529]">Send Feedback</h1>
         </div>
-        <PaperPlane className="text-purple-500 w-6 h-6" />
+        <Send className="text-purple-500 w-6 h-6" />
       </div>
       {/* Main Content */}
       <div className="px-6 pb-32">
