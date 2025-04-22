@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -5,8 +6,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
-import { Button } from '@/components/ui/button';
-import { Camera } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,14 +15,6 @@ const Dashboard = () => {
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
-
-  const handleWaterReading = () => {
-    navigate('/water/add-reading');
-  };
-
-  const handleElectricityReading = () => {
-    navigate('/electricity/add-reading');
-  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
@@ -82,15 +73,15 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex flex-col items-center justify-center py-8">
-              <Camera className="text-blue-200 w-12 h-12 mb-4" />
+              <i className="fa-solid fa-camera text-blue-200 text-4xl mb-4"></i>
               <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
-              <Button 
-                onClick={handleWaterReading}
-                className="hover:bg-blue-100 hover:text-blue-600 active:scale-95 transition-all duration-100"
-                variant="outline"
+              <button
+                className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold cursor-pointer transition transform duration-100 hover:bg-blue-100 hover:text-blue-600 active:scale-95 focus:outline-none"
+                type="button"
+                tabIndex={0}
               >
                 Add Reading
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -105,15 +96,15 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex flex-col items-center justify-center py-8">
-              <Camera className="text-amber-200 w-12 h-12 mb-4" />
+              <i className="fa-solid fa-camera text-amber-200 text-4xl mb-4"></i>
               <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
-              <Button 
-                onClick={handleElectricityReading}
-                className="hover:bg-amber-100 hover:text-amber-600 active:scale-95 transition-all duration-100"
-                variant="outline"
+              <button
+                className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold cursor-pointer transition transform duration-100 hover:bg-amber-100 hover:text-amber-600 active:scale-95 focus:outline-none"
+                type="button"
+                tabIndex={0}
               >
                 Add Reading
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -135,6 +126,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Fixed footer nav bar */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -189,3 +181,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
