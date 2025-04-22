@@ -14,7 +14,6 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
   
   return (
     <div
-      key={location.key}
       className="transition-all duration-300 animate-fade-in w-full h-full"
       style={{
         animation: 'fadeIn 300ms ease-in-out',
@@ -26,4 +25,3 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 export default PageTransition;
-

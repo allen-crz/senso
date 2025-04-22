@@ -1,172 +1,186 @@
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import { signInWithEmail } from '@/services/auth';
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { Icons } from "@/components/icons";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTransition } from "@/hooks/usePageTransition";
 
+const FormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
+});
+
 const Login = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Use page transition hook
-  const { transitionClass, triggerTransition, transitioning } = usePageTransition(300);
+  const { transitionClass, isTransitioning } = usePageTransition();
 
-  // Visual effect for button click (shrink and fade quickly)
-  const [buttonActive, setButtonActive] = useState(false);
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { user, error } = await signInWithEmail(email, password);
-      
-      if (user && !error) {
-        // For existing users, check if they have a profile
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('phone, address, created_at')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        // If profile exists and has required fields, go to dashboard
-        if (profile?.phone || profile?.address) {
-          // Add page exit effect before navigating to /dashboard
-          triggerTransition(() => {
-            navigate('/dashboard');
-          });
-        } else {
-          // If no profile or incomplete, go to profile page for new users
-          triggerTransition(() => {
-            navigate('/profile');
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    } finally {
+  const { mutate: signIn } = useMutation(
+    async (values: z.infer<typeof FormSchema>) => {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
       setIsLoading(false);
-      setButtonActive(false); // Reset click effect
-    }
-  };
 
-  // Handler for Register link with transition
-  const handleRegisterTransition = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    triggerTransition(() => {
-      navigate("/register");
-    });
-  };
+      if (error) {
+        throw error;
+      }
+    },
+    {
+      onSuccess: () => {
+        toast({
+          title: "Login successful!",
+          description: "You have successfully logged in.",
+        });
+        navigate("/dashboard");
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Login failed.",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    }
+  );
+
+  function onSubmit(values: z.infer<typeof FormSchema>) {
+    signIn(values);
+  }
 
   return (
-    <div className={`min-h-screen bg-[#f5f6f7] px-6 py-12 transition-opacity duration-300 ${transitionClass}`}>
-      <div className="mb-12 flex justify-center">
-        <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">
-          <i className="fa-solid fa-bolt-lightning text-white text-2xl"></i>
+    <div className="grid h-screen w-screen place-items-center">
+      <div className={`container flex w-full max-w-md flex-col items-center justify-center space-y-4 ${transitionClass}`}>
+        <div className="flex flex-col items-center space-y-2 text-center">
+          <Icons.logo className="h-9 w-9" />
+          <h1 className="text-2xl font-semibold">Welcome back.</h1>
+          <p className="text-muted-foreground text-sm">
+            Enter your email and password to login
+          </p>
         </div>
-      </div>
-
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-[#212529] mb-2">Welcome to Senso</h1>
-        <p className="text-gray-500">Log in to your account to continue</p>
-      </div>
-
-      <form 
-        onSubmit={handleLogin} 
-        className="bg-white rounded-3xl p-6 shadow-sm mb-6"
-        autoComplete="off"
-      >
-        <div className="space-y-4">
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              autoComplete="username"
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="block text-sm text-[#212529] mb-2">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                autoComplete="current-password"
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                className="absolute right-4 top-1/2 -translate-y-1/2"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-right mt-2 mb-6">
-          <span className="text-sm text-[#212529] cursor-pointer select-none">Forgot Password?</span>
-        </div>
-
-        <button 
-          type="submit" 
-          className={`
-            w-full bg-[#212529] text-white py-4 font-semibold transition 
-            duration-200 ease-in-out
-            rounded-xl
-            hover:bg-[#33373a] 
-            hover:scale-105
-            active:scale-95
-            disabled:opacity-50 
-            disabled:cursor-not-allowed
-            focus:outline-none
-            ${buttonActive ? 'scale-95 opacity-75' : ''}
-          `}
-          style={{transitionProperty: 'background, transform, opacity'}}
-          disabled={isLoading}
-          onMouseDown={() => setButtonActive(true)}
-          onMouseUp={() => setButtonActive(false)}
-          onMouseLeave={() => setButtonActive(false)}
-        >
-          {isLoading ? 'Logging in...' : 'Log In'}
-        </button>
-      </form>
-
-      <div className="text-center mt-4">
-        <p className="text-gray-500">
-          {"Don't have an account? "}
-          <a
-            href="/register"
-            onClick={handleRegisterTransition}
-            className="font-semibold text-[#212529] cursor-pointer inline-block transition story-link"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex w-full flex-col space-y-4"
           >
-            Create one here
-          </a>
-        </p>
-      </div>
-
-      <div className="w-full text-center pt-2">
-        <p className="text-xs text-gray-400 bg-transparent">
-          Senso App v1.0.0
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="mail@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id="terms" />
+                <Label
+                  htmlFor="terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Remember me
+                </Label>
+              </div>
+              <Link
+                to="/change-password"
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <Button disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Login"
+              )}
+            </Button>
+          </form>
+        </Form>
+        <div className="relative w-full">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
+        </div>
+        <Button variant="outline" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </>
+          ) : (
+            <>
+              <Icons.google className="mr-2 h-4 w-4" />
+              Google
+            </>
+          )}
+        </Button>
+        <p className="px-8 text-center text-sm text-muted-foreground">
+          By continuing, you are setting up a Senso account and agree to our{" "}
+          <Link to="/terms-privacy" className="underline underline-offset-4 hover:text-primary">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link to="/terms-privacy" className="underline underline-offset-4 hover:text-primary">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,6 +27,7 @@ export const useUserData = () => {
     }
   );
   const [isLoading, setIsLoading] = useState(!userDataCache);
+  const fetchAttemptedRef = useRef(false);
 
   useEffect(() => {
     // If we already have cached data and aren't currently fetching, return early
@@ -36,8 +37,9 @@ export const useUserData = () => {
       return;
     }
 
-    // Prevent multiple simultaneous fetches
-    if (isFetchingUserData) return;
+    // Prevent multiple simultaneous fetches and re-fetches on the same component
+    if (isFetchingUserData || fetchAttemptedRef.current) return;
+    fetchAttemptedRef.current = true;
 
     const fetchUserData = async () => {
       isFetchingUserData = true;

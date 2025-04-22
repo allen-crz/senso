@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -23,12 +22,27 @@ const DashboardTabs = () => {
     return "all"; // default is dashboard
   }, [location.pathname]);
 
-  // Immediately use the cached first name to prevent flashing
-  const capitalizedFirstName = useMemo(() => {
-    return firstName 
+  // Strong memoization of user data to prevent UI flickering
+  const userAvatar = useMemo(() => {
+    const capitalizedFirstName = firstName 
       ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
       : 'User';
-  }, [firstName]);
+    
+    return (
+      <>
+        <div>
+          <h1 className="text-2xl font-bold text-[#212529] mb-1">
+            Hi, {capitalizedFirstName} <span role="img" aria-label="wave">👋</span>
+          </h1>
+          <p className="text-gray-500">Welcome to Senso</p>
+        </div>
+        <Avatar className="w-12 h-12">
+          <AvatarImage src={avatarUrl || ''} alt="Profile" />
+          <AvatarFallback>{capitalizedFirstName[0] || '?'}</AvatarFallback>
+        </Avatar>
+      </>
+    );
+  }, [firstName, avatarUrl]);
 
   const handleAddWaterReading = () => {
     toast({
@@ -48,18 +62,9 @@ const DashboardTabs = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Shared Top Header - Now uses memoized values */}
+        {/* Shared Top Header - Now fully memoized to prevent refreshing */}
         <div className="flex justify-between items-center mb-8 pt-0">
-          <div>
-            <h1 className="text-2xl font-bold text-[#212529] mb-1">
-              Hi, {capitalizedFirstName} <span role="img" aria-label="wave">👋</span>
-            </h1>
-            <p className="text-gray-500">Welcome to Senso</p>
-          </div>
-          <Avatar className="w-12 h-12">
-            <AvatarImage src={avatarUrl || ''} alt="Profile" />
-            <AvatarFallback>{capitalizedFirstName[0] || '?'}</AvatarFallback>
-          </Avatar>
+          {userAvatar}
         </div>
 
         {/* Tabs */}
@@ -311,4 +316,3 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
-
