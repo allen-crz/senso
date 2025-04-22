@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -88,7 +87,6 @@ const Electricity = () => {
         </div>
       </div>
 
-      {/* Fixed footer nav bar, dashboard-style */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -104,7 +102,6 @@ const Electricity = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -143,4 +140,3 @@ const Electricity = () => {
 };
 
 export default Electricity;
-

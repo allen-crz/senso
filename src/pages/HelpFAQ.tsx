@@ -47,10 +47,8 @@ const HelpFAQ = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative">
       <div className="px-6 pb-32">
-        {/* Header with back button */}
         <div className="flex justify-between items-center mb-8 pt-6">
           <div className="flex items-center gap-2">
-            {/* Back button */}
             <button 
               onClick={() => navigate('/settings')} 
               className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-purple-200 outline-none"
@@ -76,7 +74,6 @@ const HelpFAQ = () => {
           </div>
         </div>
 
-        {/* Popular Topics */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Popular Topics</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -96,7 +93,6 @@ const HelpFAQ = () => {
           </div>
         </div>
 
-        {/* FAQ Sections */}
         <div className="space-y-4">
           {faqSections.map((section, index) => {
             const SectionIcon = section.icon;
@@ -120,7 +116,7 @@ const HelpFAQ = () => {
           })}
         </div>
       </div>
-      {/* Fixed footer nav bar, Dashboard-style */}
+
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -136,7 +132,6 @@ const HelpFAQ = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -147,7 +142,6 @@ const HelpFAQ = () => {
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
-              onClick={() => navigate('/electricity')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}

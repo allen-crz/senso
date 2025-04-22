@@ -11,12 +11,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
 
-  // Capitalize the first letter of the first name
   const capitalizedFirstName = firstName 
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
     : 'User';
 
-  // Handler for "Add Reading" button for water
   const handleAddWaterReading = () => {
     toast({
       title: "Add Water Reading",
@@ -24,7 +22,6 @@ const Dashboard = () => {
     });
   };
 
-  // Handler for "Add Reading" button for electricity
   const handleAddElectricityReading = () => {
     toast({
       title: "Add Electricity Reading",
@@ -144,7 +141,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Fixed footer nav bar */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -160,7 +156,6 @@ const Dashboard = () => {
               <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
             </button>
             <button
-              onClick={() => navigate('/water')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
@@ -171,7 +166,6 @@ const Dashboard = () => {
               <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Water</span>
             </button>
             <button
-              onClick={() => navigate('/electricity')}
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               type="button"
               tabIndex={0}
