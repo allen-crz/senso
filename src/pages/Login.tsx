@@ -16,26 +16,30 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { user, error } = await signInWithEmail(email, password);
-    
-    if (user && !error) {
-      // Check if user has a complete profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('phone, address')
-        .eq('id', user.id)
-        .single();
+    try {
+      const { user, error } = await signInWithEmail(email, password);
+      
+      if (user && !error) {
+        // Check if user has a complete profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('phone, address')
+          .eq('id', user.id)
+          .single();
 
-      // Only redirect to profile if profile is missing or incomplete
-      if (!profile || !profile.phone || !profile.address) {
-        navigate('/profile');
-      } else {
-        // Profile is complete, go to dashboard
-        navigate('/dashboard');
+        // Only redirect to profile if profile is missing or incomplete
+        if (!profile || (!profile.phone && !profile.address)) {
+          navigate('/profile');
+        } else {
+          // Profile is complete, go to dashboard
+          navigate('/dashboard');
+        }
       }
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
