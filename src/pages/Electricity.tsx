@@ -78,29 +78,29 @@ const Electricity = () => {
       </div>
 
       <div className="fixed bottom-6 left-6 right-6">
-        <div className="bg-[#212529] rounded-full px-4 py-2">
+        <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
             <button onClick={() => navigate('/dashboard')} className="flex flex-col items-center gap-1 relative">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-house text-gray-400 text-lg"></i>
+              <div className="w-10 h-10 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-house text-white"></i>
               </div>
-              <span className="text-xs text-gray-400">Home</span>
+              <span className="text-xs font-medium text-white">Home</span>
             </button>
             <button onClick={() => navigate('/water')} className="flex flex-col items-center gap-1">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-droplet text-gray-400 text-lg"></i>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-droplet text-gray-400 text-2xl"></i>
               </div>
               <span className="text-xs text-gray-400">Water</span>
             </button>
             <button className="flex flex-col items-center gap-1">
-              <div className="w-8 h-8 bg-white bg-opacity-10 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-bolt text-white text-sm"></i>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-bolt text-gray-400 text-2xl"></i>
               </div>
-              <span className="text-xs font-medium text-white">Electric</span>
+              <span className="text-xs text-gray-400">Electric</span>
             </button>
             <button onClick={() => navigate('/settings')} className="flex flex-col items-center gap-1">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-gear text-gray-400 text-lg"></i>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-gear text-gray-400 text-2xl"></i>
               </div>
               <span className="text-xs text-gray-400">Settings</span>
             </button>
