@@ -18,6 +18,8 @@ const Profile = () => {
     address: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,10 +36,77 @@ const Profile = () => {
         fullName: user.user_metadata?.full_name || '',
         email: user.email || '',
       }));
+
+      // Fetch existing avatar URL
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.avatar_url) {
+        setAvatarUrl(profile.avatar_url);
+      }
     };
 
     fetchUserData();
   }, [navigate]);
+
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error('No user found');
+
+      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(data.publicUrl);
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          avatar_url: data.publicUrl,
+        });
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Success",
+        description: "Avatar uploaded successfully!",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error uploading avatar.",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +127,7 @@ const Profile = () => {
           email: formData.email,
           phone: formData.phone,
           address: formData.address,
+          avatar_url: avatarUrl,
         });
 
       if (error) throw error;
@@ -93,16 +163,31 @@ const Profile = () => {
         {/* Profile Image Upload */}
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center">
-              <i className="fa-regular fa-user text-3xl text-gray-400"></i>
+            <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <i className="fa-regular fa-user text-3xl text-gray-400"></i>
+              )}
             </div>
-            <button 
-              type="button"
-              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center"
-              onClick={() => console.log('Upload image')}
+            <label 
+              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer"
+              htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
-            </button>
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                onChange={uploadAvatar}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
           </div>
         </div>
 
@@ -112,9 +197,8 @@ const Profile = () => {
             <Input 
               type="text" 
               value={formData.fullName}
-              onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-              className="bg-[#f5f6f7]" 
-              placeholder="Enter your full name"
+              className="bg-[#f5f6f7] opacity-75 cursor-not-allowed" 
+              readOnly
             />
           </div>
 
@@ -123,9 +207,8 @@ const Profile = () => {
             <Input 
               type="email" 
               value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              className="bg-[#f5f6f7]" 
-              placeholder="Enter your email"
+              className="bg-[#f5f6f7] opacity-75 cursor-not-allowed" 
+              readOnly
             />
           </div>
 
@@ -154,7 +237,7 @@ const Profile = () => {
         <Button 
           type="submit" 
           className="w-full bg-[#212529] hover:bg-[#2c3238] text-white py-6 rounded-xl font-semibold mt-8"
-          disabled={isLoading}
+          disabled={isLoading || uploading}
         >
           {isLoading ? 'Saving Profile...' : 'Save Profile'}
         </Button>
