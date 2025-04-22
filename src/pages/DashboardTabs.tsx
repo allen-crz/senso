@@ -14,7 +14,7 @@ type TabType = "all" | "water" | "electricity";
 const DashboardTabs = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { firstName, avatarUrl } = useUserData();
+  const { firstName, avatarUrl, isLoading } = useUserData();
 
   // Determine selected tab by path (so url stays in sync)
   const tab: TabType = useMemo(() => {
@@ -23,9 +23,12 @@ const DashboardTabs = () => {
     return "all"; // default is dashboard
   }, [location.pathname]);
 
-  const capitalizedFirstName = firstName 
-    ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
-    : 'User';
+  // Immediately use the cached first name to prevent flashing
+  const capitalizedFirstName = useMemo(() => {
+    return firstName 
+      ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
+      : 'User';
+  }, [firstName]);
 
   const handleAddWaterReading = () => {
     toast({
@@ -33,6 +36,7 @@ const DashboardTabs = () => {
       description: "Coming soon: take and submit a water meter photo!",
     });
   };
+  
   const handleAddElectricityReading = () => {
     toast({
       title: "Add Electricity Reading",
@@ -44,7 +48,7 @@ const DashboardTabs = () => {
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Shared Top Header */}
+        {/* Shared Top Header - Now uses memoized values */}
         <div className="flex justify-between items-center mb-8 pt-0">
           <div>
             <h1 className="text-2xl font-bold text-[#212529] mb-1">
@@ -307,3 +311,4 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
+
