@@ -1,3 +1,4 @@
+
 import React from "react";
 import { RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +10,14 @@ const WaterResults = () => {
 
   const handleScanAgain = () => {
     localStorage.removeItem('waterMeterImageCaptured');
-    // Force reload the component state
-    navigate("/water-monitoring", { replace: true });
+    // Navigate back to water monitoring and force a page reload to reset state
+    navigate("/water-monitoring", { 
+      replace: true,
+      state: { 
+        slideIndex: 0, // Force navigation to first slide
+        resetState: true // Signal that we want to reset the state
+      }
+    });
   };
 
   return (
@@ -97,3 +104,4 @@ const WaterResults = () => {
 };
 
 export default WaterResults;
+
