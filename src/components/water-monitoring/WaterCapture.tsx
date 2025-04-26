@@ -1,21 +1,31 @@
-import React, { useEffect } from "react";
-import { Camera, Droplet, CheckCircle, RefreshCw } from "lucide-react";
+
+import React, { useEffect, useState } from "react";
+import { Camera, Droplet, CheckCircle, RefreshCw, LoaderCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const WaterCapture = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isImageCaptured, setIsImageCaptured] = React.useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     // Check localStorage on component mount
     const storedCaptureState = localStorage.getItem('waterMeterImageCaptured');
     if (storedCaptureState === 'true' || location.state?.imageCaptured) {
-      setIsImageCaptured(true);
+      // Simulate CNN analysis
+      setIsAnalyzing(true);
+      const timer = setTimeout(() => {
+        setIsAnalyzing(false);
+        setIsImageCaptured(true);
+      }, 2000); // 2 second delay
+      
       // Store in localStorage when coming from camera
       if (location.state?.imageCaptured) {
         localStorage.setItem('waterMeterImageCaptured', 'true');
       }
+      
+      return () => clearTimeout(timer);
     }
   }, [location.state?.imageCaptured]);
 
@@ -54,30 +64,42 @@ const WaterCapture = () => {
       </div>
 
       {/* Meter Scan Section */}
-      {isImageCaptured ? (
+      {isImageCaptured || isAnalyzing ? (
         <div className="space-y-4">
-          <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 rounded-3xl shadow-lg mb-6">
+          <div className={`bg-gradient-to-br ${isAnalyzing ? 'from-blue-500 to-blue-600' : 'from-green-500 to-green-600'} p-8 rounded-3xl shadow-lg mb-6 transition-colors duration-500`}>
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="text-3xl text-white w-10 h-10" />
+              <div className={`w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4 transition-all duration-300`}>
+                {isAnalyzing ? (
+                  <LoaderCircle className="text-3xl text-white w-10 h-10 animate-spin" />
+                ) : (
+                  <CheckCircle className="text-3xl text-white w-10 h-10" />
+                )}
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Meter Scanned by CNN</h3>
-              <p className="text-green-50 mb-6">Analysis complete</p>
-              <button
-                className="w-full bg-white text-green-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
-                onClick={handleViewResults}
-              >
-                View Results
-              </button>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {isAnalyzing ? "Analyzing Meter..." : "Meter Scanned by CNN"}
+              </h3>
+              <p className="text-green-50 mb-6">
+                {isAnalyzing ? "Please wait..." : "Analysis complete"}
+              </p>
+              {!isAnalyzing && (
+                <button
+                  className="w-full bg-white text-green-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
+                  onClick={handleViewResults}
+                >
+                  View Results
+                </button>
+              )}
             </div>
           </div>
-          <button
-            onClick={handleScanAgain}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-full font-medium text-lg shadow-md transition-colors flex items-center justify-center gap-2"
-          >
-            <RefreshCw className="w-5 h-5" />
-            Scan Again
-          </button>
+          {!isAnalyzing && (
+            <button
+              onClick={handleScanAgain}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-full font-medium text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-5 h-5" />
+              Scan Again
+            </button>
+          )}
         </div>
       ) : (
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-3xl shadow-lg mb-4">
