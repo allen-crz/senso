@@ -31,15 +31,10 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
-  const toggleFlash = async () => {
+  const toggleFlash = () => {
     setIsFlashOn(!isFlashOn);
-    try {
-      await CapacitorCamera.setFlashMode({
-        flashMode: !isFlashOn ? 'torch' : 'off'
-      });
-    } catch (error) {
-      console.error('Error toggling flash:', error);
-    }
+    // Flash is handled during photo capture by including it in the options
+    console.log("Flash toggled:", !isFlashOn);
   };
 
   const takePicture = async () => {
@@ -49,7 +44,9 @@ const WaterMeterCamera: React.FC = () => {
         allowEditing: false,
         resultType: CameraResultType.Base64,
         direction: CameraDirection.Rear,
-        saveToGallery: false
+        saveToGallery: false,
+        // Apply flash setting here when taking the photo
+        useFlash: isFlashOn
       });
       
       console.log('Captured image:', image);
