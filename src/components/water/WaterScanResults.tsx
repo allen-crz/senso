@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Info } from 'lucide-react';
+import { ChevronDown, Info } from 'lucide-react';
 
 const WaterScanResults = () => {
   return (
@@ -58,7 +58,7 @@ const WaterScanResults = () => {
             <h3 className="text-lg font-semibold text-white mb-1">Anomaly Detected</h3>
             <p className="text-red-100">High water consumption detected</p>
           </div>
-          <i className="fa-solid fa-chevron-down text-white text-xl"></i>
+          <ChevronDown className="text-white h-6 w-6" />
         </div>
       </div>
 
@@ -70,7 +70,7 @@ const WaterScanResults = () => {
             <p className="text-4xl font-bold text-white">₱1,124.00</p>
             <span className="text-blue-50 text-sm">Forecast for February 2025</span>
           </div>
-          <i className="fa-solid fa-chevron-down text-white text-xl"></i>
+          <ChevronDown className="text-white h-6 w-6" />
         </div>
       </div>
     </div>
