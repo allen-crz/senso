@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Camera, Droplet, Info } from "lucide-react";
 
 const WaterCapture = () => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 -mt-2">
       {/* Current Water Price */}
       <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-6 rounded-3xl shadow-sm mb-4">
         <div className="text-center">
@@ -18,7 +17,7 @@ const WaterCapture = () => {
       </div>
 
       {/* Meter Scan Section */}
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-3xl shadow-lg mb-6 transform hover:scale-[1.02] transition-transform">
+      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-3xl shadow-lg mb-4">
         <div className="flex flex-col items-center text-center">
           <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4 animate-pulse">
             <Camera className="text-3xl text-white" size={38} />
