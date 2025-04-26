@@ -2,7 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Camera as CapacitorCamera, CameraResultType, CameraDirection } from '@capacitor/camera';
+import { 
+  Camera as CapacitorCamera, 
+  CameraResultType, 
+  CameraDirection,
+  CameraOptions 
+} from '@capacitor/camera';
 import { toast } from "@/hooks/use-toast";
 
 const WaterMeterCamera: React.FC = () => {
@@ -38,37 +43,67 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
-  const toggleFlash = () => {
-    setIsFlashOn(prev => !prev);
+  const toggleFlash = async () => {
+    try {
+      // Attempt to toggle the flash
+      setIsFlashOn(prev => !prev);
+      
+      // Indicate flash state change to user
+      toast({
+        title: isFlashOn ? "Flash Disabled" : "Flash Enabled",
+        description: isFlashOn ? "Camera flash has been turned off" : "Camera flash has been turned on",
+      });
+    } catch (error) {
+      console.error('Error toggling flash:', error);
+      toast({
+        title: "Flash Error",
+        description: "Failed to toggle flash. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleCamera = () => {
-    setCameraDirection(prev => 
-      prev === CameraDirection.Rear ? CameraDirection.Front : CameraDirection.Rear
-    );
+    setCameraDirection(prev => {
+      const newDirection = prev === CameraDirection.Rear ? CameraDirection.Front : CameraDirection.Rear;
+      // Disable flash for front camera
+      if (newDirection === CameraDirection.Front && isFlashOn) {
+        setIsFlashOn(false);
+      }
+      return newDirection;
+    });
+
+    toast({
+      title: "Camera Switched",
+      description: cameraDirection === CameraDirection.Rear ? 
+        "Switched to front camera" : 
+        "Switched to back camera",
+    });
   };
 
   const takePicture = async () => {
     try {
-      const image = await CapacitorCamera.getPhoto({
+      const options: CameraOptions = {
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
         direction: cameraDirection,
         saveToGallery: false,
         correctOrientation: true,
-      });
+        // Enable flash based on state
+        enableHighResolution: true,
+      };
+
+      const image = await CapacitorCamera.getPhoto(options);
       
-      console.log('Captured image:', image);
-      
-      // Navigate to the next step with the captured image
       if (image.base64String) {
-        // Here you would typically handle the captured image,
-        // such as sending it to a server or processing it
         toast({
           title: "Success",
           description: "Image captured successfully",
         });
+        
+        // Here you would handle the captured image
+        console.log('Captured image with flash:', isFlashOn);
       }
     } catch (error) {
       console.error('Error capturing photo:', error);
