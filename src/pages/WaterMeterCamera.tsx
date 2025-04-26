@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Camera, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -46,15 +47,15 @@ const WaterMeterCamera: React.FC = () => {
   const handleUseImage = () => {
     setIsTransitioning(true);
     localStorage.setItem('waterMeterImageCaptured', 'true');
+    
+    // Only use the slide animation without the transition hook to avoid double animation
     setTimeout(() => {
-      transitionAndNavigate(() => {
-        navigate("/water-monitoring", { 
-          state: { 
-            imageCaptured: true,
-            slideIndex: 0,
-            slideDirection: 'right'
-          } 
-        });
+      navigate("/water-monitoring", { 
+        state: { 
+          imageCaptured: true,
+          slideIndex: 0,
+          slideDirection: 'right'
+        } 
       });
     }, 300);
   };
