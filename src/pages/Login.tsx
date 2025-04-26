@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, AlertTriangle } from "lucide-react";
 import { signInWithEmail } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,7 +21,14 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { transitionAndNavigate } = usePageTransitionTrigger(300);
+
+  const handleRetry = () => {
+    setShowErrorDialog(false);
+    setPassword(""); // Clear password for security
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +48,17 @@ const Login = () => {
       const { user, error } = await signInWithEmail(email, password);
 
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: error.message,
-        });
+        let userFriendlyMessage = "An error occurred during login";
+        
+        // Map error messages to user-friendly versions
+        if (error.message?.includes("Invalid login credentials")) {
+          userFriendlyMessage = "The email or password you entered is incorrect";
+        } else if (error.message?.includes("Email not confirmed")) {
+          userFriendlyMessage = "Please verify your email address before logging in";
+        }
+
+        setErrorMessage(userFriendlyMessage);
+        setShowErrorDialog(true);
         setIsLoading(false);
         return;
       }
@@ -79,11 +101,8 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: "An unexpected error occurred",
-      });
+      setErrorMessage("An unexpected error occurred. Please try again.");
+      setShowErrorDialog(true);
     } finally {
       setIsLoading(false);
     }
@@ -182,6 +201,21 @@ const Login = () => {
       <div className="fixed bottom-8 left-0 right-0 text-center pointer-events-none z-[10000]">
         <p className="text-xs text-gray-400">Senso App v1.0.0</p>
       </div>
+
+      <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Login Failed
+            </AlertDialogTitle>
+            <AlertDialogDescription>{errorMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleRetry}>Try Again</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
