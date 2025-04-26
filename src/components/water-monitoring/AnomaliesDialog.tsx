@@ -75,4 +75,3 @@ const AnomaliesDialog: React.FC<AnomaliesDialogProps> = ({
 };
 
 export default AnomaliesDialog;
-
