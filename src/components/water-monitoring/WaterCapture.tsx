@@ -13,21 +13,27 @@ const WaterCapture = () => {
     // Check localStorage on component mount
     const storedCaptureState = localStorage.getItem('waterMeterImageCaptured');
     if (storedCaptureState === 'true' || location.state?.imageCaptured) {
-      // Simulate CNN analysis
-      setIsAnalyzing(true);
-      const timer = setTimeout(() => {
-        setIsAnalyzing(false);
+      // Only start analyzing if we're not coming from the results view
+      if (!location.state?.showResults) {
+        // Simulate CNN analysis
+        setIsAnalyzing(true);
+        const timer = setTimeout(() => {
+          setIsAnalyzing(false);
+          setIsImageCaptured(true);
+        }, 2000); // 2 second delay
+        
+        return () => clearTimeout(timer);
+      } else {
+        // Skip analysis if coming from results view
         setIsImageCaptured(true);
-      }, 2000); // 2 second delay
+      }
       
       // Store in localStorage when coming from camera
       if (location.state?.imageCaptured) {
         localStorage.setItem('waterMeterImageCaptured', 'true');
       }
-      
-      return () => clearTimeout(timer);
     }
-  }, [location.state?.imageCaptured]);
+  }, [location.state?.imageCaptured, location.state?.showResults]);
 
   const handleOpenCamera = () => {
     navigate("/water-meter-camera");
