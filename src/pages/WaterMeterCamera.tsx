@@ -31,9 +31,21 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
-  const redirectToResults = () => {
-    // Use the carousel API to move to the results slide
-    navigate("/water-monitoring", { state: { slideIndex: 1 } });
+  const handleSuccess = () => {
+    toast({
+      title: "Success",
+      description: "Image captured successfully",
+    });
+    
+    // Navigate back with success state
+    setTimeout(() => {
+      navigate("/water-monitoring", { 
+        state: { 
+          imageCaptured: true,
+          slideIndex: 0 // Start at the first slide to show success state
+        } 
+      });
+    }, 800);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +55,7 @@ const WaterMeterCamera: React.FC = () => {
       reader.onload = (e) => {
         const result = e.target?.result as string;
         if (result) {
-          toast({
-            title: "Success",
-            description: "Image captured successfully",
-          });
-          
-          // Redirect to results page after a short delay
-          setTimeout(() => {
-            redirectToResults();
-          }, 800);
+          handleSuccess();
         }
       };
       reader.readAsDataURL(file);
