@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Info } from 'lucide-react';
+import { User } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ const UserTypeToggle = ({ currentType, onTypeChange }: UserTypeToggleProps) => {
           aria-label="Toggle user type"
           className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
         >
-          <Info className="h-5 w-5" />
+          <User className="h-5 w-5" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -7,7 +7,7 @@ import NewUserResults from "./NewUserResults";
 
 const WaterResults = () => {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState<'new' | 'existing'>('existing');
+  const [userType, setUserType] = useState<'new' | 'existing'>('new');
   const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
 
   const handleScanAgain = () => {
