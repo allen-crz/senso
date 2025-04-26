@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Droplet, Info, Home, Bolt, Settings as SettingsIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";

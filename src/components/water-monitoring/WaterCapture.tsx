@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Camera, Droplet } from "lucide-react";
-import CameraView from "./CameraView";
+import { useNavigate } from "react-router-dom";
 
 const WaterCapture = () => {
-  const [showCamera, setShowCamera] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenCamera = () => {
+    navigate("/water-meter-camera");
+  };
 
   return (
     <>
@@ -30,7 +34,7 @@ const WaterCapture = () => {
             <p className="text-blue-50 mb-6">Tap to capture a photo of your meter</p>
             <button
               className="w-full bg-white text-blue-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
-              onClick={() => setShowCamera(true)}
+              onClick={handleOpenCamera}
             >
               Open Camera
             </button>
@@ -72,9 +76,6 @@ const WaterCapture = () => {
           </button>
         </form>
       </div>
-
-      {/* Camera View */}
-      {showCamera && <CameraView onClose={() => setShowCamera(false)} />}
     </>
   );
 };
