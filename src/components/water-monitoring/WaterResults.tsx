@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { RefreshCw } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -12,10 +13,11 @@ const WaterResults = () => {
   const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
 
   useEffect(() => {
-    if (location.state?.imageCaptured) {
+    // Set to existing view if image was captured
+    if (imageCaptured || location.state?.imageCaptured) {
       setUserType('existing');
     }
-  }, [location.state]);
+  }, [location.state, imageCaptured]);
 
   const handleScanAgain = () => {
     localStorage.removeItem('waterMeterImageCaptured');
