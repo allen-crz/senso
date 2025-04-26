@@ -41,28 +41,26 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <PageTransition>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/registration-success" element={<RegistrationSuccess />} />
-              <Route path="/success" element={<SuccessScreen />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/edit-profile" element={<EditProfile />} />
-              <Route path="/dashboard" element={<DashboardTabs />} />
-              <Route path="/water" element={<DashboardTabs />} />
-              <Route path="/electricity" element={<DashboardTabs />} />
-              <Route path="/water-monitoring" element={<WaterMonitoring />} />
-              <Route path="/electricity-monitoring" element={<ElectricityMonitoring />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/change-password" element={<ChangePassword />} />
-              <Route path="/help" element={<HelpFAQ />} />
-              <Route path="/send-feedback" element={<SendFeedback />} />
-              <Route path="/terms-privacy" element={<TermsPrivacy />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </PageTransition>
+          <Routes>
+            <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+            <Route path="/registration-success" element={<PageTransition><RegistrationSuccess /></PageTransition>} />
+            <Route path="/success" element={<PageTransition><SuccessScreen /></PageTransition>} />
+            <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+            <Route path="/edit-profile" element={<PageTransition><EditProfile /></PageTransition>} />
+            <Route path="/dashboard" element={<PageTransition><DashboardTabs /></PageTransition>} />
+            <Route path="/water" element={<PageTransition><DashboardTabs /></PageTransition>} />
+            <Route path="/electricity" element={<PageTransition><DashboardTabs /></PageTransition>} />
+            <Route path="/water-monitoring" element={<PageTransition><WaterMonitoring /></PageTransition>} />
+            <Route path="/electricity-monitoring" element={<PageTransition><ElectricityMonitoring /></PageTransition>} />
+            <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+            <Route path="/change-password" element={<PageTransition><ChangePassword /></PageTransition>} />
+            <Route path="/help" element={<PageTransition><HelpFAQ /></PageTransition>} />
+            <Route path="/send-feedback" element={<PageTransition><SendFeedback /></PageTransition>} />
+            <Route path="/terms-privacy" element={<PageTransition><TermsPrivacy /></PageTransition>} />
+            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+          </Routes>
           <Toaster />
           <Sonner />
         </BrowserRouter>

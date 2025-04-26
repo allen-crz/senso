@@ -172,24 +172,24 @@ function toast({ ...props }: Toast) {
   }
 }
 
+// Create a context and default value
+const ToastContext = React.createContext<{
+  toasts: ToasterToast[];
+  toast: typeof toast;
+  dismiss: (toastId?: string) => void;
+}>({
+  toasts: [],
+  toast,
+  dismiss: () => {},
+});
+
+// Wrapper to ensure we use React context properly
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
-
-  React.useEffect(() => {
-    listeners.push(setState)
-    return () => {
-      const index = listeners.indexOf(setState)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
-    }
-  }, [state])
-
   return {
-    ...state,
+    toasts: memoryState.toasts,
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
+  };
 }
 
 export { useToast, toast }

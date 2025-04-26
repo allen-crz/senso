@@ -1,6 +1,5 @@
 
 import React from "react";
-import { useLocation } from "react-router-dom";
 
 /**
  * PageTransition will animate children in/out on route changes.
@@ -10,8 +9,6 @@ import { useLocation } from "react-router-dom";
  * preserving state between route changes.
  */
 const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
-  
   return (
     <div
       className="transition-all duration-300 animate-fade-in w-full h-full"

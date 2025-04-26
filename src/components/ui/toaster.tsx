@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/use-toast"
+
 import {
   Toast,
   ToastClose,
@@ -8,8 +8,10 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+// Create a functional component for Toaster
 export function Toaster() {
-  const { toasts } = useToast()
+  // Import useToast inside the component to ensure it runs in the correct context
+  const { toasts } = require("@/hooks/use-toast").useToast()
 
   return (
     <ToastProvider>
