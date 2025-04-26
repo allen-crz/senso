@@ -7,6 +7,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import WaterCapture from "@/components/water-monitoring/WaterCapture";
 import WaterResults from "@/components/water-monitoring/WaterResults";
 import WaterConfirmation from "@/components/water-monitoring/WaterConfirmation";
@@ -28,55 +29,59 @@ const WaterMonitoring: React.FC = () => {
   }, [api]);
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
-      <div className="px-6 pb-32">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-              <Droplet className="text-blue-400" />
+    <div className="min-h-screen bg-[#f5f6f7] flex flex-col">
+      <div className="flex-1 overflow-hidden">
+        <div className="px-6 pt-8 pb-20">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                <Droplet className="text-blue-400" />
+              </div>
+              <h1 className="text-xl font-bold text-[#212529]">Water Monitoring</h1>
             </div>
-            <h1 className="text-xl font-bold text-[#212529]">Water Monitoring</h1>
+            <button
+              aria-label="Info"
+              className="w-10 h-10 rounded-full flex items-center justify-center focus:outline-none"
+            >
+              <Info className="text-gray-400" />
+            </button>
           </div>
-          <button
-            aria-label="Info"
-            className="w-10 h-10 rounded-full flex items-center justify-center focus:outline-none"
-          >
-            <Info className="text-gray-400" />
-          </button>
-        </div>
 
-        {/* Progress Bars */}
-        <div className="mb-6 flex gap-2">
-          {[0, 1, 2].map((index) => (
-            <div
-              key={index}
-              className={`h-1.5 flex-1 rounded-full ${
-                index === current ? "bg-blue-500" : "bg-gray-200"
-              }`}
-            />
-          ))}
-        </div>
+          {/* Progress Bars */}
+          <div className="mb-6 flex gap-2">
+            {[0, 1, 2].map((index) => (
+              <div
+                key={index}
+                className={`h-1.5 flex-1 rounded-full ${
+                  index === current ? "bg-blue-500" : "bg-gray-200"
+                }`}
+              />
+            ))}
+          </div>
 
-        <Carousel 
-          setApi={setApi}
-          opts={{
-            align: "start",
-            loop: false,
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            <CarouselItem>
-              <WaterCapture />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterResults />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterConfirmation />
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
+          <ScrollArea className="h-[calc(100vh-180px)]">
+            <Carousel 
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: false,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                <CarouselItem>
+                  <WaterCapture />
+                </CarouselItem>
+                <CarouselItem>
+                  <WaterResults />
+                </CarouselItem>
+                <CarouselItem>
+                  <WaterConfirmation />
+                </CarouselItem>
+              </CarouselContent>
+            </Carousel>
+          </ScrollArea>
+        </div>
       </div>
 
       {/* Bottom Navigation */}
