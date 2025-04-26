@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { RefreshCw, ChevronUp, ChevronDown, TriangleAlert } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,17 +15,13 @@ const WaterResults = () => {
   const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
 
   useEffect(() => {
-    const hasScannedBefore = localStorage.getItem('hasScannedMeterBefore') === 'true';
-    
-    if ((hasScannedBefore && imageCaptured) || location.state?.imageCaptured) {
+    if (imageCaptured || location.state?.imageCaptured) {
       setUserType('existing');
-      if (imageCaptured || location.state?.imageCaptured) {
-        localStorage.setItem('hasScannedMeterBefore', 'true');
-      }
+      localStorage.setItem('hasScannedMeterBefore', 'true');
     } else {
       setUserType('new');
     }
-  }, [location.state, imageCaptured]);
+  }, [location.state?.imageCaptured, imageCaptured]);
 
   const handleScanAgain = () => {
     localStorage.removeItem('waterMeterImageCaptured');
