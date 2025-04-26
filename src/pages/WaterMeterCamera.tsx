@@ -31,6 +31,11 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
+  const redirectToResults = () => {
+    // Use the carousel API to move to the results slide
+    navigate("/water-monitoring", { state: { slideIndex: 1 } });
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -43,8 +48,9 @@ const WaterMeterCamera: React.FC = () => {
             description: "Image captured successfully",
           });
           
+          // Redirect to results page after a short delay
           setTimeout(() => {
-            navigate("/water-monitoring");
+            redirectToResults();
           }, 800);
         }
       };
