@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
+
+import React, { useState } from "react";
+import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { 
   Camera as CapacitorCamera, 
@@ -11,12 +12,10 @@ import { toast } from "@/hooks/use-toast";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
-  const [isFlashOn, setIsFlashOn] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
-  const [cameraDirection, setCameraDirection] = useState(CameraDirection.Rear);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     requestCameraPermission();
   }, []);
 
@@ -43,59 +42,23 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
-  const toggleFlash = () => {
-    setIsFlashOn(prev => !prev);
-    toast({
-      title: isFlashOn ? "Flash Disabled" : "Flash Enabled",
-      description: isFlashOn ? "Camera flash has been turned off" : "Camera flash has been turned on",
-    });
-  };
-
-  const toggleCamera = () => {
-    setCameraDirection(prev => {
-      const newDirection = prev === CameraDirection.Rear ? CameraDirection.Front : CameraDirection.Rear;
-      // Disable flash for front camera
-      if (newDirection === CameraDirection.Front && isFlashOn) {
-        setIsFlashOn(false);
-      }
-      return newDirection;
-    });
-
-    toast({
-      title: "Camera Switched",
-      description: cameraDirection === CameraDirection.Rear ? 
-        "Switched to front camera" : 
-        "Switched to back camera",
-    });
-  };
-
   const takePicture = async () => {
     try {
-      // Use Capacitor Camera's built-in camera interface
       const image = await CapacitorCamera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        source: CameraSource.Camera, // This ensures the native camera is used
-        direction: cameraDirection,
-        saveToGallery: false,
-        // Flash isn't directly controllable via this API, but keeping the state for UI
+        source: CameraSource.Camera,
+        direction: CameraDirection.Rear,
+        saveToGallery: false
       });
       
       if (image.base64String) {
-        // Store captured image
         setCapturedImage(`data:image/jpeg;base64,${image.base64String}`);
-        
         toast({
           title: "Success",
           description: "Image captured successfully",
         });
-
-        // Here you would handle the captured image
-        console.log('Captured image:', image);
-        
-        // Navigate back with the captured image data
-        // You could implement a state management solution to pass this data
         navigate("/water-monitoring");
       }
     } catch (error) {
@@ -110,7 +73,7 @@ const WaterMeterCamera: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black relative">
-      {/* Status Bar Area - Now empty */}
+      {/* Status Bar Area */}
       <div className="h-10"></div>
 
       {/* Header */}
@@ -153,34 +116,6 @@ const WaterMeterCamera: React.FC = () => {
 
       {/* Camera Controls */}
       <div className="absolute bottom-0 left-0 right-0 pb-12">
-        {/* Additional Controls */}
-        <div className="flex justify-center gap-32 mb-8">
-          <button 
-            onClick={toggleFlash}
-            className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              !hasPermission || cameraDirection === CameraDirection.Front
-                ? 'bg-gray-600 opacity-50'
-                : 'bg-gray-800'
-            }`}
-            disabled={!hasPermission || cameraDirection === CameraDirection.Front}
-          >
-            {isFlashOn ? (
-              <Flashlight className="text-white h-5 w-5" />
-            ) : (
-              <FlashlightOff className="text-white h-5 w-5" />
-            )}
-          </button>
-          <button 
-            onClick={toggleCamera}
-            className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              !hasPermission ? 'bg-gray-600 opacity-50' : 'bg-gray-800'
-            }`}
-            disabled={!hasPermission}
-          >
-            <SwitchCamera className="text-white h-5 w-5" />
-          </button>
-        </div>
-
         {/* Capture Button */}
         <div className="flex flex-col items-center gap-4">
           <button 
