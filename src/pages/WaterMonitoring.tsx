@@ -28,17 +28,30 @@ const WaterMonitoring: React.FC = () => {
     });
   }, [api]);
   
-  // Handle direct navigation to results view if requested
+  // Handle navigation to specific slides based on location state
   React.useEffect(() => {
-    const showResults = location.state?.showResults;
-    if (showResults && api) {
+    if (!api) return;
+
+    const slideIndex = location.state?.slideIndex;
+    
+    if (slideIndex !== undefined) {
       // Small delay to ensure the carousel is fully initialized
+      setTimeout(() => {
+        api.scrollTo(slideIndex);
+        console.log(`Scrolling to slide ${slideIndex}`);
+      }, 100);
+      
+      // Clear the state after navigation to avoid loops on page refresh
+      navigate("/water-monitoring", { replace: true, state: {} });
+    }
+    else if (location.state?.showResults) {
+      // For backward compatibility
       setTimeout(() => {
         api.scrollTo(1);
         console.log("Scrolling to results view");
       }, 100);
     }
-  }, [api, location.state?.showResults]);
+  }, [api, location.state, navigate]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
