@@ -11,6 +11,7 @@ const WaterMeterCamera: React.FC = () => {
   const [hasPermission, setHasPermission] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     startCamera();
@@ -28,13 +29,14 @@ const WaterMeterCamera: React.FC = () => {
     try {
       // First clear any previous errors
       setCameraError(null);
+      setIsLoading(true);
       
       console.log("Requesting camera access...");
       
-      // Be explicit about constraints for mobile
+      // Try environment camera first, but as preference not requirement
       const constraints = {
         video: {
-          facingMode: { exact: "environment" }, // Force rear camera
+          facingMode: "environment", // Preference, not strict requirement
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
@@ -47,39 +49,53 @@ const WaterMeterCamera: React.FC = () => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current!.play().catch(e => {
-            console.error("Error playing video:", e);
-            setCameraError("Failed to play video stream");
-          });
+          videoRef.current!.play()
+            .then(() => {
+              console.log("Video playback started successfully");
+              setHasPermission(true);
+              setIsLoading(false);
+            })
+            .catch(e => {
+              console.error("Error playing video:", e);
+              setCameraError("Failed to play video stream");
+              setIsLoading(false);
+            });
         };
-        setHasPermission(true);
       } else {
         console.error("Video reference not available");
         setCameraError("Video element not ready");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
       
-      // Try fallback to any camera if environment camera fails
-      if (String(error).includes("overconstrained")) {
-        try {
-          console.log("Trying fallback to any available camera...");
-          const fallbackStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: false
-          });
-          
-          if (videoRef.current) {
-            videoRef.current.srcObject = fallbackStream;
-            videoRef.current.onloadedmetadata = () => {
-              videoRef.current!.play().catch(e => console.error("Error playing video:", e));
-            };
-            setHasPermission(true);
-            return;
-          }
-        } catch (fallbackError) {
-          console.error('Fallback camera also failed:', fallbackError);
+      // Try again with any available camera
+      try {
+        console.log("Trying with any available camera...");
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+        
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current!.play()
+              .then(() => {
+                console.log("Fallback video playback started successfully");
+                setHasPermission(true);
+                setIsLoading(false);
+              })
+              .catch(e => {
+                console.error("Error playing fallback video:", e);
+                setCameraError("Failed to play video stream");
+                setIsLoading(false);
+              });
+          };
+          return;
         }
+      } catch (fallbackError) {
+        console.error('All camera attempts failed:', fallbackError);
       }
       
       let errorMessage = "Failed to access camera. Please check permissions.";
@@ -87,6 +103,8 @@ const WaterMeterCamera: React.FC = () => {
         errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
       } else if (String(error).includes("not found")) {
         errorMessage = "No camera found on your device.";
+      } else if (String(error).includes("OverconstrainedError")) {
+        errorMessage = "Camera configuration not supported. Please try a different browser or device.";
       }
       
       setCameraError(errorMessage);
@@ -96,6 +114,7 @@ const WaterMeterCamera: React.FC = () => {
         variant: "destructive",
       });
       setHasPermission(false);
+      setIsLoading(false);
     }
   };
 
@@ -109,7 +128,7 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   const takePicture = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    if (!videoRef.current || !canvasRef.current || !hasPermission) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -136,7 +155,10 @@ const WaterMeterCamera: React.FC = () => {
       const stream = video.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
       
-      navigate("/water-monitoring");
+      // Navigate after a short delay to ensure image is processed
+      setTimeout(() => {
+        navigate("/water-monitoring");
+      }, 500);
     }
   };
 
@@ -170,7 +192,12 @@ const WaterMeterCamera: React.FC = () => {
             />
           ) : (
             <>
-              {cameraError ? (
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                  <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-white mt-4">Initializing camera...</p>
+                </div>
+              ) : cameraError ? (
                 <div className="flex items-center justify-center h-full text-center p-4">
                   <p className="text-white">{cameraError}</p>
                 </div>
@@ -181,7 +208,6 @@ const WaterMeterCamera: React.FC = () => {
                   playsInline
                   muted
                   className="w-full h-full object-cover"
-                  style={{ transform: "scaleX(1)" }} /* Fix selfie mirroring if needed */
                 />
               )}
             </>
@@ -192,13 +218,15 @@ const WaterMeterCamera: React.FC = () => {
         <canvas ref={canvasRef} className="hidden" />
         
         {/* Overlay Guide */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-4/5 h-40 border-2 border-blue-400 rounded-lg">
-            <div className="absolute -top-8 w-full text-center">
-              <span className="text-blue-400 text-sm">Align meter display here</span>
+        {!isLoading && !cameraError && !capturedImage && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-4/5 h-40 border-2 border-blue-400 rounded-lg">
+              <div className="absolute -top-8 w-full text-center">
+                <span className="text-blue-400 text-sm">Align meter display here</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Camera Controls */}
@@ -211,6 +239,12 @@ const WaterMeterCamera: React.FC = () => {
             >
               Retry Camera Access
             </button>
+          </div>
+        ) : isLoading ? (
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-white text-sm">
+              Waiting for camera...
+            </p>
           </div>
         ) : (
           /* Capture Button */
