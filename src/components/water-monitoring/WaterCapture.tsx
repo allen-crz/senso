@@ -8,23 +8,32 @@ const WaterCapture = () => {
   const location = useLocation();
   const [isImageCaptured, setIsImageCaptured] = React.useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasCompletedAnalysis, setHasCompletedAnalysis] = useState(false);
 
   useEffect(() => {
+    // Load previous analysis state from sessionStorage
+    const analysisCompleted = sessionStorage.getItem('waterMeterAnalysisCompleted') === 'true';
+    setHasCompletedAnalysis(analysisCompleted);
+    
     // Check localStorage on component mount
     const storedCaptureState = localStorage.getItem('waterMeterImageCaptured');
     if (storedCaptureState === 'true' || location.state?.imageCaptured) {
-      // Only start analyzing if we're not coming from the results view
-      if (!location.state?.showResults) {
+      // Only start analyzing if we haven't already completed analysis
+      // and we're not coming from the results view
+      if (!analysisCompleted && !location.state?.showResults) {
         // Simulate CNN analysis
         setIsAnalyzing(true);
         const timer = setTimeout(() => {
           setIsAnalyzing(false);
           setIsImageCaptured(true);
+          setHasCompletedAnalysis(true);
+          // Store analysis state in sessionStorage
+          sessionStorage.setItem('waterMeterAnalysisCompleted', 'true');
         }, 2000); // 2 second delay
         
         return () => clearTimeout(timer);
       } else {
-        // Skip analysis if coming from results view
+        // Skip analysis if coming from results view or already analyzed
         setIsImageCaptured(true);
       }
       
@@ -50,10 +59,21 @@ const WaterCapture = () => {
 
   const handleScanAgain = () => {
     localStorage.removeItem('waterMeterImageCaptured');
+    sessionStorage.removeItem('waterMeterAnalysisCompleted');
     setIsImageCaptured(false);
+    setHasCompletedAnalysis(false);
     // Force reload the component state
     navigate("/water-monitoring", { replace: true });
   };
+
+  // If we've already completed analysis, or we're coming from results view,
+  // skip directly to the captured state
+  useEffect(() => {
+    if (hasCompletedAnalysis || location.state?.showResults) {
+      setIsAnalyzing(false);
+      setIsImageCaptured(true);
+    }
+  }, [hasCompletedAnalysis, location.state?.showResults]);
 
   return (
     <div className="space-y-4 pb-10">
