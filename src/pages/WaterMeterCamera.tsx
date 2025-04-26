@@ -1,12 +1,20 @@
-import React from "react";
-import { ArrowLeft, Camera, Bolt, SwitchCamera } from "lucide-react";
+
+import React, { useState } from "react";
+import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
+  const [isFlashOn, setIsFlashOn] = useState(false);
 
   const handleBack = () => {
     navigate("/water-monitoring");
+  };
+
+  const toggleFlash = () => {
+    setIsFlashOn(!isFlashOn);
+    // Flash functionality will be implemented when we add camera functionality
+    console.log("Flash toggled:", !isFlashOn);
   };
 
   return (
@@ -49,8 +57,15 @@ const WaterMeterCamera: React.FC = () => {
       <div className="absolute bottom-0 left-0 right-0 pb-12">
         {/* Additional Controls */}
         <div className="flex justify-center gap-32 mb-8">
-          <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
-            <Bolt className="text-white h-5 w-5" />
+          <button 
+            onClick={toggleFlash}
+            className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center"
+          >
+            {isFlashOn ? (
+              <Flashlight className="text-white h-5 w-5" />
+            ) : (
+              <FlashlightOff className="text-white h-5 w-5" />
+            )}
           </button>
           <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
             <SwitchCamera className="text-white h-5 w-5" />
@@ -75,3 +90,4 @@ const WaterMeterCamera: React.FC = () => {
 };
 
 export default WaterMeterCamera;
+
