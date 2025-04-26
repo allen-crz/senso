@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +15,19 @@ const ChangePassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 8;
+    const hasNumber = /\d/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    
+    return {
+      isValid: hasMinLength && hasNumber && hasUpperCase,
+      hasMinLength,
+      hasNumber,
+      hasUpperCase
+    };
+  };
+
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -28,11 +40,13 @@ const ChangePassword = () => {
       return;
     }
 
-    if (newPassword.length < 8) {
+    const passwordValidation = validatePassword(newPassword);
+
+    if (!passwordValidation.isValid) {
       toast({
         variant: "destructive",
-        title: "Password too short",
-        description: "Password must be at least 8 characters long",
+        title: "Invalid Password",
+        description: "Password must be at least 8 characters long, include numbers and uppercase letters",
       });
       return;
     }
@@ -160,8 +174,8 @@ const ChangePassword = () => {
                   Include numbers
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-500">
-                  <i className={`fa-solid fa-check ${/[!@#$%^&*]/.test(newPassword) ? 'text-green-500' : 'text-gray-300'}`} />
-                  Include special characters
+                  <i className={`fa-solid fa-check ${/[A-Z]/.test(newPassword) ? 'text-green-500' : 'text-gray-300'}`} />
+                  Include uppercase letters
                 </li>
               </ul>
             </div>
@@ -181,4 +195,3 @@ const ChangePassword = () => {
 };
 
 export default ChangePassword;
-

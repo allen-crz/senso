@@ -21,13 +21,13 @@ const Register = () => {
   const validatePassword = (password: string) => {
     const hasMinLength = password.length >= 8;
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
     
     return {
-      isValid: hasMinLength && hasNumber && hasSpecialChar,
+      isValid: hasMinLength && hasNumber && hasUpperCase,
       hasMinLength,
       hasNumber,
-      hasSpecialChar
+      hasUpperCase
     };
   };
 
@@ -40,7 +40,7 @@ const Register = () => {
       toast({
         variant: "destructive",
         title: "Invalid Password",
-        description: "Password must be at least 8 characters long, include numbers and special characters"
+        description: "Password must be at least 8 characters long, include numbers and uppercase letters"
       });
       return;
     }
@@ -149,8 +149,8 @@ const Register = () => {
                   Include numbers
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-500">
-                  <i className={`fa-solid fa-check ${passwordValidation.hasSpecialChar ? 'text-green-500' : 'text-gray-300'}`} />
-                  Include special characters
+                  <i className={`fa-solid fa-check ${passwordValidation.hasUpperCase ? 'text-green-500' : 'text-gray-300'}`} />
+                  Include uppercase letters
                 </li>
               </ul>
             </div>
