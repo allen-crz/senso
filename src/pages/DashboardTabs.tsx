@@ -1,12 +1,14 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Toggle } from "@/components/ui/toggle";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
 import { Card } from "@/components/ui/card";
-import { Home, Droplet, Bolt, Settings } from 'lucide-react';
+import { Home, Droplet, Bolt, Settings, User } from 'lucide-react';
+import DashboardNewUserView from '@/components/dashboard/DashboardNewUserView';
+import DashboardExistingUserView from '@/components/dashboard/DashboardExistingUserView';
 
 type TabType = "all" | "water" | "electricity";
 
@@ -14,6 +16,7 @@ const DashboardTabs = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { firstName, avatarUrl, isLoading } = useUserData();
+  const [showExisting, setShowExisting] = useState(false);
 
   // Determine selected tab by path (so url stays in sync)
   const tab: TabType = useMemo(() => {
@@ -62,197 +65,71 @@ const DashboardTabs = () => {
           {userAvatar}
         </div>
 
-        {/* Tabs */}
+        {/* Tabs with Toggle */}
         <div className="mb-8">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className={
-                "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
-                (tab === "all"
-                  ? "bg-[#212529] text-white"
-                  : "bg-white text-[#212529] border-2 border-gray-200 hover:bg-gray-100")
-              }
-              type="button"
-              tabIndex={0}
+          <div className="flex gap-3 items-center overflow-x-auto no-scrollbar">
+            <div className="flex gap-3 flex-1">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className={
+                  "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
+                  (tab === "all"
+                    ? "bg-[#212529] text-white"
+                    : "bg-white text-[#212529] border-2 border-gray-200 hover:bg-gray-100")
+                }
+                type="button"
+                tabIndex={0}
+              >
+                All
+              </button>
+              <button
+                onClick={() => navigate('/water')}
+                className={
+                  "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
+                  (tab === "water"
+                    ? "bg-[#212529] text-white"
+                    : "bg-white text-[#212529] border-2 border-blue-200 hover:bg-blue-50")
+                }
+                type="button"
+                tabIndex={0}
+              >
+                Water
+              </button>
+              <button
+                onClick={() => navigate('/electricity')}
+                className={
+                  "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
+                  (tab === "electricity"
+                    ? "bg-[#212529] text-white"
+                    : "bg-white text-[#212529] border-2 border-amber-200 hover:bg-amber-50")
+                }
+                type="button"
+                tabIndex={0}
+              >
+                Electricity
+              </button>
+            </div>
+            <Toggle
+              pressed={showExisting}
+              onPressedChange={setShowExisting}
+              className="h-10 w-10 rounded-full hover:bg-gray-100"
+              aria-label="Toggle user view"
             >
-              All
-            </button>
-            <button
-              onClick={() => navigate('/water')}
-              className={
-                "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
-                (tab === "water"
-                  ? "bg-[#212529] text-white"
-                  : "bg-white text-[#212529] border-2 border-blue-200 hover:bg-blue-50")
-              }
-              type="button"
-              tabIndex={0}
-            >
-              Water
-            </button>
-            <button
-              onClick={() => navigate('/electricity')}
-              className={
-                "px-6 py-3 rounded-full whitespace-nowrap transition-colors duration-150 " +
-                (tab === "electricity"
-                  ? "bg-[#212529] text-white"
-                  : "bg-white text-[#212529] border-2 border-amber-200 hover:bg-amber-50")
-              }
-              type="button"
-              tabIndex={0}
-            >
-              Electricity
-            </button>
+              <User className="h-4 w-4" />
+            </Toggle>
           </div>
         </div>
 
         {/* Tabbed Content */}
         <div className="space-y-4">
           {tab === "all" && (
-            <>
-              <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
-              <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
-
-              {/* ...Simple sections exactly as Dashboard... */}
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Water Usage Today</h3>
-                    <p className="text-gray-400">No readings yet</p>
-                  </div>
-                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-droplet text-blue-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-camera text-blue-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
-                  <button
-                    className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold"
-                    type="button"
-                    tabIndex={0}
-                    onClick={handleAddWaterReading}
-                  >
-                    Add Reading
-                  </button>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Electricity Usage Today</h3>
-                    <p className="text-gray-400">No readings yet</p>
-                  </div>
-                  <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-bolt text-amber-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-camera text-amber-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
-                  <button
-                    className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold"
-                    type="button"
-                    tabIndex={0}
-                    onClick={handleAddElectricityReading}
-                  >
-                    Add Reading
-                  </button>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">This Month's Forecast</h3>
-                    <p className="text-gray-400">Add readings to see forecast</p>
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-chart-line text-gray-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-calculator text-gray-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center">Start adding meter readings to see cost predictions</p>
-                </div>
-              </div>
-            </>
+            showExisting ? <DashboardExistingUserView /> : <DashboardNewUserView />
           )}
           {tab === "water" && (
-            <>
-              <WaterSection variant="water" onAddReading={() => navigate('/water-monitoring')} />
-              <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
-                <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-check text-gray-500"></i>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-700 mb-1">No anomalies detected</h3>
-                    <p className="text-sm text-gray-500">Your water usage is within normal range</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Water Prices</h3>
-                    <p className="text-2xl font-bold text-[#212529]">₱25.50/m³</p>
-                    <p className="text-sm text-gray-500">Base rate for residential</p>
-                  </div>
-                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-peso-sign text-blue-400"></i>
-                  </div>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-4 mt-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">First 10m³</span>
-                    <span className="text-sm font-semibold">₱25.50/m³</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">11m³ and above</span>
-                    <span className="text-sm font-semibold">₱28.00/m³</span>
-                  </div>
-                </div>
-              </div>
-            </>
+            <WaterSection variant="water" onAddReading={() => navigate('/water-monitoring')} />
           )}
           {tab === "electricity" && (
-            <>
-              <ElectricitySection variant="electricity" onAddReading={handleAddElectricityReading} />
-              <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
-                <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-triangle-exclamation text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white mb-1">Anomaly Detected</h3>
-                    <p className="text-sm text-white text-opacity-90">Unusual spike in electricity consumption</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Electricity Rates</h3>
-                    <p className="text-2xl font-bold text-[#212529]">₱9.50/kWh</p>
-                    <p className="text-sm text-gray-500">Base rate for residential</p>
-                  </div>
-                  <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-peso-sign text-amber-400" />
-                  </div>
-                </div>
-                <div className="bg-amber-50 rounded-xl p-4 mt-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">Peak Hours (9AM-9PM)</span>
-                    <span className="text-sm font-semibold">₱11.50/kWh</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Off-Peak Hours</span>
-                    <span className="text-sm font-semibold">₱8.00/kWh</span>
-                  </div>
-                </div>
-              </Card>
-            </>
+            <ElectricitySection variant="electricity" onAddReading={handleAddElectricityReading} />
           )}
         </div>
       </div>
@@ -311,4 +188,3 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
-
