@@ -1,32 +1,13 @@
 
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Droplet, Info, Home, Bolt, Settings, ChevronRight } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
+import { Droplet, Info, Home, Bolt, Settings } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import WaterScanResults from "@/components/water/WaterScanResults";
 
 const WaterMonitoring: React.FC = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [api, setApi] = useState<CarouselApi>();
-
-  // Set up the carousel when the API is available
-  useCallback(() => {
-    if (!api) return;
-    
-    // Set initial slide
-    api.scrollTo(currentStep);
-    
-    // Listen to carousel changes
-    const onSelect = () => {
-      setCurrentStep(api.selectedScrollSnap());
-    };
-    
-    api.on("select", onSelect);
-    return () => {
-      api.off("select", onSelect);
-    };
-  }, [api, currentStep]);
+  const [currentStep, setCurrentStep] = React.useState(1);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans">
@@ -67,12 +48,8 @@ const WaterMonitoring: React.FC = () => {
         {/* Carousel for swipeable content */}
         <Carousel 
           className="w-full"
-          setApi={setApi}
-          opts={{
-            startIndex: 1, // Start at the middle item (scan results)
-            dragFree: true,
-            containScroll: "trimSnaps",
-          }}
+          onSelect={(index) => setCurrentStep(index)}
+          defaultIndex={1}
         >
           <CarouselContent>
             <CarouselItem>
