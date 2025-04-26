@@ -18,9 +18,33 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 8;
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+    
+    return {
+      isValid: hasMinLength && hasNumber && hasSpecialChar,
+      hasMinLength,
+      hasNumber,
+      hasSpecialChar
+    };
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const passwordValidation = validatePassword(formData.password);
+    
+    if (!passwordValidation.isValid) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Password",
+        description: "Password must be at least 8 characters long, include numbers and special characters"
+      });
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         variant: "destructive",
@@ -47,6 +71,8 @@ const Register = () => {
       navigate('/registration-success');
     }
   };
+
+  const passwordValidation = validatePassword(formData.password);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 relative">
@@ -109,6 +135,24 @@ const Register = () => {
                   <Eye className="h-5 w-5 text-gray-400" />
                 )}
               </button>
+            </div>
+
+            <div className="mt-3">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">Password Requirements</h3>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-sm text-gray-500">
+                  <i className={`fa-solid fa-check ${passwordValidation.hasMinLength ? 'text-green-500' : 'text-gray-300'}`} />
+                  At least 8 characters
+                </li>
+                <li className="flex items-center gap-2 text-sm text-gray-500">
+                  <i className={`fa-solid fa-check ${passwordValidation.hasNumber ? 'text-green-500' : 'text-gray-300'}`} />
+                  Include numbers
+                </li>
+                <li className="flex items-center gap-2 text-sm text-gray-500">
+                  <i className={`fa-solid fa-check ${passwordValidation.hasSpecialChar ? 'text-green-500' : 'text-gray-300'}`} />
+                  Include special characters
+                </li>
+              </ul>
             </div>
           </div>
 
