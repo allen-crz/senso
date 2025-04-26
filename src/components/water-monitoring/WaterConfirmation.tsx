@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -9,6 +9,11 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const data = [
   { name: "Nov", value: 36.8 },
@@ -28,31 +33,56 @@ const previousReadings = [
 ];
 
 const WaterConfirmation = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-[#212529] mb-6">Confirm Reading</h2>
+      <h2 className="text-2xl font-bold text-[#212529] mb-6">History</h2>
 
       {/* Previous Readings Card */}
       <div className="bg-white rounded-3xl shadow-sm mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-t-3xl flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-semibold text-white">Previous Readings</h3>
-            <p className="text-sm text-blue-100">All readings</p>
-          </div>
-          <ChevronUp className="text-white" />
-        </div>
-        <div className="px-6 pt-4 pb-6">
-          <div className="space-y-4">
-            {previousReadings.map((item, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium text-[#212529]">{item.month}</p>
-                  <p className="text-sm text-gray-500">Reading: {item.reading} m³</p>
-                </div>
-                <p className="text-lg font-semibold text-[#212529]">₱{item.amount}</p>
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-t-3xl">
+          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Previous Readings</h3>
+                <p className="text-sm text-blue-100">All readings</p>
               </div>
-            ))}
-          </div>
+              <CollapsibleTrigger className="text-white">
+                <ChevronDown className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+              </CollapsibleTrigger>
+            </div>
+            
+            <div className="px-6 pt-4 pb-6 -mx-6 -mb-6 bg-white rounded-b-3xl">
+              {/* Always show first 3 readings */}
+              <div className="space-y-4">
+                {previousReadings.slice(0, 3).map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium text-[#212529]">{item.month}</p>
+                      <p className="text-sm text-gray-500">Reading: {item.reading} m³</p>
+                    </div>
+                    <p className="text-lg font-semibold text-[#212529]">₱{item.amount}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Collapsible content for remaining readings */}
+              <CollapsibleContent>
+                <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
+                  {previousReadings.slice(3).map((item, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium text-[#212529]">{item.month}</p>
+                        <p className="text-sm text-gray-500">Reading: {item.reading} m³</p>
+                      </div>
+                      <p className="text-lg font-semibold text-[#212529]">₱{item.amount}</p>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
         </div>
       </div>
 
