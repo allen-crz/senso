@@ -28,6 +28,7 @@ const WaterMeterCamera: React.FC = () => {
 
   const handleBack = () => {
     cleanup();
+    localStorage.removeItem('waterMeterImageCaptured'); // Clear capture state when going back
     navigate("/water-monitoring");
   };
 
@@ -37,12 +38,13 @@ const WaterMeterCamera: React.FC = () => {
       description: "Image captured successfully",
     });
     
-    // Navigate back with success state
+    // Store capture state and navigate back
+    localStorage.setItem('waterMeterImageCaptured', 'true');
     setTimeout(() => {
       navigate("/water-monitoring", { 
         state: { 
           imageCaptured: true,
-          slideIndex: 0 // Start at the first slide to show success state
+          slideIndex: 0
         } 
       });
     }, 800);

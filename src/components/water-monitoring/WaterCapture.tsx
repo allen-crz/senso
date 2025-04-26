@@ -1,19 +1,29 @@
-
-import React from "react";
-import { Camera, Droplet, CheckCircle } from "lucide-react";
+import React, { useEffect } from "react";
+import { Camera, Droplet, CheckCircle, RefreshCw } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const WaterCapture = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isImageCaptured = location.state?.imageCaptured;
+  const [isImageCaptured, setIsImageCaptured] = React.useState(false);
+
+  useEffect(() => {
+    // Check localStorage on component mount
+    const storedCaptureState = localStorage.getItem('waterMeterImageCaptured');
+    if (storedCaptureState === 'true' || location.state?.imageCaptured) {
+      setIsImageCaptured(true);
+      // Store in localStorage when coming from camera
+      if (location.state?.imageCaptured) {
+        localStorage.setItem('waterMeterImageCaptured', 'true');
+      }
+    }
+  }, [location.state?.imageCaptured]);
 
   const handleOpenCamera = () => {
     navigate("/water-meter-camera");
   };
 
   const handleViewResults = () => {
-    // Navigate to the parent component and pass an instruction to show the second slide
     navigate("/water-monitoring", { 
       state: { 
         imageCaptured: true,
@@ -22,9 +32,16 @@ const WaterCapture = () => {
     });
   };
 
+  const handleScanAgain = () => {
+    localStorage.removeItem('waterMeterImageCaptured');
+    setIsImageCaptured(false);
+    // Force reload the component state
+    navigate("/water-monitoring", { replace: true });
+  };
+
   return (
     <div className="space-y-4 pb-10">
-      {/* Current Water Price */}
+      {/* Current Water Price Card */}
       <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-6 rounded-3xl shadow-sm mb-4">
         <div className="text-center">
           <h3 className="text-lg font-semibold text-white mb-2">Current Water Price</h3>
@@ -38,20 +55,29 @@ const WaterCapture = () => {
 
       {/* Meter Scan Section */}
       {isImageCaptured ? (
-        <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 rounded-3xl shadow-lg mb-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="text-3xl text-white w-10 h-10" />
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 rounded-3xl shadow-lg mb-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="text-3xl text-white w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Meter Scanned by CNN</h3>
+              <p className="text-green-50 mb-6">Analysis complete</p>
+              <button
+                className="w-full bg-white text-green-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
+                onClick={handleViewResults}
+              >
+                View Results
+              </button>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Meter Scanned by CNN</h3>
-            <p className="text-green-50 mb-6">Analysis complete</p>
-            <button
-              className="w-full bg-white text-green-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
-              onClick={handleViewResults}
-            >
-              View Results
-            </button>
           </div>
+          <button
+            onClick={handleScanAgain}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-full font-medium text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Scan Again
+          </button>
         </div>
       ) : (
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-3xl shadow-lg mb-4">
