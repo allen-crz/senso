@@ -1,6 +1,5 @@
 
 import { useState, useRef } from "react";
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 interface UseCameraResult {
   videoRef: React.RefObject<HTMLVideoElement>;
@@ -10,52 +9,28 @@ interface UseCameraResult {
   cameraError: string | null;
   isLoading: boolean;
   startCamera: () => Promise<void>;
-  takePicture: () => Promise<void>;
+  takePicture: () => void;
   cleanup: () => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const useCamera = (): UseCameraResult => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [hasPermission, setHasPermission] = useState(true);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const startCamera = async () => {
-    try {
-      await Camera.checkPermissions();
-      setHasPermission(true);
-      setCameraError(null);
-    } catch (error) {
-      console.error('Camera permission error:', error);
-      setCameraError('Camera permissions required');
-      setHasPermission(false);
-    }
+    setHasPermission(true);
+    setCameraError(null);
   };
 
-  const takePicture = async () => {
-    setIsLoading(true);
-    setCameraError(null);
-    try {
-      const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-        direction: {
-          camera: 'REAR'
-        }
-      });
-      
-      if (image.dataUrl) {
-        setCapturedImage(image.dataUrl);
-      }
-    } catch (error) {
-      console.error('Camera capture error:', error);
-      setCameraError('Failed to capture image');
-    } finally {
-      setIsLoading(false);
+  const takePicture = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
@@ -73,6 +48,7 @@ export const useCamera = (): UseCameraResult => {
     isLoading,
     startCamera,
     takePicture,
-    cleanup
+    cleanup,
+    inputRef
   };
 };

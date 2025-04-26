@@ -1,11 +1,12 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
 import { CameraOverlay } from "@/components/camera/CameraOverlay";
 import { CameraControls } from "@/components/camera/CameraControls";
+import { isIOSDevice } from "@/utils/deviceDetection";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
@@ -16,32 +17,41 @@ const WaterMeterCamera: React.FC = () => {
     isLoading,
     startCamera,
     takePicture,
-    cleanup
+    cleanup,
+    inputRef
   } = useCamera();
+
+  useEffect(() => {
+    startCamera();
+  }, []);
 
   const handleBack = () => {
     cleanup();
     navigate("/water-monitoring");
   };
 
-  const handleCapture = async () => {
-    try {
-      await takePicture();
-      toast({
-        title: "Success",
-        description: "Image captured successfully",
-      });
-      
-      setTimeout(() => {
-        navigate("/water-monitoring");
-      }, 800);
-    } catch (error) {
-      console.error('Failed to capture:', error);
-      toast({
-        title: "Error",
-        description: "Failed to capture image",
-        variant: "destructive"
-      });
+  const handleCapture = () => {
+    takePicture();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (result) {
+          toast({
+            title: "Success",
+            description: "Image captured successfully",
+          });
+          
+          setTimeout(() => {
+            navigate("/water-monitoring");
+          }, 800);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -76,6 +86,15 @@ const WaterMeterCamera: React.FC = () => {
           isLoading={isLoading}
           cameraError={cameraError}
           capturedImage={capturedImage}
+        />
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handleFileChange}
         />
       </div>
 
