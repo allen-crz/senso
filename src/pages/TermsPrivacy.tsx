@@ -7,17 +7,10 @@ const TermsPrivacy: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] flex flex-col">
-      {/* Fake status bar for visual alignment */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-[0.95rem] text-[#212529] font-medium">9:41</div>
-        <div className="flex items-center gap-2 text-[#212529]">
-          <i className="fa-solid fa-signal" />
-          <i className="fa-solid fa-wifi" />
-          <i className="fa-solid fa-battery-full" />
-        </div>
-      </div>
+      {/* Removed status bar elements */}
+      
       {/* Main Content */}
-      <div className="px-6 pb-32 flex-1 flex flex-col">
+      <div className="px-6 pb-32 flex-1 flex flex-col pt-4">
         {/* Header */}
         <div className="mb-8 flex items-center gap-4">
           <button
