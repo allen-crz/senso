@@ -3,11 +3,13 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Camera as CapacitorCamera, CameraResultType, CameraDirection } from '@capacitor/camera';
+import { toast } from "@/hooks/use-toast";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
+  const [cameraDirection, setCameraDirection] = useState(CameraDirection.Rear);
 
   useEffect(() => {
     requestCameraPermission();
@@ -24,6 +26,11 @@ const WaterMeterCamera: React.FC = () => {
       }
     } catch (error) {
       console.error('Error requesting camera permission:', error);
+      toast({
+        title: "Camera Error",
+        description: "Failed to access camera. Please check permissions.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -32,8 +39,13 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   const toggleFlash = () => {
-    setIsFlashOn(!isFlashOn);
-    console.log("Flash toggled:", !isFlashOn);
+    setIsFlashOn(prev => !prev);
+  };
+
+  const toggleCamera = () => {
+    setCameraDirection(prev => 
+      prev === CameraDirection.Rear ? CameraDirection.Front : CameraDirection.Rear
+    );
   };
 
   const takePicture = async () => {
@@ -42,16 +54,29 @@ const WaterMeterCamera: React.FC = () => {
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        direction: CameraDirection.Rear,
+        direction: cameraDirection,
         saveToGallery: false,
-        // Note: Flash control is not directly available in the options
-        // We'll need to handle flash control through a separate plugin or approach
+        correctOrientation: true,
       });
       
       console.log('Captured image:', image);
-      // Here you can handle the captured image
+      
+      // Navigate to the next step with the captured image
+      if (image.base64String) {
+        // Here you would typically handle the captured image,
+        // such as sending it to a server or processing it
+        toast({
+          title: "Success",
+          description: "Image captured successfully",
+        });
+      }
     } catch (error) {
       console.error('Error capturing photo:', error);
+      toast({
+        title: "Error",
+        description: "Failed to capture image. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,6 +123,7 @@ const WaterMeterCamera: React.FC = () => {
           <button 
             onClick={toggleFlash}
             className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center"
+            disabled={!hasPermission || cameraDirection === CameraDirection.Front}
           >
             {isFlashOn ? (
               <Flashlight className="text-white h-5 w-5" />
@@ -105,7 +131,10 @@ const WaterMeterCamera: React.FC = () => {
               <FlashlightOff className="text-white h-5 w-5" />
             )}
           </button>
-          <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
+          <button 
+            onClick={toggleCamera}
+            className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center"
+          >
             <SwitchCamera className="text-white h-5 w-5" />
           </button>
         </div>
