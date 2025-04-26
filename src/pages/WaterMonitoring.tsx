@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Droplet, Info, Home, Bolt, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -74,6 +74,7 @@ const WaterMonitoring: React.FC = () => {
           }}
           className="w-full"
           setApi={setApi}
+          defaultIndex={0}
         >
           <CarouselContent>
             <CarouselItem>
