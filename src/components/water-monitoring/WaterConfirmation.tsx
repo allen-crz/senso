@@ -135,6 +135,36 @@ const WaterConfirmation = () => {
         </div>
       </div>
 
+      {/* Previous Anomaly Alerts Card */}
+      <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-[#212529]">Previous Anomaly Alerts</h3>
+          <button className="text-sm font-medium text-blue-500">View All</button>
+        </div>
+        <div className="space-y-4">
+          <div className="p-4 bg-red-50 rounded-xl">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <p className="font-medium text-red-600">High Usage Detected</p>
+                <p className="text-sm text-gray-500">March 15, 2025</p>
+              </div>
+              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">+45%</span>
+            </div>
+            <p className="text-sm text-gray-600">Usage spike detected: 5.2m³ above normal range</p>
+          </div>
+          <div className="p-4 bg-red-50 rounded-xl">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <p className="font-medium text-red-600">High Usage Detected</p>
+                <p className="text-sm text-gray-500">February 28, 2025</p>
+              </div>
+              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">+32%</span>
+            </div>
+            <p className="text-sm text-gray-600">Usage spike detected: 4.8m³ above normal range</p>
+          </div>
+        </div>
+      </div>
+
       {/* Previous Images Card */}
       <div className="bg-white rounded-3xl shadow-sm p-6">
         <div className="flex justify-between items-center mb-4">
