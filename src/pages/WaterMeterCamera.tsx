@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ArrowLeft, Camera, Bolt, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,15 +11,8 @@ const WaterMeterCamera: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black relative">
-      {/* Status Bar Area */}
-      <div className="flex justify-between items-center px-6 py-4">
-        <div className="text-sm text-white">9:41</div>
-        <div className="flex items-center gap-2 text-white">
-          <i className="fa-solid fa-signal"></i>
-          <i className="fa-solid fa-wifi"></i>
-          <i className="fa-solid fa-battery-full"></i>
-        </div>
-      </div>
+      {/* Status Bar Area - Now empty */}
+      <div className="h-10"></div>
 
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4">
