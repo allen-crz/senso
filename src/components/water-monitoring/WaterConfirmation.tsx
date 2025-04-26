@@ -1,6 +1,5 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   AreaChart,
   Area,
@@ -14,6 +13,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import AnomaliesDialog from "./AnomaliesDialog";
 
 const data = [
   { name: "Nov", value: 36.8 },
@@ -34,29 +34,34 @@ const previousReadings = [
 
 const WaterConfirmation = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const navigate = useNavigate();
+  const [showAnomalies, setShowAnomalies] = React.useState(false);
 
-  const handleViewAllAnomalies = () => {
-    navigate("/water-monitoring/anomalies", {
-      state: { 
-        origin: "confirmation",
-        previousAnomalies: [
-          { 
-            date: "March 15, 2025", 
-            type: "High Usage", 
-            percentage: "+45%", 
-            description: "Usage spike detected: 5.2m³ above normal range" 
-          },
-          { 
-            date: "February 28, 2025", 
-            type: "High Usage", 
-            percentage: "+32%", 
-            description: "Usage spike detected: 4.8m³ above normal range" 
-          }
-        ]
-      }
-    });
-  };
+  const previousAnomalies = [
+    {
+      date: "March 15, 2025",
+      type: "High Usage",
+      percentage: "+45%",
+      description: "Usage spike detected: 5.2m³ above normal range",
+    },
+    {
+      date: "February 28, 2025",
+      type: "High Usage",
+      percentage: "+32%",
+      description: "Usage spike detected: 4.8m³ above normal range",
+    },
+    {
+      date: "January 15, 2025",
+      type: "High Usage",
+      percentage: "+28%",
+      description: "Usage spike detected: 4.1m³ above normal range",
+    },
+    {
+      date: "December 10, 2024",
+      type: "High Usage",
+      percentage: "+37%",
+      description: "Usage spike detected: 4.9m³ above normal range",
+    },
+  ];
 
   return (
     <div className="space-y-4 pb-10">
@@ -163,34 +168,28 @@ const WaterConfirmation = () => {
       <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-[#212529]">Previous Anomaly Alerts</h3>
-          <button 
-            onClick={handleViewAllAnomalies}
+          <button
+            onClick={() => setShowAnomalies(true)}
             className="text-sm font-medium text-blue-500 hover:text-blue-600 active:text-blue-700 transition-colors"
           >
             View All
           </button>
         </div>
         <div className="space-y-4">
-          <div className="p-4 bg-red-50 rounded-xl">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="font-medium text-red-600">High Usage Detected</p>
-                <p className="text-sm text-gray-500">March 15, 2025</p>
+          {previousAnomalies.slice(0, 2).map((anomaly, index) => (
+            <div key={index} className="p-4 bg-red-50 rounded-xl">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="font-medium text-red-600">{anomaly.type}</p>
+                  <p className="text-sm text-gray-500">{anomaly.date}</p>
+                </div>
+                <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">
+                  {anomaly.percentage}
+                </span>
               </div>
-              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">+45%</span>
+              <p className="text-sm text-gray-600">{anomaly.description}</p>
             </div>
-            <p className="text-sm text-gray-600">Usage spike detected: 5.2m³ above normal range</p>
-          </div>
-          <div className="p-4 bg-red-50 rounded-xl">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="font-medium text-red-600">High Usage Detected</p>
-                <p className="text-sm text-gray-500">February 28, 2025</p>
-              </div>
-              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">+32%</span>
-            </div>
-            <p className="text-sm text-gray-600">Usage spike detected: 4.8m³ above normal range</p>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -218,6 +217,12 @@ const WaterConfirmation = () => {
           ))}
         </div>
       </div>
+
+      <AnomaliesDialog
+        open={showAnomalies}
+        onOpenChange={setShowAnomalies}
+        anomalies={previousAnomalies}
+      />
     </div>
   );
 };
