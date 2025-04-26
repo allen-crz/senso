@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   AreaChart,
   Area,
@@ -33,7 +34,30 @@ const previousReadings = [
 
 const WaterConfirmation = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  
+  const navigate = useNavigate();
+
+  const handleViewAllAnomalies = () => {
+    navigate("/water-monitoring/anomalies", {
+      state: { 
+        origin: "confirmation",
+        previousAnomalies: [
+          { 
+            date: "March 15, 2025", 
+            type: "High Usage", 
+            percentage: "+45%", 
+            description: "Usage spike detected: 5.2m³ above normal range" 
+          },
+          { 
+            date: "February 28, 2025", 
+            type: "High Usage", 
+            percentage: "+32%", 
+            description: "Usage spike detected: 4.8m³ above normal range" 
+          }
+        ]
+      }
+    });
+  };
+
   return (
     <div className="space-y-4 pb-10">
       <h2 className="text-2xl font-bold text-[#212529] mb-6">History</h2>
@@ -139,7 +163,12 @@ const WaterConfirmation = () => {
       <div className="bg-white rounded-3xl shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-[#212529]">Previous Anomaly Alerts</h3>
-          <button className="text-sm font-medium text-blue-500">View All</button>
+          <button 
+            onClick={handleViewAllAnomalies}
+            className="text-sm font-medium text-blue-500 hover:text-blue-600 active:text-blue-700 transition-colors"
+          >
+            View All
+          </button>
         </div>
         <div className="space-y-4">
           <div className="p-4 bg-red-50 rounded-xl">
