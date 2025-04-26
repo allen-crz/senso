@@ -5,7 +5,7 @@ import {
   Camera as CapacitorCamera, 
   CameraResultType, 
   CameraDirection,
-  CameraOptions 
+  CameraSource
 } from '@capacitor/camera';
 import { toast } from "@/hooks/use-toast";
 
@@ -14,6 +14,7 @@ const WaterMeterCamera: React.FC = () => {
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const [cameraDirection, setCameraDirection] = useState(CameraDirection.Rear);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   useEffect(() => {
     requestCameraPermission();
@@ -42,24 +43,12 @@ const WaterMeterCamera: React.FC = () => {
     navigate("/water-monitoring");
   };
 
-  const toggleFlash = async () => {
-    try {
-      // Attempt to toggle the flash
-      setIsFlashOn(prev => !prev);
-      
-      // Indicate flash state change to user
-      toast({
-        title: isFlashOn ? "Flash Disabled" : "Flash Enabled",
-        description: isFlashOn ? "Camera flash has been turned off" : "Camera flash has been turned on",
-      });
-    } catch (error) {
-      console.error('Error toggling flash:', error);
-      toast({
-        title: "Flash Error",
-        description: "Failed to toggle flash. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const toggleFlash = () => {
+    setIsFlashOn(prev => !prev);
+    toast({
+      title: isFlashOn ? "Flash Disabled" : "Flash Enabled",
+      description: isFlashOn ? "Camera flash has been turned off" : "Camera flash has been turned on",
+    });
   };
 
   const toggleCamera = () => {
@@ -82,31 +71,32 @@ const WaterMeterCamera: React.FC = () => {
 
   const takePicture = async () => {
     try {
-      const options: CameraOptions = {
+      // Use Capacitor Camera's built-in camera interface
+      const image = await CapacitorCamera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
+        source: CameraSource.Camera, // This ensures the native camera is used
         direction: cameraDirection,
         saveToGallery: false,
-        correctOrientation: true,
-        // Handle flash based on state but using the correct property name
-        // The Capacitor Camera API doesn't have flashMode property
-        // We need to use 'promptLabelHeader' property or similar
-      };
-
-      // If flash is enabled, we may need to handle it separately
-      // as the direct property isn't available in the options
-
-      const image = await CapacitorCamera.getPhoto(options);
+        // Flash isn't directly controllable via this API, but keeping the state for UI
+      });
       
       if (image.base64String) {
+        // Store captured image
+        setCapturedImage(`data:image/jpeg;base64,${image.base64String}`);
+        
         toast({
           title: "Success",
           description: "Image captured successfully",
         });
-        
+
         // Here you would handle the captured image
-        console.log('Captured image with flash:', isFlashOn);
+        console.log('Captured image:', image);
+        
+        // Navigate back with the captured image data
+        // You could implement a state management solution to pass this data
+        navigate("/water-monitoring");
       }
     } catch (error) {
       console.error('Error capturing photo:', error);
@@ -140,8 +130,15 @@ const WaterMeterCamera: React.FC = () => {
       {/* Camera Viewfinder */}
       <div className="relative mx-4 h-[60vh] rounded-3xl overflow-hidden border-4 border-gray-700">
         <div className="absolute inset-0 bg-gray-900">
-          {/* Placeholder for camera feed */}
-          <div className="w-full h-full object-cover opacity-50 bg-gray-800" />
+          {capturedImage ? (
+            <img 
+              src={capturedImage} 
+              alt="Captured" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full object-cover opacity-50 bg-gray-800" />
+          )}
         </div>
         
         {/* Overlay Guide */}
@@ -160,7 +157,11 @@ const WaterMeterCamera: React.FC = () => {
         <div className="flex justify-center gap-32 mb-8">
           <button 
             onClick={toggleFlash}
-            className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center"
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              !hasPermission || cameraDirection === CameraDirection.Front
+                ? 'bg-gray-600 opacity-50'
+                : 'bg-gray-800'
+            }`}
             disabled={!hasPermission || cameraDirection === CameraDirection.Front}
           >
             {isFlashOn ? (
@@ -171,7 +172,10 @@ const WaterMeterCamera: React.FC = () => {
           </button>
           <button 
             onClick={toggleCamera}
-            className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center"
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              !hasPermission ? 'bg-gray-600 opacity-50' : 'bg-gray-800'
+            }`}
+            disabled={!hasPermission}
           >
             <SwitchCamera className="text-white h-5 w-5" />
           </button>
@@ -181,7 +185,9 @@ const WaterMeterCamera: React.FC = () => {
         <div className="flex flex-col items-center gap-4">
           <button 
             onClick={takePicture}
-            className="w-20 h-20 rounded-full bg-blue-400 flex items-center justify-center"
+            className={`w-20 h-20 rounded-full flex items-center justify-center ${
+              !hasPermission ? 'bg-gray-400' : 'bg-blue-400'
+            }`}
             disabled={!hasPermission}
           >
             <Camera className="text-white h-8 w-8" />

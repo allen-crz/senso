@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Camera, Droplet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +34,7 @@ const WaterCapture = () => {
             <h3 className="text-xl font-semibold text-white mb-2">Scan Water Meter</h3>
             <p className="text-blue-50 mb-6">Tap to capture a photo of your meter</p>
             <button
-              className="w-full bg-white text-blue-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors"
+              className="w-full bg-white text-blue-600 py-4 rounded-full font-medium text-lg shadow-md hover:bg-opacity-90 transition-colors active:scale-95"
               onClick={handleOpenCamera}
             >
               Open Camera
