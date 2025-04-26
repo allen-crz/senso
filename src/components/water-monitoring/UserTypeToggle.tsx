@@ -18,10 +18,10 @@ const UserTypeToggle = ({ currentType, onTypeChange }: UserTypeToggleProps) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          aria-label="Toggle user type"
-          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+          aria-label="Toggle user view type"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none bg-white/50 backdrop-blur-sm"
         >
-          <User className="h-5 w-5" />
+          <User className="h-4 w-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
