@@ -2,7 +2,7 @@ import React from "react";
 
 const WaterResults = () => {
   return (
-    <div className="space-y-4 pb-24">
+    <div className="space-y-4 pb-16">
       <h2 className="text-2xl font-bold text-[#212529] mb-6">Meter Scan Results</h2>
 
       {/* Meter Usage/Bill Card */}

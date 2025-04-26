@@ -35,7 +35,7 @@ const WaterConfirmation = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   
   return (
-    <div className="space-y-4 pb-24">
+    <div className="space-y-4 pb-16">
       <h2 className="text-2xl font-bold text-[#212529] mb-6">History</h2>
 
       {/* Previous Readings Card */}

@@ -3,7 +3,7 @@ import { Camera, Droplet, Info } from "lucide-react";
 
 const WaterCapture = () => {
   return (
-    <div className="space-y-4 pb-24">
+    <div className="space-y-4 pb-16">
       {/* Current Water Price */}
       <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-6 rounded-3xl shadow-sm mb-4">
         <div className="text-center">
