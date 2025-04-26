@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ArrowLeft, Camera, Bolt, CameraRotate } from "lucide-react";
+import { ArrowLeft, Camera, Bolt, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const WaterMeterCamera: React.FC = () => {
@@ -61,7 +61,7 @@ const WaterMeterCamera: React.FC = () => {
             <Bolt className="text-white h-5 w-5" />
           </button>
           <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
-            <CameraRotate className="text-white h-5 w-5" />
+            <SwitchCamera className="text-white h-5 w-5" />
           </button>
         </div>
 
