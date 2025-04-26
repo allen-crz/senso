@@ -55,7 +55,7 @@ const WaterMonitoring: React.FC = () => {
     }
   }, [api, location.state, navigate]);
 
-  const animationClass = isEntering ? "animate-fade-in" : "";
+  const animationClass = isEntering ? 'animate-slide-in-right' : '';
 
   return (
     <div className={`min-h-screen bg-[#f5f6f7] relative font-sans pt-8 ${animationClass}`}>
