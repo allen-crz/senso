@@ -11,6 +11,7 @@ import WaterCapture from "@/components/water-monitoring/WaterCapture";
 import WaterResults from "@/components/water-monitoring/WaterResults";
 import WaterConfirmation from "@/components/water-monitoring/WaterConfirmation";
 import type { CarouselApi } from "@/components/ui/carousel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WaterMonitoring: React.FC = () => {
   const navigate = useNavigate();
@@ -28,8 +29,8 @@ const WaterMonitoring: React.FC = () => {
   }, [api]);
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
-      <div className="px-6 pb-32">
+    <div className="min-h-screen bg-[#f5f6f7] flex flex-col font-sans">
+      <div className="px-6 pt-8 flex-grow overflow-hidden">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
@@ -57,30 +58,32 @@ const WaterMonitoring: React.FC = () => {
           ))}
         </div>
 
-        <Carousel 
-          setApi={setApi}
-          opts={{
-            align: "start",
-            loop: false,
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            <CarouselItem>
-              <WaterCapture />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterResults />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterConfirmation />
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
+        <ScrollArea className="h-[calc(100vh-170px)]">
+          <Carousel 
+            setApi={setApi}
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              <CarouselItem>
+                <WaterCapture />
+              </CarouselItem>
+              <CarouselItem>
+                <WaterResults />
+              </CarouselItem>
+              <CarouselItem>
+                <WaterConfirmation />
+              </CarouselItem>
+            </CarouselContent>
+          </Carousel>
+        </ScrollArea>
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pb-4 z-50">
+      <div className="px-6 pb-4 mt-auto">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
             {/* Home */}
