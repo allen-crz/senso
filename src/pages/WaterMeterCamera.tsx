@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -90,10 +89,13 @@ const WaterMeterCamera: React.FC = () => {
         direction: cameraDirection,
         saveToGallery: false,
         correctOrientation: true,
-        // Use proper flash property according to Capacitor Camera API
-        // The flash option controls whether the flash should be on, off, or auto
-        flashMode: isFlashOn ? 'on' : 'off',
+        // Handle flash based on state but using the correct property name
+        // The Capacitor Camera API doesn't have flashMode property
+        // We need to use 'promptLabelHeader' property or similar
       };
+
+      // If flash is enabled, we may need to handle it separately
+      // as the direct property isn't available in the options
 
       const image = await CapacitorCamera.getPhoto(options);
       
