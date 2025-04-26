@@ -90,8 +90,9 @@ const WaterMeterCamera: React.FC = () => {
         direction: cameraDirection,
         saveToGallery: false,
         correctOrientation: true,
-        // Enable flash based on state
-        enableHighResolution: true,
+        // Use proper flash property according to Capacitor Camera API
+        // The flash option controls whether the flash should be on, off, or auto
+        flashMode: isFlashOn ? 'on' : 'off',
       };
 
       const image = await CapacitorCamera.getPhoto(options);
