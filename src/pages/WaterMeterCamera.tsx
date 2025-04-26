@@ -33,7 +33,6 @@ const WaterMeterCamera: React.FC = () => {
 
   const toggleFlash = () => {
     setIsFlashOn(!isFlashOn);
-    // Flash is handled during photo capture by including it in the options
     console.log("Flash toggled:", !isFlashOn);
   };
 
@@ -45,8 +44,8 @@ const WaterMeterCamera: React.FC = () => {
         resultType: CameraResultType.Base64,
         direction: CameraDirection.Rear,
         saveToGallery: false,
-        // Apply flash setting here when taking the photo
-        useFlash: isFlashOn
+        // Note: Flash control is not directly available in the options
+        // We'll need to handle flash control through a separate plugin or approach
       });
       
       console.log('Captured image:', image);
