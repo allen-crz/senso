@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
@@ -52,44 +53,52 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative">
-      <div className="h-safe-top"></div>
+    <div className="min-h-screen bg-background relative flex flex-col">
+      <div className="h-safe-top bg-background/80 backdrop-blur-lg border-b border-border/40"></div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <button onClick={handleBack} className="text-white">
-          <ArrowLeft className="text-2xl" />
-        </button>
-        <h1 className="text-white text-lg font-medium text-center flex-1">
-          Capture Water Meter
-        </h1>
-        <div className="w-8"></div>
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/40">
+        <div className="flex items-center justify-between px-4 py-4">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="text-foreground">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-foreground text-lg font-semibold">
+            Capture Water Meter
+          </h1>
+          <div className="w-10"></div>
+        </div>
       </div>
 
-      {/* Center content */}
-      <div className="flex flex-col items-center justify-center h-[60vh] px-6 gap-4">
-        <p className="text-white text-center mb-6">
-          Please capture your water meter reading or select an image from your gallery
-        </p>
-        
-        <Button
-          onClick={takePicture}
-          className="w-full max-w-sm bg-blue-500 hover:bg-blue-600"
-          size="lg"
-        >
-          <Camera className="mr-2" />
-          Capture Image
-        </Button>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+        <Card className="w-full max-w-md bg-card/50 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <p className="text-card-foreground text-center mb-8">
+              Please capture your water meter reading or select an image from your gallery
+            </p>
+            
+            <div className="space-y-4">
+              <Button
+                onClick={takePicture}
+                className="w-full"
+                size="lg"
+              >
+                <Camera className="mr-2 h-5 w-5" />
+                Capture Image
+              </Button>
 
-        <Button
-          onClick={selectFromGallery}
-          variant="secondary"
-          className="w-full max-w-sm"
-          size="lg"
-        >
-          <Image className="mr-2" />
-          Choose from Gallery
-        </Button>
+              <Button
+                onClick={selectFromGallery}
+                variant="secondary"
+                className="w-full"
+                size="lg"
+              >
+                <Image className="mr-2 h-5 w-5" />
+                Choose from Gallery
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <input
           ref={inputRef}
