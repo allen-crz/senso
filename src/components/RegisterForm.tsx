@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUpWithEmail } from '@/services/auth';
 import { useToast } from "@/hooks/use-toast";
-import PasswordInput from './PasswordInput';
 import PasswordRequirements from './PasswordRequirements';
 import { validatePassword } from '@/utils/passwordValidation';
 import { Input } from '@/components/ui/input';
@@ -89,24 +87,30 @@ const RegisterForm = () => {
             required
           />
         </div>
-        
-        <PasswordInput
-          value={formData.password}
-          onChange={(value) => setFormData({ ...formData, password: value })}
-          label="Password"
-          placeholder="Create a password"
-          showPassword={showPassword}
-          onToggleShow={() => setShowPassword(!showPassword)}
-        />
 
-        <PasswordInput
-          value={formData.confirmPassword}
-          onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
-          label="Confirm Password"
-          placeholder="Confirm your password"
-          showPassword={showConfirmPassword}
-          onToggleShow={() => setShowConfirmPassword(!showConfirmPassword)}
-        />
+        <div className="form-group">
+          <label className="block text-sm text-[#212529] mb-2">Password</label>
+          <Input
+            type="password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
+            placeholder="Create a password"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="block text-sm text-[#212529] mb-2">Confirm Password</label>
+          <Input
+            type="password"
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
+            placeholder="Confirm your password"
+            required
+          />
+        </div>
 
         <PasswordRequirements password={formData.password} />
 
