@@ -13,10 +13,13 @@ const WaterCapture = () => {
   };
 
   const handleViewResults = () => {
-    const api = location.state?.api;
-    if (api) {
-      api.scrollTo(1); // Scroll to the second slide (index 1)
-    }
+    // Navigate to the parent component and pass an instruction to show the second slide
+    navigate("/water-monitoring", { 
+      state: { 
+        imageCaptured: true,
+        showResults: true 
+      } 
+    });
   };
 
   return (

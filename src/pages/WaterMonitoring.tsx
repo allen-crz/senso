@@ -1,6 +1,7 @@
-import React from "react";
+
+import React, { useEffect } from "react";
 import { Droplet, Info, Home, Bolt, Settings as SettingsIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -13,6 +14,7 @@ import type { CarouselApi } from "@/components/ui/carousel";
 
 const WaterMonitoring: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
@@ -25,6 +27,18 @@ const WaterMonitoring: React.FC = () => {
       setCurrent(api.selectedScrollSnap());
     });
   }, [api]);
+  
+  // Handle direct navigation to results view if requested
+  React.useEffect(() => {
+    const showResults = location.state?.showResults;
+    if (showResults && api) {
+      // Small delay to ensure the carousel is fully initialized
+      setTimeout(() => {
+        api.scrollTo(1);
+        console.log("Scrolling to results view");
+      }, 100);
+    }
+  }, [api, location.state?.showResults]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
