@@ -1,11 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Droplet, Info, Home, Bolt, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  type CarouselApi
 } from "@/components/ui/carousel";
 import WaterCapture from "@/components/water-monitoring/WaterCapture";
 import WaterResults from "@/components/water-monitoring/WaterResults";
@@ -14,10 +15,18 @@ import WaterConfirmation from "@/components/water-monitoring/WaterConfirmation";
 const WaterMonitoring: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
 
-  const handleStepChange = (step: number) => {
-    setCurrentStep(step);
-  };
+  // Use effect to handle carousel events
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", () => {
+      setCurrentStep(api.selectedScrollSnap() || 0);
+    });
+  }, [api]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
@@ -64,10 +73,7 @@ const WaterMonitoring: React.FC = () => {
             loop: false,
           }}
           className="w-full"
-          onSelect={(api) => {
-            const selectedIndex = api?.selectedScrollSnap() || 0;
-            handleStepChange(selectedIndex);
-          }}
+          setApi={setApi}
         >
           <CarouselContent>
             <CarouselItem>
