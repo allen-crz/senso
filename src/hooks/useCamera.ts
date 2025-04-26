@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { isIOSDevice } from "@/utils/deviceDetection";
+import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
 
 interface UseCameraResult {
   videoRef: React.RefObject<HTMLVideoElement>;
@@ -23,6 +23,7 @@ export const useCamera = (): UseCameraResult => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
+  const attemptCountRef = useRef<number>(0);
 
   const cleanup = () => {
     console.log("Cleaning up camera resources");
@@ -47,16 +48,27 @@ export const useCamera = (): UseCameraResult => {
     
     // Clean up any existing stream first
     cleanup();
+
+    // Increment attempt counter
+    attemptCountRef.current += 1;
     
     try {
-      console.log("Requesting camera access for iOS PWA...");
+      console.log(`Requesting camera access (attempt ${attemptCountRef.current})...`);
       
-      // Check if iOS device
+      // Check if iOS PWA
       const isIOS = isIOSDevice();
-      console.log("Is iOS device:", isIOS);
+      const isiOSPWA = isIOSPWA();
+      console.log("Device detection:", { isIOS, isiOSPWA, attemptCount: attemptCountRef.current });
       
-      // iOS specific constraints - forcefully use back camera
-      const constraints = isIOS ? 
+      // iOS PWA specific constraints - absolutely force back camera with minimal constraints
+      const constraints = isiOSPWA ? 
+        {
+          audio: false,
+          video: {
+            facingMode: "environment", // Force back camera
+          }
+        } : 
+        isIOS ? 
         {
           audio: false,
           video: {
@@ -85,11 +97,19 @@ export const useCamera = (): UseCameraResult => {
         videoRef.current.srcObject = stream;
         
         // Critical for iOS Safari - must be set directly on the element
-        if (isIOS) {
+        if (isIOS || isiOSPWA) {
           videoRef.current.setAttribute('playsinline', 'true');
           videoRef.current.setAttribute('webkit-playsinline', 'true');
           videoRef.current.setAttribute('autoplay', 'true');
           videoRef.current.muted = true;
+          
+          if (isiOSPWA) {
+            videoRef.current.setAttribute('controls', 'false');
+            videoRef.current.style.width = "100%";
+            videoRef.current.style.height = "100%";
+            videoRef.current.style.objectFit = "cover";
+          }
+          
           console.log("Set iOS-specific video attributes");
         }
         
@@ -118,8 +138,52 @@ export const useCamera = (): UseCameraResult => {
     } catch (error) {
       console.error('Error accessing camera:', error);
       
-      // Special handling for iOS devices
-      if (isIOSDevice()) {
+      // Special handling for iOS PWA
+      if (isIOSPWA()) {
+        console.log("iOS PWA camera access failed, trying simplified approach");
+        try {
+          // iOS PWA fallback with absolute minimal constraints
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+          
+          streamRef.current = fallbackStream;
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = fallbackStream;
+            videoRef.current.setAttribute('playsinline', 'true');
+            videoRef.current.setAttribute('webkit-playsinline', 'true');
+            videoRef.current.setAttribute('autoplay', 'true');
+            videoRef.current.muted = true;
+            videoRef.current.setAttribute('controls', 'false');
+            
+            videoRef.current.onloadedmetadata = () => {
+              if (!videoRef.current) return;
+              
+              console.log("iOS PWA fallback: Video metadata loaded, attempting to play");
+              videoRef.current.play()
+                .then(() => {
+                  console.log("iOS PWA fallback: Video playback started successfully");
+                  setHasPermission(true);
+                  setIsLoading(false);
+                  setIsCameraInitialized(true);
+                })
+                .catch(e => {
+                  console.error("iOS PWA fallback: Error playing video:", e);
+                  setCameraError("Failed to access camera on iOS. Please check permissions and restart the app from your home screen.");
+                  setIsLoading(false);
+                });
+            };
+            return;
+          }
+        } catch (fallbackError) {
+          console.error('iOS PWA fallback camera attempt failed:', fallbackError);
+          setCameraError("Camera access failed. Please ensure camera permissions are enabled in Settings → Safari → Camera and restart the app from your home screen.");
+          setIsLoading(false);
+          return;
+        }
+      } else if (isIOSDevice()) {
         console.log("iOS camera access failed, trying simplified approach");
         try {
           // iOS fallback with minimal constraints

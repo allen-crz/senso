@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Camera, RefreshCw } from "lucide-react";
-import { isIOSDevice } from "@/utils/deviceDetection";
+import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
 
 interface CameraControlsProps {
   cameraError: string | null;
@@ -19,6 +19,7 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
   onCapture,
 }) => {
   const isIOS = isIOSDevice();
+  const isiOSPWA = isIOSPWA();
 
   if (cameraError) {
     return (
@@ -31,10 +32,16 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
           <RefreshCw className="w-5 h-5" />
           Retry Camera Access
         </button>
-        {isIOS && (
+        {isiOSPWA && (
           <p className="text-white text-xs max-w-xs text-center px-4">
-            For iOS devices: If camera access was denied, please close the app completely, 
-            go to Settings → Safari → {isIOS ? "Camera" : "Permissions"} and enable camera access
+            For iOS home screen app: If camera access was denied, please close the app completely, 
+            go to Settings → Safari → Camera and enable camera access. Then restart the app from your home screen.
+          </p>
+        )}
+        {isIOS && !isiOSPWA && (
+          <p className="text-white text-xs max-w-xs text-center px-4">
+            For iOS devices: If camera access was denied, please close Safari completely, 
+            go to Settings → Safari → Camera and enable camera access
           </p>
         )}
       </div>
@@ -50,6 +57,15 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
         <p className="text-white text-sm">
           {isIOS ? "Accessing camera..." : "Waiting for camera..."}
         </p>
+        {isLoading && isiOSPWA && (
+          <button 
+            onClick={onRetry}
+            className="mt-2 bg-blue-400 bg-opacity-50 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
+        )}
       </div>
     );
   }
@@ -69,6 +85,11 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
       <p className="text-white text-sm">
         {hasPermission ? 'Tap to capture image' : 'Camera permission required'}
       </p>
+      {isiOSPWA && hasPermission && (
+        <p className="text-blue-200 text-xs max-w-xs text-center">
+          For best results on iOS home screen app, hold your device steady
+        </p>
+      )}
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
 import { CameraOverlay } from "@/components/camera/CameraOverlay";
 import { CameraControls } from "@/components/camera/CameraControls";
-import { isIOSDevice } from "@/utils/deviceDetection";
+import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
@@ -22,18 +22,30 @@ const WaterMeterCamera: React.FC = () => {
     cleanup
   } = useCamera();
 
+  // Check if device is iOS PWA
+  const isIOS = isIOSDevice();
+  const isiOSPWA = isIOSPWA();
+
   // Effect to handle iOS specific camera setup
   useEffect(() => {
-    const isIOS = isIOSDevice();
-    if (isIOS && videoRef.current) {
+    if ((isIOS || isiOSPWA) && videoRef.current) {
       console.log("Setting iOS-specific video attributes in component");
       // Critical attributes for iOS Safari/PWA
       videoRef.current.setAttribute('playsinline', 'true');
       videoRef.current.setAttribute('webkit-playsinline', 'true');
       videoRef.current.setAttribute('autoplay', 'true');
       videoRef.current.muted = true;
+      
+      // Force capture in PWA mode
+      if (isiOSPWA) {
+        console.log("Forcing PWA-specific attributes");
+        videoRef.current.setAttribute('controls', 'false');
+        videoRef.current.style.width = "100%";
+        videoRef.current.style.height = "100%";
+        videoRef.current.style.objectFit = "cover";
+      }
     }
-  }, [videoRef.current]);
+  }, [videoRef.current, isIOS, isiOSPWA]);
 
   const handleBack = () => {
     cleanup();
@@ -48,7 +60,7 @@ const WaterMeterCamera: React.FC = () => {
     });
     
     // Longer delay for iOS devices to allow for processing
-    const delay = isIOSDevice() ? 1500 : 800;
+    const delay = isIOSDevice() ? 2000 : 800;
     setTimeout(() => {
       navigate("/water-monitoring");
     }, delay);

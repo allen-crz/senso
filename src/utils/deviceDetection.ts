@@ -23,10 +23,14 @@ export const isIOSDevice = (): boolean => {
   const isIOS = /iPad|iPhone|iPod/.test(userAgent);
   
   // Additional check for iOS within a PWA context
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                (window.navigator as any).standalone === true;
+  const isPWA = isStandalone();
   
-  console.log("iOS detection:", { isIOS, isPWA, userAgent: userAgent.substring(0, 50) + "..." });
+  console.log("iOS detection:", { 
+    isIOS, 
+    isPWA, 
+    isStandalone: isStandalone(),
+    userAgent: userAgent.substring(0, 100) + "..." 
+  });
   
   return isIOS && !(window as any).MSStream;
 };
@@ -37,6 +41,21 @@ export const isIOSDevice = (): boolean => {
  */
 export const isStandalone = (): boolean => {
   return (window.matchMedia('(display-mode: standalone)').matches) || 
-    (window.navigator as any).standalone || 
+    (window.navigator as any).standalone === true || 
     document.referrer.includes('android-app://');
 };
+
+/**
+ * Check if the device is an iOS device running in PWA mode
+ * This is critical for handling camera access correctly
+ * @returns {boolean} true if the device is iOS in PWA mode
+ */
+export const isIOSPWA = (): boolean => {
+  const isIOS = isIOSDevice();
+  const isPWA = isStandalone();
+  
+  console.log("iOS PWA detection:", { isIOS, isPWA });
+  
+  return isIOS && isPWA;
+};
+

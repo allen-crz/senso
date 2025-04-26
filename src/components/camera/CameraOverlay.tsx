@@ -1,6 +1,6 @@
 
 import React from "react";
-import { isIOSDevice } from "@/utils/deviceDetection";
+import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
 
 interface CameraOverlayProps {
   isLoading: boolean;
@@ -14,6 +14,7 @@ export const CameraOverlay: React.FC<CameraOverlayProps> = ({
   capturedImage,
 }) => {
   const isIOS = isIOSDevice();
+  const isiOSPWA = isIOSPWA();
 
   if (isLoading) {
     return (
@@ -26,12 +27,20 @@ export const CameraOverlay: React.FC<CameraOverlayProps> = ({
         </p>
         {isIOS && (
           <div className="mt-3 text-blue-100 text-sm max-w-xs">
-            <p className="mb-2 font-medium">For iOS devices:</p>
+            <p className="mb-2 font-medium">For iPhone users:</p>
             <ul className="list-disc list-inside space-y-1 text-left">
               <li>Make sure to grant camera permissions when prompted</li>
-              <li>If using as a PWA, close and reopen the app if camera doesn't initialize</li>
-              <li>Try refreshing if the camera doesn't appear</li>
+              <li>If using as a PWA, try opening the app fresh from your home screen</li>
+              <li>Try force-quitting the app and reopening if camera doesn't initialize</li>
+              <li className="text-yellow-300 font-medium">Check if Camera access is enabled in Settings → Safari → Camera</li>
             </ul>
+          </div>
+        )}
+        {isiOSPWA && (
+          <div className="mt-3 px-4 py-2 bg-yellow-500 bg-opacity-30 rounded-lg">
+            <p className="text-yellow-100 text-sm font-medium">
+              PWA Mode Detected: If the camera doesn't initialize, please check your iOS settings or try using Safari directly
+            </p>
           </div>
         )}
       </div>
@@ -45,6 +54,11 @@ export const CameraOverlay: React.FC<CameraOverlayProps> = ({
           <p className="text-white mb-2 font-medium">
             {cameraError}
           </p>
+          {isiOSPWA && cameraError.includes("permission") && (
+            <p className="text-white text-sm">
+              On iOS home screen apps, go to Settings → Safari → Camera and enable access, then restart the app from your home screen
+            </p>
+          )}
           {isIOS && cameraError.includes("permission") && (
             <p className="text-white text-sm">
               On iOS, go to Settings → Safari → Camera and enable access for this site
