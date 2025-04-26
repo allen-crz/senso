@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
 import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SuccessScreen = () => {
   const navigate = useNavigate();
@@ -29,7 +30,9 @@ const SuccessScreen = () => {
       <div className="bg-white rounded-3xl p-6 shadow-sm mb-8">
         <div className="flex flex-col items-center text-center gap-4 mb-6">
           <div className="w-16 h-16 overflow-hidden rounded-full">
-            {!isLoading && (
+            {isLoading ? (
+              <Skeleton className="w-full h-full rounded-full" />
+            ) : (
               <Avatar className="w-full h-full">
                 <AvatarImage 
                   src={avatarUrl || undefined} 
@@ -42,10 +45,19 @@ const SuccessScreen = () => {
             )}
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-[#212529]">
-              Welcome aboard, {capitalizedFirstName}!
-            </h2>
-            <p className="text-gray-500">Let's start monitoring your utilities</p>
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-40 mx-auto" />
+                <Skeleton className="h-4 w-56 mx-auto" />
+              </div>
+            ) : (
+              <>
+                <h2 className="text-xl font-semibold text-[#212529]">
+                  Welcome aboard, {capitalizedFirstName}!
+                </h2>
+                <p className="text-gray-500">Let's start monitoring your utilities</p>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -78,4 +90,3 @@ const SuccessScreen = () => {
 };
 
 export default SuccessScreen;
-

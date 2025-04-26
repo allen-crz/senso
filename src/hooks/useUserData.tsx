@@ -58,6 +58,9 @@ export const useUserData = () => {
         if (userDataCache && cachedUserId === user.id) {
           setUserData(userDataCache);
           setIsLoading(false);
+          
+          // Refresh cache in background without blocking UI
+          setTimeout(() => refreshUserData(user.id), 0);
           return;
         }
 
@@ -92,6 +95,37 @@ export const useUserData = () => {
         setIsLoading(false);
       }
     };
+    
+    // Helper function to refresh user data in background
+    const refreshUserData = async (userId: string) => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || user.id !== userId) return;
+        
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, avatar_url, phone, address')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          const firstName = profile.full_name?.split(' ')[0] || 'User';
+          const newUserData = {
+            firstName,
+            email: user.email || '',
+            phone: profile.phone,
+            address: profile.address,
+            avatarUrl: profile.avatar_url,
+          };
+          
+          cachedUserId = user.id;
+          userDataCache = newUserData;
+          setUserData(newUserData);
+        }
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    };
 
     fetchUserData();
     
@@ -110,7 +144,8 @@ export const useUserData = () => {
         });
       } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         // Refetch user data when user signs in or is updated
-        fetchUserData();
+        // Use setTimeout to prevent potential deadlock in Supabase auth
+        setTimeout(() => fetchUserData(), 0);
       }
     });
 
