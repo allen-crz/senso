@@ -10,14 +10,17 @@ interface UseCameraResult {
   isLoading: boolean;
   startCamera: () => Promise<void>;
   takePicture: () => void;
+  selectFromGallery: () => void;
   cleanup: () => void;
   inputRef: React.RefObject<HTMLInputElement>;
+  galleryRef: React.RefObject<HTMLInputElement>;
 }
 
 export const useCamera = (): UseCameraResult => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [hasPermission, setHasPermission] = useState(true);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -31,6 +34,12 @@ export const useCamera = (): UseCameraResult => {
   const takePicture = () => {
     if (inputRef.current) {
       inputRef.current.click();
+    }
+  };
+
+  const selectFromGallery = () => {
+    if (galleryRef.current) {
+      galleryRef.current.click();
     }
   };
 
@@ -48,7 +57,9 @@ export const useCamera = (): UseCameraResult => {
     isLoading,
     startCamera,
     takePicture,
+    selectFromGallery,
     cleanup,
-    inputRef
+    inputRef,
+    galleryRef
   };
 };

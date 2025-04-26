@@ -1,12 +1,10 @@
 
 import React, { useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Camera, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
-import { CameraOverlay } from "@/components/camera/CameraOverlay";
-import { CameraControls } from "@/components/camera/CameraControls";
-import { isIOSDevice } from "@/utils/deviceDetection";
+import { Button } from "@/components/ui/button";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
@@ -17,8 +15,10 @@ const WaterMeterCamera: React.FC = () => {
     isLoading,
     startCamera,
     takePicture,
+    selectFromGallery,
     cleanup,
-    inputRef
+    inputRef,
+    galleryRef
   } = useCamera();
 
   useEffect(() => {
@@ -28,10 +28,6 @@ const WaterMeterCamera: React.FC = () => {
   const handleBack = () => {
     cleanup();
     navigate("/water-monitoring");
-  };
-
-  const handleCapture = () => {
-    takePicture();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,23 +66,30 @@ const WaterMeterCamera: React.FC = () => {
         <div className="w-8"></div>
       </div>
 
-      {/* Image Preview Area */}
-      <div className="relative mx-4 h-[60vh] rounded-3xl overflow-hidden border-4 border-gray-700">
-        <div className="absolute inset-0 bg-gray-900">
-          {capturedImage && (
-            <img 
-              src={capturedImage} 
-              alt="Captured" 
-              className="w-full h-full object-cover"
-            />
-          )}
-        </div>
+      {/* Center content */}
+      <div className="flex flex-col items-center justify-center h-[60vh] px-6 gap-4">
+        <p className="text-white text-center mb-6">
+          Please capture your water meter reading or select an image from your gallery
+        </p>
         
-        <CameraOverlay
-          isLoading={isLoading}
-          cameraError={cameraError}
-          capturedImage={capturedImage}
-        />
+        <Button
+          onClick={takePicture}
+          className="w-full max-w-sm bg-blue-500 hover:bg-blue-600"
+          size="lg"
+        >
+          <Camera className="mr-2" />
+          Capture Image
+        </Button>
+
+        <Button
+          onClick={selectFromGallery}
+          variant="secondary"
+          className="w-full max-w-sm"
+          size="lg"
+        >
+          <Image className="mr-2" />
+          Choose from Gallery
+        </Button>
 
         <input
           ref={inputRef}
@@ -96,16 +99,13 @@ const WaterMeterCamera: React.FC = () => {
           className="hidden"
           onChange={handleFileChange}
         />
-      </div>
 
-      {/* Camera Controls */}
-      <div className="absolute bottom-0 left-0 right-0 pb-12">
-        <CameraControls
-          cameraError={cameraError}
-          isLoading={isLoading}
-          hasPermission={hasPermission}
-          onRetry={startCamera}
-          onCapture={handleCapture}
+        <input
+          ref={galleryRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
         />
       </div>
     </div>
