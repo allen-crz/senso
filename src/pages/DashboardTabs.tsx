@@ -1,12 +1,15 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid, Users } from "lucide-react";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
 import { Card } from "@/components/ui/card";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
+import DashboardExistingUserView from '@/components/dashboard/DashboardExistingUserView';
+import DashboardNewUserView from '@/components/dashboard/DashboardNewUserView';
 
 type TabType = "all" | "water" | "electricity";
 
@@ -14,12 +17,13 @@ const DashboardTabs = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { firstName, avatarUrl, isLoading } = useUserData();
+  const [userType, setUserType] = useState<'new' | 'existing'>('new');
 
-  // Determine selected tab by path (so url stays in sync)
+  // Determine selected tab by path
   const tab: TabType = useMemo(() => {
     if (location.pathname === "/water") return "water";
     if (location.pathname === "/electricity") return "electricity";
-    return "all"; // default is dashboard
+    return "all";
   }, [location.pathname]);
 
   // Strong memoization of user data to prevent UI flickering
@@ -44,7 +48,7 @@ const DashboardTabs = () => {
     );
   }, [firstName, avatarUrl]);
 
-  // Redirect to monitoring pages instead of showing toast
+  // Redirect to monitoring pages
   const handleAddWaterReading = () => {
     navigate('/water-monitoring');
   };
@@ -53,13 +57,34 @@ const DashboardTabs = () => {
     navigate('/electricity-monitoring');
   };
 
-  // NAV: Only "Home" is highlighted, Water/Electric/Electricity always default
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Shared Top Header - Now fully memoized to prevent refreshing */}
+        {/* Shared Top Header */}
         <div className="flex justify-between items-center mb-8 pt-0">
           {userAvatar}
+        </div>
+
+        {/* User Type Toggle Button */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full"
+            onClick={() => setUserType(userType === 'new' ? 'existing' : 'new')}
+          >
+            {userType === 'new' ? (
+              <>
+                <Users className="h-4 w-4 mr-2" />
+                New User View
+              </>
+            ) : (
+              <>
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Existing User View
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Tabs */}
@@ -107,157 +132,15 @@ const DashboardTabs = () => {
           </div>
         </div>
 
-        {/* Tabbed Content */}
-        <div className="space-y-4">
-          {tab === "all" && (
-            <>
-              <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
-              <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
-
-              {/* ...Simple sections exactly as Dashboard... */}
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Water Usage Today</h3>
-                    <p className="text-gray-400">No readings yet</p>
-                  </div>
-                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-droplet text-blue-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-camera text-blue-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
-                  <button
-                    className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold"
-                    type="button"
-                    tabIndex={0}
-                    onClick={handleAddWaterReading}
-                  >
-                    Add Reading
-                  </button>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Electricity Usage Today</h3>
-                    <p className="text-gray-400">No readings yet</p>
-                  </div>
-                  <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-bolt text-amber-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-camera text-amber-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
-                  <button
-                    className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold"
-                    type="button"
-                    tabIndex={0}
-                    onClick={handleAddElectricityReading}
-                  >
-                    Add Reading
-                  </button>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">This Month's Forecast</h3>
-                    <p className="text-gray-400">Add readings to see forecast</p>
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-chart-line text-gray-400"></i>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <i className="fa-solid fa-calculator text-gray-200 text-4xl mb-4"></i>
-                  <p className="text-gray-400 text-center">Start adding meter readings to see cost predictions</p>
-                </div>
-              </div>
-            </>
-          )}
-          {tab === "water" && (
-            <>
-              <WaterSection variant="water" onAddReading={() => navigate('/water-monitoring')} />
-              <div className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
-                <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-check text-gray-500"></i>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-700 mb-1">No anomalies detected</h3>
-                    <p className="text-sm text-gray-500">Your water usage is within normal range</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Water Prices</h3>
-                    <p className="text-2xl font-bold text-[#212529]">₱25.50/m³</p>
-                    <p className="text-sm text-gray-500">Base rate for residential</p>
-                  </div>
-                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-peso-sign text-blue-400"></i>
-                  </div>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-4 mt-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">First 10m³</span>
-                    <span className="text-sm font-semibold">₱25.50/m³</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">11m³ and above</span>
-                    <span className="text-sm font-semibold">₱28.00/m³</span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-          {tab === "electricity" && (
-            <>
-              <ElectricitySection variant="electricity" onAddReading={handleAddElectricityReading} />
-              <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
-                <div className="flex gap-4 items-center">
-                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-triangle-exclamation text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white mb-1">Anomaly Detected</h3>
-                    <p className="text-sm text-white text-opacity-90">Unusual spike in electricity consumption</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="bg-white p-6 rounded-3xl shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Electricity Rates</h3>
-                    <p className="text-2xl font-bold text-[#212529]">₱9.50/kWh</p>
-                    <p className="text-sm text-gray-500">Base rate for residential</p>
-                  </div>
-                  <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-peso-sign text-amber-400" />
-                  </div>
-                </div>
-                <div className="bg-amber-50 rounded-xl p-4 mt-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">Peak Hours (9AM-9PM)</span>
-                    <span className="text-sm font-semibold">₱11.50/kWh</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Off-Peak Hours</span>
-                    <span className="text-sm font-semibold">₱8.00/kWh</span>
-                  </div>
-                </div>
-              </Card>
-            </>
-          )}
-        </div>
+        {/* Content based on user type */}
+        {userType === 'new' ? (
+          <DashboardNewUserView onAddWaterReading={handleAddWaterReading} onAddElectricityReading={handleAddElectricityReading} />
+        ) : (
+          <DashboardExistingUserView onAddWaterReading={handleAddWaterReading} onAddElectricityReading={handleAddElectricityReading} />
+        )}
       </div>
 
-      {/* Bottom Nav - Home is always highlighted (active), others are always default */}
+      {/* Bottom Nav */}
       <div className="fixed bottom-6 left-6 right-6 z-30">
         <div className="bg-[#212529] rounded-full px-8 py-4 shadow-lg">
           <div className="flex justify-between items-center">
@@ -311,4 +194,3 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
-
