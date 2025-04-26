@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { RefreshCw, ChevronUp, ChevronDown, TriangleAlert } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -15,9 +16,16 @@ const WaterResults = () => {
   const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
 
   useEffect(() => {
-    if (imageCaptured || location.state?.imageCaptured) {
+    // Check if the user has ever scanned a meter before (persisted even after logout)
+    const hasEverScanned = localStorage.getItem('hasEverScannedWaterMeter') === 'true';
+    
+    if (hasEverScanned || imageCaptured || location.state?.imageCaptured) {
       setUserType('existing');
-      localStorage.setItem('hasScannedMeterBefore', 'true');
+      
+      // If this is a new scan, mark that they've scanned at least once
+      if (imageCaptured || location.state?.imageCaptured) {
+        localStorage.setItem('hasEverScannedWaterMeter', 'true');
+      }
     } else {
       setUserType('new');
     }
