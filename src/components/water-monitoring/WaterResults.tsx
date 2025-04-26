@@ -13,9 +13,15 @@ const WaterResults = () => {
   const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
 
   useEffect(() => {
-    // Set to existing view if image was captured
-    if (imageCaptured || location.state?.imageCaptured) {
+    const hasScannedBefore = localStorage.getItem('hasScannedMeterBefore') === 'true';
+    
+    // Check if user has scanned before or just captured an image
+    if (hasScannedBefore || imageCaptured || location.state?.imageCaptured) {
       setUserType('existing');
+      // Set the flag that user has scanned at least once
+      if (imageCaptured || location.state?.imageCaptured) {
+        localStorage.setItem('hasScannedMeterBefore', 'true');
+      }
     }
   }, [location.state, imageCaptured]);
 
