@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUpWithEmail } from '@/services/auth';
 import { useToast } from "@/hooks/use-toast";
 import PasswordRequirements from './PasswordRequirements';
 import { validatePassword } from '@/utils/passwordValidation';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Check, X } from 'lucide-react';
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +18,13 @@ const RegisterForm = () => {
     confirmPassword: '',
     termsAccepted: false
   });
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    setPasswordsMatch(formData.password === formData.confirmPassword && formData.password !== '');
+  }, [formData.password, formData.confirmPassword]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +40,7 @@ const RegisterForm = () => {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!passwordsMatch) {
       toast({
         variant: "destructive",
         title: "Registration Error",
@@ -125,18 +130,32 @@ const RegisterForm = () => {
               type={showConfirmPassword ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] pr-10"
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] pr-20"
               placeholder="Confirm your password"
               required
             />
-            <button
-              type="button"
-              onClick={() => togglePasswordVisibility('confirmPassword')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-            >
-              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {formData.confirmPassword && (
+                <span className={`text-sm ${passwordsMatch ? 'text-green-500' : 'text-red-500'}`}>
+                  {passwordsMatch ? (
+                    <Check className="h-5 w-5" />
+                  ) : (
+                    <X className="h-5 w-5" />
+                  )}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => togglePasswordVisibility('confirmPassword')}
+                className="text-gray-400"
+              >
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
+          {formData.confirmPassword && !passwordsMatch && (
+            <p className="text-sm text-red-500 mt-1">Passwords do not match</p>
+          )}
         </div>
 
         <PasswordRequirements password={formData.password} />
