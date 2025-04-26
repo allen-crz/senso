@@ -1,73 +1,80 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Camera as CapacitorCamera, 
-  CameraResultType, 
-  CameraDirection,
-  CameraSource
-} from '@capacitor/camera';
 import { toast } from "@/hooks/use-toast";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    requestCameraPermission();
+  useEffect(() => {
+    startCamera();
   }, []);
 
-  const requestCameraPermission = async () => {
+  const startCamera = async () => {
     try {
-      const permission = await CapacitorCamera.checkPermissions();
-      if (permission.camera !== 'granted') {
-        const request = await CapacitorCamera.requestPermissions();
-        setHasPermission(request.camera === 'granted');
-      } else {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }, // Use rear camera
+        audio: false
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
         setHasPermission(true);
       }
     } catch (error) {
-      console.error('Error requesting camera permission:', error);
+      console.error('Error accessing camera:', error);
       toast({
         title: "Camera Error",
         description: "Failed to access camera. Please check permissions.",
         variant: "destructive",
       });
+      setHasPermission(false);
     }
   };
 
   const handleBack = () => {
+    // Stop camera stream when navigating away
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+    }
     navigate("/water-monitoring");
   };
 
-  const takePicture = async () => {
-    try {
-      const image = await CapacitorCamera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Base64,
-        source: CameraSource.Camera,
-        direction: CameraDirection.Rear,
-        saveToGallery: false
+  const takePicture = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    // Match canvas size to video feed
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw current video frame to canvas
+    if (context) {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert to base64
+      const imageData = canvas.toDataURL('image/jpeg', 0.9);
+      setCapturedImage(imageData);
+      
+      toast({
+        title: "Success",
+        description: "Image captured successfully",
       });
       
-      if (image.base64String) {
-        setCapturedImage(`data:image/jpeg;base64,${image.base64String}`);
-        toast({
-          title: "Success",
-          description: "Image captured successfully",
-        });
-        navigate("/water-monitoring");
-      }
-    } catch (error) {
-      console.error('Error capturing photo:', error);
-      toast({
-        title: "Error",
-        description: "Failed to capture image. Please try again.",
-        variant: "destructive",
-      });
+      // Stop camera stream
+      const stream = video.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      
+      navigate("/water-monitoring");
     }
   };
 
@@ -100,9 +107,17 @@ const WaterMeterCamera: React.FC = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full object-cover opacity-50 bg-gray-800" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full h-full object-cover"
+            />
           )}
         </div>
+        
+        {/* Hidden canvas for image capture */}
+        <canvas ref={canvasRef} className="hidden" />
         
         {/* Overlay Guide */}
         <div className="absolute inset-0 flex items-center justify-center">
