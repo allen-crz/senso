@@ -20,6 +20,7 @@ export const useCamera = (): UseCameraResult => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCameraInitialized, setIsCameraInitialized] = useState(false);
 
   const cleanup = () => {
     if (videoRef.current?.srcObject) {
@@ -29,15 +30,21 @@ export const useCamera = (): UseCameraResult => {
   };
 
   const startCamera = async () => {
+    // Reset states when retrying
+    setCameraError(null);
+    setIsLoading(true);
+    setIsCameraInitialized(false);
+    
+    // Clean up any existing stream
+    cleanup();
+    
     try {
-      setCameraError(null);
-      setIsLoading(true);
-      
       console.log("Requesting camera access...");
       
       const constraints = {
         video: {
-          facingMode: "environment",
+          // Use facingMode as a preference, not a requirement
+          facingMode: { ideal: "environment" },
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
@@ -50,11 +57,14 @@ export const useCamera = (): UseCameraResult => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current!.play()
+          if (!videoRef.current) return;
+          
+          videoRef.current.play()
             .then(() => {
               console.log("Video playback started successfully");
               setHasPermission(true);
               setIsLoading(false);
+              setIsCameraInitialized(true);
             })
             .catch(e => {
               console.error("Error playing video:", e);
@@ -80,11 +90,14 @@ export const useCamera = (): UseCameraResult => {
         if (videoRef.current) {
           videoRef.current.srcObject = fallbackStream;
           videoRef.current.onloadedmetadata = () => {
-            videoRef.current!.play()
+            if (!videoRef.current) return;
+            
+            videoRef.current.play()
               .then(() => {
                 console.log("Fallback video playback started successfully");
                 setHasPermission(true);
                 setIsLoading(false);
+                setIsCameraInitialized(true);
               })
               .catch(e => {
                 console.error("Error playing fallback video:", e);
@@ -131,10 +144,14 @@ export const useCamera = (): UseCameraResult => {
     }
   };
 
+  // Only initialize camera once when component mounts
   useEffect(() => {
-    startCamera();
+    if (!isCameraInitialized) {
+      startCamera();
+    }
+    
     return cleanup;
-  }, []);
+  }, [isCameraInitialized]);
 
   return {
     videoRef,

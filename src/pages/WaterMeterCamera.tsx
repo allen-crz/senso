@@ -33,9 +33,10 @@ const WaterMeterCamera: React.FC = () => {
       description: "Image captured successfully",
     });
     
+    // Delay navigation slightly to allow the user to see the captured image
     setTimeout(() => {
       navigate("/water-monitoring");
-    }, 500);
+    }, 800);
   };
 
   return (
