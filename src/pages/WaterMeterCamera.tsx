@@ -1,20 +1,62 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, Flashlight, FlashlightOff, SwitchCamera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Camera as CapacitorCamera, CameraResultType, CameraDirection } from '@capacitor/camera';
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
   const [isFlashOn, setIsFlashOn] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+
+  useEffect(() => {
+    requestCameraPermission();
+  }, []);
+
+  const requestCameraPermission = async () => {
+    try {
+      const permission = await CapacitorCamera.checkPermissions();
+      if (permission.camera !== 'granted') {
+        const request = await CapacitorCamera.requestPermissions();
+        setHasPermission(request.camera === 'granted');
+      } else {
+        setHasPermission(true);
+      }
+    } catch (error) {
+      console.error('Error requesting camera permission:', error);
+    }
+  };
 
   const handleBack = () => {
     navigate("/water-monitoring");
   };
 
-  const toggleFlash = () => {
+  const toggleFlash = async () => {
     setIsFlashOn(!isFlashOn);
-    // Flash functionality will be implemented when we add camera functionality
-    console.log("Flash toggled:", !isFlashOn);
+    try {
+      await CapacitorCamera.setFlashMode({
+        flashMode: !isFlashOn ? 'torch' : 'off'
+      });
+    } catch (error) {
+      console.error('Error toggling flash:', error);
+    }
+  };
+
+  const takePicture = async () => {
+    try {
+      const image = await CapacitorCamera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Base64,
+        direction: CameraDirection.Rear,
+        saveToGallery: false
+      });
+      
+      console.log('Captured image:', image);
+      // Here you can handle the captured image
+    } catch (error) {
+      console.error('Error capturing photo:', error);
+    }
   };
 
   return (
@@ -75,14 +117,15 @@ const WaterMeterCamera: React.FC = () => {
         {/* Capture Button */}
         <div className="flex flex-col items-center gap-4">
           <button 
-            onClick={() => {
-              console.log("Capturing image...");
-            }}
+            onClick={takePicture}
             className="w-20 h-20 rounded-full bg-blue-400 flex items-center justify-center"
+            disabled={!hasPermission}
           >
-            <i className="fa-solid fa-droplet text-white text-2xl"></i>
+            <Camera className="text-white h-8 w-8" />
           </button>
-          <p className="text-white text-sm">Tap to capture image</p>
+          <p className="text-white text-sm">
+            {hasPermission ? 'Tap to capture image' : 'Camera permission required'}
+          </p>
         </div>
       </div>
     </div>
@@ -90,4 +133,3 @@ const WaterMeterCamera: React.FC = () => {
 };
 
 export default WaterMeterCamera;
-
