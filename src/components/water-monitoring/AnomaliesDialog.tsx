@@ -29,7 +29,7 @@ const AnomaliesDialog: React.FC<AnomaliesDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-md max-w-[90%] w-[500px] mx-auto" 
+        className="sm:max-w-md max-w-[90%] w-[500px] mx-auto rounded-xl" 
         hideCloseButton
       >
         <DialogHeader>
