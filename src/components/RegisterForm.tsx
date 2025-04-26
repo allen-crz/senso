@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import PasswordRequirements from './PasswordRequirements';
 import { validatePassword } from '@/utils/passwordValidation';
 import { Input } from '@/components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +62,14 @@ const RegisterForm = () => {
     }
   };
 
+  const togglePasswordVisibility = (type: 'password' | 'confirmPassword') => {
+    if (type === 'password') {
+      setShowPassword(!showPassword);
+    } else {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
+  };
+
   return (
     <form onSubmit={handleRegister} className="bg-white rounded-3xl p-6 shadow-sm mb-6">
       <div className="space-y-4">
@@ -88,28 +97,46 @@ const RegisterForm = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group relative">
           <label className="block text-sm text-[#212529] mb-2">Password</label>
-          <Input
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
-            placeholder="Create a password"
-            required
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] pr-10"
+              placeholder="Create a password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility('password')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
-        <div className="form-group">
+        <div className="form-group relative">
           <label className="block text-sm text-[#212529] mb-2">Confirm Password</label>
-          <Input
-            type="password"
-            value={formData.confirmPassword}
-            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529]"
-            placeholder="Confirm your password"
-            required
-          />
+          <div className="relative">
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-[#f5f6f7] text-[#212529] pr-10"
+              placeholder="Confirm your password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility('confirmPassword')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            >
+              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         <PasswordRequirements password={formData.password} />
