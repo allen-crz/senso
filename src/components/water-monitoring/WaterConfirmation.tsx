@@ -55,7 +55,7 @@ const WaterConfirmation = () => {
             
             <div className="px-6 pt-4 pb-6 -mx-6 -mb-6 bg-white rounded-b-3xl">
               {/* Always show first 3 readings */}
-              <div className="space-y-4 bg-blue-50 rounded-xl p-4">
+              <div className="space-y-4 bg-blue-50 rounded-xl p-4 shadow-sm">
                 {previousReadings.slice(0, 3).map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <div>
@@ -69,7 +69,7 @@ const WaterConfirmation = () => {
               
               {/* Collapsible content for remaining readings */}
               <CollapsibleContent>
-                <div className="space-y-4 mt-4 pt-4 border-t border-gray-100 bg-blue-50 rounded-xl p-4">
+                <div className="space-y-4 mt-4 pt-4 border-t border-gray-100 bg-blue-50 rounded-xl p-4 shadow-sm">
                   {previousReadings.slice(3).map((item, index) => (
                     <div key={index} className="flex justify-between items-center">
                       <div>
@@ -165,3 +165,4 @@ const WaterConfirmation = () => {
 };
 
 export default WaterConfirmation;
+
