@@ -1,6 +1,6 @@
 
-import { useState, useRef, useEffect } from "react";
-import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
+import { useState, useRef } from "react";
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 interface UseCameraResult {
   videoRef: React.RefObject<HTMLVideoElement>;
@@ -10,122 +10,59 @@ interface UseCameraResult {
   cameraError: string | null;
   isLoading: boolean;
   startCamera: () => Promise<void>;
-  takePicture: () => void;
+  takePicture: () => Promise<void>;
   cleanup: () => void;
 }
 
 export const useCamera = (): UseCameraResult => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hasPermission, setHasPermission] = useState(false);
+  const [hasPermission, setHasPermission] = useState(true);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const cleanup = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => {
-        track.stop();
-      });
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
+  const startCamera = async () => {
+    try {
+      await Camera.checkPermissions();
+      setHasPermission(true);
+      setCameraError(null);
+    } catch (error) {
+      console.error('Camera permission error:', error);
+      setCameraError('Camera permissions required');
+      setHasPermission(false);
     }
   };
 
-  const startCamera = async () => {
-    cleanup();
-    setCameraError(null);
+  const takePicture = async () => {
     setIsLoading(true);
-    setCapturedImage(null);
-
+    setCameraError(null);
     try {
-      const isIOS = isIOSDevice();
-      const isiOSPWA = isIOSPWA();
-      
-      // iOS PWA specific constraints - minimal for maximum compatibility
-      const constraints = {
-        audio: false,
-        video: {
-          facingMode: 'environment'
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+        direction: {
+          camera: 'REAR'
         }
-      };
-
-      console.log('Requesting camera with constraints:', constraints);
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      if (!videoRef.current) return;
-      
-      streamRef.current = stream;
-      videoRef.current.srcObject = stream;
-      
-      // Critical iOS attributes
-      videoRef.current.setAttribute('playsinline', 'true');
-      videoRef.current.setAttribute('autoplay', 'true');
-      videoRef.current.muted = true;
-
-      // Wait for loadedmetadata event before playing
-      await new Promise<void>((resolve) => {
-        if (!videoRef.current) return;
-        videoRef.current.onloadedmetadata = () => {
-          if (!videoRef.current) return;
-          videoRef.current.play()
-            .then(() => {
-              console.log('Video playback started');
-              setHasPermission(true);
-              setIsLoading(false);
-              resolve();
-            })
-            .catch(error => {
-              console.error('Error starting video playback:', error);
-              setCameraError('Failed to start camera stream');
-              setIsLoading(false);
-            });
-        };
       });
       
-    } catch (error) {
-      console.error('Camera access error:', error);
-      let errorMessage = 'Failed to access camera';
-      
-      if (isIOSPWA()) {
-        errorMessage = 'Camera access failed. For iOS home screen app: Please check Settings → Safari → Camera access is enabled, then close and reopen the app.';
-      } else if (isIOSDevice()) {
-        errorMessage = 'Camera access failed. Please ensure camera permissions are enabled in Settings → Safari → Camera.';
+      if (image.dataUrl) {
+        setCapturedImage(image.dataUrl);
       }
-      
-      setCameraError(errorMessage);
-      setHasPermission(false);
+    } catch (error) {
+      console.error('Camera capture error:', error);
+      setCameraError('Failed to capture image');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const takePicture = () => {
-    if (!videoRef.current || !canvasRef.current || !hasPermission) return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    // Capture frame
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/jpeg', 0.9);
-    setCapturedImage(imageData);
-    cleanup();
+  const cleanup = () => {
+    setCapturedImage(null);
+    setCameraError(null);
   };
-
-  useEffect(() => {
-    startCamera();
-    return cleanup;
-  }, []);
 
   return {
     videoRef,

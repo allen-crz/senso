@@ -1,18 +1,15 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
 import { CameraOverlay } from "@/components/camera/CameraOverlay";
 import { CameraControls } from "@/components/camera/CameraControls";
-import { isIOSDevice, isIOSPWA } from "@/utils/deviceDetection";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
   const {
-    videoRef,
-    canvasRef,
     hasPermission,
     capturedImage,
     cameraError,
@@ -22,32 +19,30 @@ const WaterMeterCamera: React.FC = () => {
     cleanup
   } = useCamera();
 
-  const isIOS = isIOSDevice();
-  const isiOSPWA = isIOSPWA();
-
-  useEffect(() => {
-    if ((isIOS || isiOSPWA) && videoRef.current) {
-      videoRef.current.setAttribute('playsinline', 'true');
-      videoRef.current.setAttribute('autoplay', 'true');
-      videoRef.current.muted = true;
-    }
-  }, [videoRef.current, isIOS, isiOSPWA]);
-
   const handleBack = () => {
     cleanup();
     navigate("/water-monitoring");
   };
 
-  const handleCapture = () => {
-    takePicture();
-    toast({
-      title: "Success",
-      description: "Image captured successfully",
-    });
-    
-    setTimeout(() => {
-      navigate("/water-monitoring");
-    }, isIOSDevice() ? 2000 : 800);
+  const handleCapture = async () => {
+    try {
+      await takePicture();
+      toast({
+        title: "Success",
+        description: "Image captured successfully",
+      });
+      
+      setTimeout(() => {
+        navigate("/water-monitoring");
+      }, 800);
+    } catch (error) {
+      console.error('Failed to capture:', error);
+      toast({
+        title: "Error",
+        description: "Failed to capture image",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -65,27 +60,17 @@ const WaterMeterCamera: React.FC = () => {
         <div className="w-8"></div>
       </div>
 
-      {/* Camera Viewfinder */}
+      {/* Image Preview Area */}
       <div className="relative mx-4 h-[60vh] rounded-3xl overflow-hidden border-4 border-gray-700">
         <div className="absolute inset-0 bg-gray-900">
-          {capturedImage ? (
+          {capturedImage && (
             <img 
               src={capturedImage} 
               alt="Captured" 
               className="w-full h-full object-cover"
             />
-          ) : (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
           )}
         </div>
-        
-        <canvas ref={canvasRef} className="hidden" />
         
         <CameraOverlay
           isLoading={isLoading}
