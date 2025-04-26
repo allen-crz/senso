@@ -12,6 +12,7 @@ const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
   const { transitionAndNavigate } = usePageTransitionTrigger();
   const [hasImage, setHasImage] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const {
     hasPermission,
     capturedImage,
@@ -44,15 +45,23 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   const handleUseImage = () => {
+    // Set transitioning state to trigger animation
+    setIsTransitioning(true);
+    
+    // Store the capture state in localStorage
     localStorage.setItem('waterMeterImageCaptured', 'true');
-    transitionAndNavigate(() => {
-      navigate("/water-monitoring", { 
-        state: { 
-          imageCaptured: true,
-          slideIndex: 0
-        } 
+    
+    // Add a short delay before navigation to allow animation to play
+    setTimeout(() => {
+      transitionAndNavigate(() => {
+        navigate("/water-monitoring", { 
+          state: { 
+            imageCaptured: true,
+            slideIndex: 0
+          } 
+        });
       });
-    });
+    }, 300); // Match this with the animation duration
   };
 
   const handleCaptureAgain = () => {
@@ -74,7 +83,7 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 relative flex flex-col animate-fade-in">
+    <div className={`min-h-screen bg-blue-50 relative flex flex-col ${isTransitioning ? 'animate-fade-out' : 'animate-fade-in'}`}>
       <div className="h-safe-top bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40"></div>
 
       <div className="sticky top-0 z-10 bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40">
@@ -100,7 +109,7 @@ const WaterMeterCamera: React.FC = () => {
                 <div className="space-y-4">
                   <Button
                     onClick={handleUseImage}
-                    className="w-full bg-blue-500 hover:bg-blue-600"
+                    className="w-full bg-blue-500 hover:bg-blue-600 transition-all duration-300"
                     size="lg"
                   >
                     Use Image
@@ -108,7 +117,7 @@ const WaterMeterCamera: React.FC = () => {
                   <Button
                     onClick={handleCaptureAgain}
                     variant="secondary"
-                    className="w-full"
+                    className="w-full transition-all duration-300"
                     size="lg"
                   >
                     Capture Again
@@ -123,7 +132,7 @@ const WaterMeterCamera: React.FC = () => {
                 <div className="space-y-4">
                   <Button
                     onClick={takePicture}
-                    className="w-full bg-blue-500 hover:bg-blue-600"
+                    className="w-full bg-blue-500 hover:bg-blue-600 transition-all duration-300"
                     size="lg"
                   >
                     <Camera className="mr-2 h-5 w-5" />
@@ -132,7 +141,7 @@ const WaterMeterCamera: React.FC = () => {
                   <Button
                     onClick={selectFromGallery}
                     variant="secondary"
-                    className="w-full"
+                    className="w-full transition-all duration-300"
                     size="lg"
                   >
                     <Image className="mr-2 h-5 w-5" />

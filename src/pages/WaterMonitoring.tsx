@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Droplet, Info, Home, Bolt, Settings as SettingsIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -17,6 +16,7 @@ const WaterMonitoring: React.FC = () => {
   const location = useLocation();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
+  const [isEntering, setIsEntering] = React.useState(true);
 
   React.useEffect(() => {
     if (!api) {
@@ -28,24 +28,26 @@ const WaterMonitoring: React.FC = () => {
     });
   }, [api]);
   
-  // Handle navigation to specific slides based on location state
+  React.useEffect(() => {
+    setIsEntering(true);
+    const timer = setTimeout(() => setIsEntering(false), 500);
+    return () => clearTimeout(timer);
+  }, [location.key]);
+  
   React.useEffect(() => {
     if (!api) return;
 
     const slideIndex = location.state?.slideIndex;
     
     if (slideIndex !== undefined) {
-      // Small delay to ensure the carousel is fully initialized
       setTimeout(() => {
         api.scrollTo(slideIndex);
         console.log(`Scrolling to slide ${slideIndex}`);
       }, 100);
       
-      // Clear the state after navigation to avoid loops on page refresh
       navigate("/water-monitoring", { replace: true, state: {} });
     }
     else if (location.state?.showResults) {
-      // For backward compatibility
       setTimeout(() => {
         api.scrollTo(1);
         console.log("Scrolling to results view");
@@ -53,8 +55,10 @@ const WaterMonitoring: React.FC = () => {
     }
   }, [api, location.state, navigate]);
 
+  const animationClass = isEntering ? "animate-fade-in" : "";
+
   return (
-    <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
+    <div className={`min-h-screen bg-[#f5f6f7] relative font-sans pt-8 ${animationClass}`}>
       <div className="px-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -71,7 +75,6 @@ const WaterMonitoring: React.FC = () => {
           </button>
         </div>
 
-        {/* Progress Bars */}
         <div className="mb-6 flex gap-2">
           {[0, 1, 2].map((index) => (
             <div
@@ -107,11 +110,9 @@ const WaterMonitoring: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4 z-50">
         <div className="bg-[#212529] rounded-full px-8 py-4">
           <div className="flex justify-between items-center">
-            {/* Home */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/dashboard")}
@@ -125,7 +126,6 @@ const WaterMonitoring: React.FC = () => {
               </span>
             </button>
 
-            {/* Water */}
             <button className="flex flex-col items-center gap-1 group cursor-default">
               <div className="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-full flex items-center justify-center">
                 <Droplet className="text-blue-400" />
@@ -133,7 +133,6 @@ const WaterMonitoring: React.FC = () => {
               <span className="text-xs font-medium text-blue-400">Water</span>
             </button>
 
-            {/* Electric */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/electricity-monitoring")}
@@ -147,7 +146,6 @@ const WaterMonitoring: React.FC = () => {
               </span>
             </button>
 
-            {/* Settings */}
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
               onClick={() => navigate("/settings")}
