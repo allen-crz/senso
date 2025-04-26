@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from 'react';
+
+import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import WaterSection from '@/components/WaterSection';
 import ElectricitySection from '@/components/ElectricitySection';
 import { useUserData } from '@/hooks/useUserData';
 import { Card } from "@/components/ui/card";
-import { Home, Droplet, Bolt, Settings, ChartLine, AlertTriangle } from 'lucide-react';
-import { Progress } from "@/components/ui/progress";
+import { Home, Droplet, Bolt, Settings } from 'lucide-react';
 
 type TabType = "all" | "water" | "electricity";
 
@@ -14,21 +14,20 @@ const DashboardTabs = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { firstName, avatarUrl, isLoading } = useUserData();
-  const [userType, setUserType] = useState<'new' | 'existing'>('new'); // Default to 'new'
 
-  // Determine selected tab by path
+  // Determine selected tab by path (so url stays in sync)
   const tab: TabType = useMemo(() => {
     if (location.pathname === "/water") return "water";
     if (location.pathname === "/electricity") return "electricity";
-    return "all";
+    return "all"; // default is dashboard
   }, [location.pathname]);
 
   // Strong memoization of user data to prevent UI flickering
   const userAvatar = useMemo(() => {
-    const capitalizedFirstName = firstName
-      ? firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    const capitalizedFirstName = firstName 
+      ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
       : 'User';
-
+    
     return (
       <>
         <div>
@@ -45,6 +44,7 @@ const DashboardTabs = () => {
     );
   }, [firstName, avatarUrl]);
 
+  // Redirect to monitoring pages instead of showing toast
   const handleAddWaterReading = () => {
     navigate('/water-monitoring');
   };
@@ -53,24 +53,13 @@ const DashboardTabs = () => {
     navigate('/electricity-monitoring');
   };
 
+  // NAV: Only "Home" is highlighted, Water/Electric/Electricity always default
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative pt-6">
       <div className="px-6 pb-32">
-        {/* Shared Top Header */}
-        <div className="flex justify-between items-center mb-8">
+        {/* Shared Top Header - Now fully memoized to prevent refreshing */}
+        <div className="flex justify-between items-center mb-8 pt-0">
           {userAvatar}
-        </div>
-
-        {/* User Type Toggle */}
-        <div className="absolute right-6 top-6">
-          <select
-            value={userType}
-            onChange={(e) => setUserType(e.target.value as 'new' | 'existing')}
-            className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm"
-          >
-            <option value="new">New User</option>
-            <option value="existing">Existing User</option>
-          </select>
         </div>
 
         {/* Tabs */}
@@ -121,148 +110,73 @@ const DashboardTabs = () => {
         {/* Tabbed Content */}
         <div className="space-y-4">
           {tab === "all" && (
-            userType === 'new' ? (
-              <>
-                <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
-                <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
-                {/* ...Simple sections exactly as Dashboard... */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">Water Usage Today</h3>
-                      <p className="text-gray-400">No readings yet</p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                      <i className="fa-solid fa-droplet text-blue-400"></i>
-                    </div>
+            <>
+              <WaterSection variant="dashboard" onAddReading={handleAddWaterReading} />
+              <ElectricitySection variant="dashboard" onAddReading={handleAddElectricityReading} />
+
+              {/* ...Simple sections exactly as Dashboard... */}
+              <div className="bg-white p-6 rounded-3xl shadow-sm">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Water Usage Today</h3>
+                    <p className="text-gray-400">No readings yet</p>
                   </div>
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <i className="fa-solid fa-camera text-blue-200 text-4xl mb-4"></i>
-                    <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
-                    <button
-                      className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold"
-                      type="button"
-                      tabIndex={0}
-                      onClick={handleAddWaterReading}
-                    >
-                      Add Reading
-                    </button>
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-droplet text-blue-400"></i>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">Electricity Usage Today</h3>
-                      <p className="text-gray-400">No readings yet</p>
-                    </div>
-                    <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                      <i className="fa-solid fa-bolt text-amber-400"></i>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <i className="fa-solid fa-camera text-amber-200 text-4xl mb-4"></i>
-                    <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
-                    <button
-                      className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold"
-                      type="button"
-                      tabIndex={0}
-                      onClick={handleAddElectricityReading}
-                    >
-                      Add Reading
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">This Month's Forecast</h3>
-                      <p className="text-gray-400">Add readings to see forecast</p>
-                    </div>
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <i className="fa-solid fa-chart-line text-gray-400"></i>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <i className="fa-solid fa-calculator text-gray-200 text-4xl mb-4"></i>
-                    <p className="text-gray-400 text-center">Start adding meter readings to see cost predictions</p>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Water Usage Card */}
-                <Card className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">Water Usage Today</h3>
-                      <p className="text-2xl font-bold text-[#212529]">42 liters used</p>
-                    </div>
-                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                      <Droplet className="text-blue-400 h-5 w-5" />
-                    </div>
-                  </div>
-                  <Progress value={75} className="h-2 mb-4" />
+                <div className="flex flex-col items-center justify-center py-8">
+                  <i className="fa-solid fa-camera text-blue-200 text-4xl mb-4"></i>
+                  <p className="text-gray-400 text-center mb-2">Take a photo of your water meter</p>
                   <button
+                    className="px-6 py-2 bg-blue-50 text-blue-500 rounded-full text-sm font-semibold"
+                    type="button"
+                    tabIndex={0}
                     onClick={handleAddWaterReading}
-                    className="text-sm font-semibold text-blue-500"
                   >
-                    View Details →
+                    Add Reading
                   </button>
-                </Card>
-
-                {/* Electricity Usage Card */}
-                <Card className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">Electricity Usage Today</h3>
-                      <p className="text-2xl font-bold text-[#212529]">3.2 kWh used</p>
-                    </div>
-                    <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                      <Bolt className="text-amber-400 h-5 w-5" />
-                    </div>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-3xl shadow-sm">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#212529] mb-1">Electricity Usage Today</h3>
+                    <p className="text-gray-400">No readings yet</p>
                   </div>
-                  <Progress value={50} className="h-2 mb-4" />
+                  <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-bolt text-amber-400"></i>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <i className="fa-solid fa-camera text-amber-200 text-4xl mb-4"></i>
+                  <p className="text-gray-400 text-center mb-2">Take a photo of your electric meter</p>
                   <button
+                    className="px-6 py-2 bg-amber-50 text-amber-500 rounded-full text-sm font-semibold"
+                    type="button"
+                    tabIndex={0}
                     onClick={handleAddElectricityReading}
-                    className="text-sm font-semibold text-amber-500"
                   >
-                    View Details →
+                    Add Reading
                   </button>
-                </Card>
-
-                {/* Cost Forecast Card */}
-                <Card className="bg-white p-6 rounded-3xl shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#212529] mb-1">This Month's Forecast</h3>
-                      <p className="text-2xl font-bold text-[#212529]">₱824 Estimated</p>
-                    </div>
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <ChartLine className="text-gray-500 h-5 w-5" />
-                    </div>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-3xl shadow-sm">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#212529] mb-1">This Month's Forecast</h3>
+                    <p className="text-gray-400">Add readings to see forecast</p>
                   </div>
-                  <Progress value={66} className="h-2 mb-4" />
-                  <button className="text-sm font-semibold text-gray-500">
-                    View Breakdown →
-                  </button>
-                </Card>
-
-                {/* Anomaly Alert */}
-                <Card className="bg-red-500 p-6 rounded-3xl shadow-sm">
-                  <div className="flex gap-4 items-center">
-                    <div className="w-10 h-10 bg-red-400 bg-opacity-20 rounded-full flex items-center justify-center">
-                      <AlertTriangle className="text-white h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-white mb-1">Unusual water usage detected</h3>
-                      <button className="text-sm font-semibold text-white opacity-90">
-                        View Report →
-                      </button>
-                    </div>
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-chart-line text-gray-400"></i>
                   </div>
-                </Card>
-              </>
-            )
+                </div>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <i className="fa-solid fa-calculator text-gray-200 text-4xl mb-4"></i>
+                  <p className="text-gray-400 text-center">Start adding meter readings to see cost predictions</p>
+                </div>
+              </div>
+            </>
           )}
           {tab === "water" && (
             <>
@@ -397,3 +311,4 @@ const DashboardTabs = () => {
 };
 
 export default DashboardTabs;
+
