@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { ArrowLeft, Camera, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +5,11 @@ import { toast } from "@/hooks/use-toast";
 import { useCamera } from "@/hooks/useCamera";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
+  const { transitionAndNavigate } = usePageTransitionTrigger();
   const {
     hasPermission,
     capturedImage,
@@ -28,8 +29,8 @@ const WaterMeterCamera: React.FC = () => {
 
   const handleBack = () => {
     cleanup();
-    localStorage.removeItem('waterMeterImageCaptured'); // Clear capture state when going back
-    navigate("/water-monitoring");
+    localStorage.removeItem('waterMeterImageCaptured');
+    transitionAndNavigate(() => navigate("/water-monitoring"));
   };
 
   const handleSuccess = () => {
@@ -38,16 +39,16 @@ const WaterMeterCamera: React.FC = () => {
       description: "Image captured successfully",
     });
     
-    // Store capture state and navigate back
     localStorage.setItem('waterMeterImageCaptured', 'true');
-    setTimeout(() => {
+    
+    transitionAndNavigate(() => {
       navigate("/water-monitoring", { 
         state: { 
           imageCaptured: true,
           slideIndex: 0
         } 
       });
-    }, 800);
+    });
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +66,7 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 relative flex flex-col">
+    <div className="min-h-screen bg-blue-50 relative flex flex-col animate-fade-in">
       <div className="h-safe-top bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40"></div>
 
       <div className="sticky top-0 z-10 bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40">
