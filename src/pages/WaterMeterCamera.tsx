@@ -10,27 +10,89 @@ const WaterMeterCamera: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   useEffect(() => {
     startCamera();
+    
+    // Cleanup function to stop camera when component unmounts
+    return () => {
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
   }, []);
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }, // Use rear camera
+      // First clear any previous errors
+      setCameraError(null);
+      
+      console.log("Requesting camera access...");
+      
+      // Be explicit about constraints for mobile
+      const constraints = {
+        video: {
+          facingMode: { exact: "environment" }, // Force rear camera
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
         audio: false
-      });
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log("Camera access granted:", stream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current!.play().catch(e => {
+            console.error("Error playing video:", e);
+            setCameraError("Failed to play video stream");
+          });
+        };
         setHasPermission(true);
+      } else {
+        console.error("Video reference not available");
+        setCameraError("Video element not ready");
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
+      
+      // Try fallback to any camera if environment camera fails
+      if (String(error).includes("overconstrained")) {
+        try {
+          console.log("Trying fallback to any available camera...");
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = fallbackStream;
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current!.play().catch(e => console.error("Error playing video:", e));
+            };
+            setHasPermission(true);
+            return;
+          }
+        } catch (fallbackError) {
+          console.error('Fallback camera also failed:', fallbackError);
+        }
+      }
+      
+      let errorMessage = "Failed to access camera. Please check permissions.";
+      if (String(error).includes("Permission denied")) {
+        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
+      } else if (String(error).includes("not found")) {
+        errorMessage = "No camera found on your device.";
+      }
+      
+      setCameraError(errorMessage);
       toast({
         title: "Camera Error",
-        description: "Failed to access camera. Please check permissions.",
+        description: errorMessage,
         variant: "destructive",
       });
       setHasPermission(false);
@@ -107,12 +169,22 @@ const WaterMeterCamera: React.FC = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover"
-            />
+            <>
+              {cameraError ? (
+                <div className="flex items-center justify-center h-full text-center p-4">
+                  <p className="text-white">{cameraError}</p>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  style={{ transform: "scaleX(1)" }} /* Fix selfie mirroring if needed */
+                />
+              )}
+            </>
           )}
         </div>
         
@@ -131,21 +203,32 @@ const WaterMeterCamera: React.FC = () => {
 
       {/* Camera Controls */}
       <div className="absolute bottom-0 left-0 right-0 pb-12">
-        {/* Capture Button */}
-        <div className="flex flex-col items-center gap-4">
-          <button 
-            onClick={takePicture}
-            className={`w-20 h-20 rounded-full flex items-center justify-center ${
-              !hasPermission ? 'bg-gray-400' : 'bg-blue-400'
-            }`}
-            disabled={!hasPermission}
-          >
-            <Camera className="text-white h-8 w-8" />
-          </button>
-          <p className="text-white text-sm">
-            {hasPermission ? 'Tap to capture image' : 'Camera permission required'}
-          </p>
-        </div>
+        {cameraError ? (
+          <div className="flex flex-col items-center gap-4">
+            <button 
+              onClick={startCamera}
+              className="bg-blue-400 text-white px-6 py-3 rounded-full"
+            >
+              Retry Camera Access
+            </button>
+          </div>
+        ) : (
+          /* Capture Button */
+          <div className="flex flex-col items-center gap-4">
+            <button 
+              onClick={takePicture}
+              className={`w-20 h-20 rounded-full flex items-center justify-center ${
+                !hasPermission ? 'bg-gray-400' : 'bg-blue-400'
+              }`}
+              disabled={!hasPermission}
+            >
+              <Camera className="text-white h-8 w-8" />
+            </button>
+            <p className="text-white text-sm">
+              {hasPermission ? 'Tap to capture image' : 'Camera permission required'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
