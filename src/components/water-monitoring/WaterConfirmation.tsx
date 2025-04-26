@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ChevronDown } from "lucide-react";
 import {
@@ -41,21 +40,21 @@ const WaterConfirmation = () => {
 
       {/* Previous Readings Card */}
       <div className="bg-white rounded-3xl shadow-sm mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-t-3xl">
+        <div className="bg-white p-6 rounded-t-3xl">
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-semibold text-white">Previous Readings</h3>
-                <p className="text-sm text-blue-100">All readings</p>
+                <h3 className="text-lg font-semibold text-[#212529]">Previous Readings</h3>
+                <p className="text-sm text-gray-500">All readings</p>
               </div>
-              <CollapsibleTrigger className="text-white">
+              <CollapsibleTrigger className="text-[#212529]">
                 <ChevronDown className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
               </CollapsibleTrigger>
             </div>
             
             <div className="px-6 pt-4 pb-6 -mx-6 -mb-6 bg-white rounded-b-3xl">
               {/* Always show first 3 readings */}
-              <div className="space-y-4 bg-blue-50 rounded-xl p-4 shadow-sm">
+              <div className="space-y-4 bg-gray-50 rounded-xl p-4 shadow-sm">
                 {previousReadings.slice(0, 3).map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <div>
@@ -69,7 +68,7 @@ const WaterConfirmation = () => {
               
               {/* Collapsible content for remaining readings */}
               <CollapsibleContent>
-                <div className="space-y-4 mt-4 pt-4 border-t border-gray-100 bg-blue-50 rounded-xl p-4 shadow-sm">
+                <div className="space-y-4 mt-4 pt-4 border-t border-gray-100 bg-gray-50 rounded-xl p-4 shadow-sm">
                   {previousReadings.slice(3).map((item, index) => (
                     <div key={index} className="flex justify-between items-center">
                       <div>
@@ -165,4 +164,3 @@ const WaterConfirmation = () => {
 };
 
 export default WaterConfirmation;
-
