@@ -29,7 +29,7 @@ const WaterMonitoring: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] relative font-sans pt-8">
-      <div className="px-6 pb-32">
+      <div className="px-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
@@ -57,26 +57,28 @@ const WaterMonitoring: React.FC = () => {
           ))}
         </div>
 
-        <Carousel 
-          setApi={setApi}
-          opts={{
-            align: "start",
-            loop: false,
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            <CarouselItem>
-              <WaterCapture />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterResults />
-            </CarouselItem>
-            <CarouselItem>
-              <WaterConfirmation />
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
+        <div className="pb-[72px]">
+          <Carousel 
+            setApi={setApi}
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              <CarouselItem className="overflow-auto h-[calc(100vh-210px)]">
+                <WaterCapture />
+              </CarouselItem>
+              <CarouselItem className="overflow-auto h-[calc(100vh-210px)]">
+                <WaterResults />
+              </CarouselItem>
+              <CarouselItem className="overflow-auto h-[calc(100vh-210px)]">
+                <WaterConfirmation />
+              </CarouselItem>
+            </CarouselContent>
+          </Carousel>
+        </div>
       </div>
 
       {/* Bottom Navigation */}
