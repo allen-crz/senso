@@ -1,6 +1,18 @@
 import React from "react";
+import { RefreshCw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const WaterResults = () => {
+  const navigate = useNavigate();
+  const imageCaptured = localStorage.getItem('waterMeterImageCaptured') === 'true';
+
+  const handleScanAgain = () => {
+    localStorage.removeItem('waterMeterImageCaptured');
+    // Force reload the component state
+    navigate("/water-monitoring", { replace: true });
+  };
+
   return (
     <div className="space-y-4 pb-10">
       <h2 className="text-2xl font-bold text-[#212529] mb-6">Meter Scan Results</h2>
@@ -69,6 +81,17 @@ const WaterResults = () => {
           </div>
         </div>
       </div>
+
+      {/* Scan Again Button - Only shown if image was captured */}
+      {imageCaptured && (
+        <Button
+          onClick={handleScanAgain}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-full font-medium text-lg shadow-md transition-colors flex items-center justify-center gap-2"
+        >
+          <RefreshCw className="w-5 h-5" />
+          Scan Again
+        </Button>
+      )}
     </div>
   );
 };
