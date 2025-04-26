@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Camera, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -45,23 +44,19 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   const handleUseImage = () => {
-    // Set transitioning state to trigger animation
     setIsTransitioning(true);
-    
-    // Store the capture state in localStorage
     localStorage.setItem('waterMeterImageCaptured', 'true');
-    
-    // Add a short delay before navigation to allow animation to play
     setTimeout(() => {
       transitionAndNavigate(() => {
         navigate("/water-monitoring", { 
           state: { 
             imageCaptured: true,
-            slideIndex: 0
+            slideIndex: 0,
+            slideDirection: 'right'
           } 
         });
       });
-    }, 300); // Match this with the animation duration
+    }, 300);
   };
 
   const handleCaptureAgain = () => {
@@ -83,7 +78,9 @@ const WaterMeterCamera: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-blue-50 relative flex flex-col ${isTransitioning ? 'animate-fade-out' : 'animate-fade-in'}`}>
+    <div className={`min-h-screen bg-blue-50 relative flex flex-col ${
+      isTransitioning ? 'animate-slide-out-left' : 'animate-slide-in-right'
+    }`}>
       <div className="h-safe-top bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40"></div>
 
       <div className="sticky top-0 z-10 bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40">
