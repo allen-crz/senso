@@ -22,28 +22,14 @@ const WaterMeterCamera: React.FC = () => {
     cleanup
   } = useCamera();
 
-  // Check if device is iOS PWA
   const isIOS = isIOSDevice();
   const isiOSPWA = isIOSPWA();
 
-  // Effect to handle iOS specific camera setup
   useEffect(() => {
     if ((isIOS || isiOSPWA) && videoRef.current) {
-      console.log("Setting iOS-specific video attributes in component");
-      // Critical attributes for iOS Safari/PWA
       videoRef.current.setAttribute('playsinline', 'true');
-      videoRef.current.setAttribute('webkit-playsinline', 'true');
       videoRef.current.setAttribute('autoplay', 'true');
       videoRef.current.muted = true;
-      
-      // Force capture in PWA mode
-      if (isiOSPWA) {
-        console.log("Forcing PWA-specific attributes");
-        videoRef.current.setAttribute('controls', 'false');
-        videoRef.current.style.width = "100%";
-        videoRef.current.style.height = "100%";
-        videoRef.current.style.objectFit = "cover";
-      }
     }
   }, [videoRef.current, isIOS, isiOSPWA]);
 
@@ -59,17 +45,14 @@ const WaterMeterCamera: React.FC = () => {
       description: "Image captured successfully",
     });
     
-    // Longer delay for iOS devices to allow for processing
-    const delay = isIOSDevice() ? 2000 : 800;
     setTimeout(() => {
       navigate("/water-monitoring");
-    }, delay);
+    }, isIOSDevice() ? 2000 : 800);
   };
 
   return (
     <div className="min-h-screen bg-black relative">
-      {/* Status Bar Area */}
-      <div className="h-10"></div>
+      <div className="h-safe-top"></div>
 
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4">
@@ -102,7 +85,6 @@ const WaterMeterCamera: React.FC = () => {
           )}
         </div>
         
-        {/* Hidden canvas for image capture */}
         <canvas ref={canvasRef} className="hidden" />
         
         <CameraOverlay
