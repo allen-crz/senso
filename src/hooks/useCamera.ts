@@ -22,11 +22,20 @@ export const useCamera = (): UseCameraResult => {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const cleanup = () => {
+    console.log("Cleaning up camera resources");
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        console.log("Stopping track:", track.kind, track.readyState);
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+    
     if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
     }
   };
 
@@ -34,60 +43,60 @@ export const useCamera = (): UseCameraResult => {
     // Reset states when retrying
     setCameraError(null);
     setIsLoading(true);
-    setIsCameraInitialized(false);
     setCapturedImage(null);
     
-    // Clean up any existing stream
+    // Clean up any existing stream first
     cleanup();
     
     try {
-      console.log("Requesting camera access...");
+      console.log("Requesting camera access for iOS PWA...");
       
-      // Specific constraints for iOS devices
+      // Check if iOS device
       const isIOS = isIOSDevice();
       console.log("Is iOS device:", isIOS);
       
-      let constraints = {};
-      
-      if (isIOS) {
-        // iOS specific constraints - explicitly require back camera
-        constraints = {
+      // iOS specific constraints - forcefully use back camera
+      const constraints = isIOS ? 
+        {
+          audio: false,
           video: {
-            facingMode: "environment", // Force environment (rear) camera
+            facingMode: "environment", // Force rear camera
             width: { min: 640, ideal: 1280, max: 1920 },
             height: { min: 480, ideal: 720, max: 1080 }
-          },
-          audio: false
-        };
-      } else {
-        // Default constraints for other devices
-        constraints = {
+          }
+        } : 
+        {
+          audio: false,
           video: {
-            facingMode: { ideal: "environment" },
+            facingMode: { exact: "environment" }, // More strict on non-iOS
             width: { ideal: 1280 },
             height: { ideal: 720 }
-          },
-          audio: false
+          }
         };
-      }
       
       console.log("Using camera constraints:", JSON.stringify(constraints));
+      
+      // Request camera access
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       console.log("Camera access granted:", stream);
+      streamRef.current = stream;
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         
-        // For iOS, we need to set playsinline again to make sure it works
+        // Critical for iOS Safari - must be set directly on the element
         if (isIOS) {
           videoRef.current.setAttribute('playsinline', 'true');
           videoRef.current.setAttribute('webkit-playsinline', 'true');
+          videoRef.current.setAttribute('autoplay', 'true');
+          videoRef.current.muted = true;
+          console.log("Set iOS-specific video attributes");
         }
         
         videoRef.current.onloadedmetadata = () => {
           if (!videoRef.current) return;
           
-          console.log("Video metadata loaded");
+          console.log("Video metadata loaded, attempting to play");
           videoRef.current.play()
             .then(() => {
               console.log("Video playback started successfully");
@@ -97,7 +106,7 @@ export const useCamera = (): UseCameraResult => {
             })
             .catch(e => {
               console.error("Error playing video:", e);
-              setCameraError("Failed to play video stream");
+              setCameraError(`Failed to start video stream: ${e.message}`);
               setIsLoading(false);
             });
         };
@@ -111,32 +120,37 @@ export const useCamera = (): UseCameraResult => {
       
       // Special handling for iOS devices
       if (isIOSDevice()) {
-        console.log("iOS camera access failed, trying fallback approach");
+        console.log("iOS camera access failed, trying simplified approach");
         try {
-          // iOS fallback - try with simpler constraints
+          // iOS fallback with minimal constraints
           const fallbackStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: { facingMode: "environment" },
             audio: false
           });
+          
+          streamRef.current = fallbackStream;
           
           if (videoRef.current) {
             videoRef.current.srcObject = fallbackStream;
             videoRef.current.setAttribute('playsinline', 'true');
             videoRef.current.setAttribute('webkit-playsinline', 'true');
+            videoRef.current.setAttribute('autoplay', 'true');
+            videoRef.current.muted = true;
             
             videoRef.current.onloadedmetadata = () => {
               if (!videoRef.current) return;
               
+              console.log("iOS fallback: Video metadata loaded, attempting to play");
               videoRef.current.play()
                 .then(() => {
-                  console.log("Fallback video playback started successfully");
+                  console.log("iOS fallback: Video playback started successfully");
                   setHasPermission(true);
                   setIsLoading(false);
                   setIsCameraInitialized(true);
                 })
                 .catch(e => {
-                  console.error("Error playing fallback video:", e);
-                  setCameraError("Failed to play video stream");
+                  console.error("iOS fallback: Error playing video:", e);
+                  setCameraError("Failed to access camera on iOS. Please check permissions and try again.");
                   setIsLoading(false);
                 });
             };
@@ -144,6 +158,9 @@ export const useCamera = (): UseCameraResult => {
           }
         } catch (fallbackError) {
           console.error('iOS fallback camera attempt failed:', fallbackError);
+          setCameraError("Camera access failed on iOS. Please ensure camera permissions are enabled in Settings → Safari → Camera.");
+          setIsLoading(false);
+          return;
         }
       }
       
@@ -155,15 +172,19 @@ export const useCamera = (): UseCameraResult => {
       } else if (String(error).includes("OverconstrainedError")) {
         errorMessage = "Camera configuration not supported. Trying with default camera.";
         
-        // Try one more time with any camera
         try {
           const anyCamera = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: false
           });
           
+          streamRef.current = anyCamera;
+          
           if (videoRef.current) {
             videoRef.current.srcObject = anyCamera;
+            videoRef.current.setAttribute('playsinline', 'true');
+            videoRef.current.setAttribute('webkit-playsinline', 'true');
+            
             videoRef.current.onloadedmetadata = () => {
               videoRef.current?.play()
                 .then(() => {

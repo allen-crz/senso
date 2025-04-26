@@ -26,9 +26,12 @@ const WaterMeterCamera: React.FC = () => {
   useEffect(() => {
     const isIOS = isIOSDevice();
     if (isIOS && videoRef.current) {
-      // Ensure playsInline is set for iOS
+      console.log("Setting iOS-specific video attributes in component");
+      // Critical attributes for iOS Safari/PWA
       videoRef.current.setAttribute('playsinline', 'true');
       videoRef.current.setAttribute('webkit-playsinline', 'true');
+      videoRef.current.setAttribute('autoplay', 'true');
+      videoRef.current.muted = true;
     }
   }, [videoRef.current]);
 
@@ -44,9 +47,8 @@ const WaterMeterCamera: React.FC = () => {
       description: "Image captured successfully",
     });
     
-    // Delay navigation slightly to allow the user to see the captured image
-    // Longer delay for iOS devices
-    const delay = isIOSDevice() ? 1200 : 800;
+    // Longer delay for iOS devices to allow for processing
+    const delay = isIOSDevice() ? 1500 : 800;
     setTimeout(() => {
       navigate("/water-monitoring");
     }, delay);

@@ -18,7 +18,17 @@ export const isMobileDevice = (): boolean => {
  */
 export const isIOSDevice = (): boolean => {
   const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-  return /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+  
+  // iOS devices include iPhone, iPad, and iPod
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+  
+  // Additional check for iOS within a PWA context
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                (window.navigator as any).standalone === true;
+  
+  console.log("iOS detection:", { isIOS, isPWA, userAgent: userAgent.substring(0, 50) + "..." });
+  
+  return isIOS && !(window as any).MSStream;
 };
 
 /**

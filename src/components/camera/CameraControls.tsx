@@ -26,13 +26,15 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
         <button 
           onClick={onRetry}
           className="bg-blue-400 text-white px-6 py-3 rounded-full flex items-center gap-2 active:bg-blue-500"
+          aria-label="Retry camera access"
         >
           <RefreshCw className="w-5 h-5" />
-          {isIOS ? "Retry Camera Access" : "Retry Camera Access"}
+          Retry Camera Access
         </button>
-        {isIOS && cameraError.includes("permission") && (
+        {isIOS && (
           <p className="text-white text-xs max-w-xs text-center px-4">
-            If camera access was denied, please close the app and enable camera permissions in your device settings
+            For iOS devices: If camera access was denied, please close the app completely, 
+            go to Settings → Safari → {isIOS ? "Camera" : "Permissions"} and enable camera access
           </p>
         )}
       </div>
@@ -60,6 +62,7 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
           !hasPermission ? 'bg-gray-400' : 'bg-blue-400'
         }`}
         disabled={!hasPermission}
+        aria-label="Capture image"
       >
         <Camera className="text-white h-8 w-8" />
       </button>
