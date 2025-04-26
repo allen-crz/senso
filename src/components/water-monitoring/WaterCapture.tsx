@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Camera, Droplet, CheckCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -14,7 +15,7 @@ const WaterCapture = () => {
   const handleViewResults = () => {
     const api = location.state?.api;
     if (api) {
-      api.scrollTo(1);
+      api.scrollTo(1); // Scroll to the second slide (index 1)
     }
   };
 
