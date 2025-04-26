@@ -1,5 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
+import { isIOSDevice } from "@/utils/deviceDetection";
 
 interface UseCameraResult {
   videoRef: React.RefObject<HTMLVideoElement>;
@@ -34,6 +35,7 @@ export const useCamera = (): UseCameraResult => {
     setCameraError(null);
     setIsLoading(true);
     setIsCameraInitialized(false);
+    setCapturedImage(null);
     
     // Clean up any existing stream
     cleanup();
@@ -41,24 +43,51 @@ export const useCamera = (): UseCameraResult => {
     try {
       console.log("Requesting camera access...");
       
-      const constraints = {
-        video: {
-          // Use facingMode as a preference, not a requirement
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      };
+      // Specific constraints for iOS devices
+      const isIOS = isIOSDevice();
+      console.log("Is iOS device:", isIOS);
       
+      let constraints = {};
+      
+      if (isIOS) {
+        // iOS specific constraints - explicitly require back camera
+        constraints = {
+          video: {
+            facingMode: "environment", // Force environment (rear) camera
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 }
+          },
+          audio: false
+        };
+      } else {
+        // Default constraints for other devices
+        constraints = {
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        };
+      }
+      
+      console.log("Using camera constraints:", JSON.stringify(constraints));
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       console.log("Camera access granted:", stream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        
+        // For iOS, we need to set playsinline again to make sure it works
+        if (isIOS) {
+          videoRef.current.setAttribute('playsinline', 'true');
+          videoRef.current.setAttribute('webkit-playsinline', 'true');
+        }
+        
         videoRef.current.onloadedmetadata = () => {
           if (!videoRef.current) return;
           
+          console.log("Video metadata loaded");
           videoRef.current.play()
             .then(() => {
               console.log("Video playback started successfully");
@@ -80,44 +109,78 @@ export const useCamera = (): UseCameraResult => {
     } catch (error) {
       console.error('Error accessing camera:', error);
       
-      try {
-        console.log("Trying with any available camera...");
-        const fallbackStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false
-        });
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = fallbackStream;
-          videoRef.current.onloadedmetadata = () => {
-            if (!videoRef.current) return;
+      // Special handling for iOS devices
+      if (isIOSDevice()) {
+        console.log("iOS camera access failed, trying fallback approach");
+        try {
+          // iOS fallback - try with simpler constraints
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = fallbackStream;
+            videoRef.current.setAttribute('playsinline', 'true');
+            videoRef.current.setAttribute('webkit-playsinline', 'true');
             
-            videoRef.current.play()
-              .then(() => {
-                console.log("Fallback video playback started successfully");
-                setHasPermission(true);
-                setIsLoading(false);
-                setIsCameraInitialized(true);
-              })
-              .catch(e => {
-                console.error("Error playing fallback video:", e);
-                setCameraError("Failed to play video stream");
-                setIsLoading(false);
-              });
-          };
-          return;
+            videoRef.current.onloadedmetadata = () => {
+              if (!videoRef.current) return;
+              
+              videoRef.current.play()
+                .then(() => {
+                  console.log("Fallback video playback started successfully");
+                  setHasPermission(true);
+                  setIsLoading(false);
+                  setIsCameraInitialized(true);
+                })
+                .catch(e => {
+                  console.error("Error playing fallback video:", e);
+                  setCameraError("Failed to play video stream");
+                  setIsLoading(false);
+                });
+            };
+            return;
+          }
+        } catch (fallbackError) {
+          console.error('iOS fallback camera attempt failed:', fallbackError);
         }
-      } catch (fallbackError) {
-        console.error('All camera attempts failed:', fallbackError);
       }
       
       let errorMessage = "Failed to access camera. Please check permissions.";
       if (String(error).includes("Permission denied")) {
-        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
+        errorMessage = "Camera permission denied. Please enable camera access in your device settings.";
       } else if (String(error).includes("not found")) {
         errorMessage = "No camera found on your device.";
       } else if (String(error).includes("OverconstrainedError")) {
-        errorMessage = "Camera configuration not supported. Please try a different browser or device.";
+        errorMessage = "Camera configuration not supported. Trying with default camera.";
+        
+        // Try one more time with any camera
+        try {
+          const anyCamera = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = anyCamera;
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current?.play()
+                .then(() => {
+                  setHasPermission(true);
+                  setIsLoading(false);
+                  setIsCameraInitialized(true);
+                })
+                .catch(() => {
+                  setCameraError("Failed to access any camera");
+                  setIsLoading(false);
+                });
+            };
+            return;
+          }
+        } catch {
+          errorMessage = "No camera available on this device";
+        }
       }
       
       setCameraError(errorMessage);
@@ -144,13 +207,18 @@ export const useCamera = (): UseCameraResult => {
     }
   };
 
-  // Only initialize camera once when component mounts
+  // Initialize camera once when component mounts
   useEffect(() => {
     if (!isCameraInitialized) {
+      console.log("Initializing camera on component mount");
       startCamera();
     }
     
-    return cleanup;
+    // Cleanup when component unmounts
+    return () => {
+      console.log("Cleaning up camera on unmount");
+      cleanup();
+    };
   }, [isCameraInitialized]);
 
   return {
