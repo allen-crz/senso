@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMeterCamera } from "@/hooks/useMeterCamera";
 import { X, ArrowLeft, RotateCcw, Check, Camera, Upload } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 interface MeterCameraViewProps {
   onClose: () => void;
@@ -12,6 +13,9 @@ interface MeterCameraViewProps {
 const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Detect if we're on iOS web (not native app)
+  const isIOSWeb = Capacitor.getPlatform() === 'web' && /iPhone|iPad|iPod/.test(navigator.userAgent);
 
   const {
     capture,
@@ -32,6 +36,13 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
   const handleCapture = async () => {
+    // For iOS web, use native file input instead of Capacitor
+    if (isIOSWeb) {
+      fileInputRef.current?.click();
+      return;
+    }
+
+    // For Android/native, use Capacitor Camera API
     const image = await capture();
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
@@ -47,6 +58,20 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   };
 
   const handleGallery = async () => {
+    // For iOS web, use native file input
+    if (isIOSWeb) {
+      if (fileInputRef.current) {
+        fileInputRef.current.removeAttribute('capture');
+        fileInputRef.current.click();
+        // Re-add capture for next camera use
+        setTimeout(() => {
+          fileInputRef.current?.setAttribute('capture', 'environment');
+        }, 100);
+      }
+      return;
+    }
+
+    // For Android/native, use Capacitor Camera API
     const image = await pickFromGallery();
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
@@ -161,14 +186,23 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
           </>
         )}
         <div className="space-y-3">
-          <button onClick={handleCapture} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+          <button onClick={handleCapture} disabled={!isIOSWeb && isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
             <Camera className="w-5 h-5" />
-            {isCapturing ? 'Loading...' : 'Take Photo'}
+            {!isIOSWeb && isCapturing ? 'Loading...' : 'Take Photo'}
           </button>
-          <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button onClick={handleGallery} disabled={!isIOSWeb && isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
             <Upload className="w-5 h-5" />
             Choose from Gallery
           </button>
+          {/* Hidden file input for iOS web compatibility */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFileChange}
+            className="hidden"
+          />
         </div>
       </div>
     </div>
