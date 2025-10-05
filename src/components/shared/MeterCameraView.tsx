@@ -212,6 +212,7 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
             <p className="text-white/80 mb-6 text-sm">{!isIOSWeb && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
+            <p className="text-white/60 text-xs mt-2">Platform: {Capacitor.getPlatform()} | iOS: {isIOSWeb ? 'Yes' : 'No'}</p>
           </>
         )}
         <div className="space-y-3">
