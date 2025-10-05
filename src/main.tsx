@@ -3,7 +3,15 @@ import App from './App.tsx'
 import './index.css'
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
-// Initialize PWA elements for Capacitor Camera
-defineCustomElements(window);
+// Wait for DOM to be ready before initializing
+const init = async () => {
+  // Initialize PWA elements for Capacitor Camera
+  await defineCustomElements(window);
 
-createRoot(document.getElementById("root")!).render(<App />);
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    createRoot(rootElement).render(<App />);
+  }
+};
+
+init();
