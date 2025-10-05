@@ -2,8 +2,6 @@ import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMeterCamera } from "@/hooks/useMeterCamera";
 import { X, ArrowLeft, RotateCcw, Check, Camera, Upload } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
-import { isIOSDevice } from '@/utils/deviceDetection';
 
 interface MeterCameraViewProps {
   onClose: () => void;
@@ -14,13 +12,6 @@ interface MeterCameraViewProps {
 const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Detect if we're on iOS (use proper detection from deviceDetection.ts)
-  const isIOS = isIOSDevice();
-  const platform = Capacitor.getPlatform();
-
-  // Use native file input for iOS OR if platform is 'web' (PWA/browser)
-  const useNativeInput = isIOS || platform === 'web';
 
   const {
     capture,
@@ -41,38 +32,6 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
   const handleCapture = async () => {
-    // For iOS/web, dynamically create file input (bypasses Safari security)
-    if (useNativeInput) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.setAttribute('capture', 'environment'); // Force rear camera
-
-      input.onchange = async (e: any) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Create fake event for handleFileSelect
-        const fakeEvent = { target: { files: [file], value: '' } } as any;
-        const image = await handleFileSelect(fakeEvent);
-        if (image) {
-          sessionStorage.setItem('temp_captured_image', image.dataUrl);
-          sessionStorage.setItem('temp_image_captured', 'true');
-          onClose();
-          navigate(route, {
-            state: {
-              imageCaptured: true,
-              imageData: image.dataUrl
-            }
-          });
-        }
-      };
-
-      input.click();
-      return;
-    }
-
-    // For Android/native, use Capacitor Camera API
     const image = await capture();
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
@@ -87,82 +46,12 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     }
   };
 
-  const handleGallery = async () => {
-    // For iOS/web, dynamically create file input without capture attribute
-    if (useNativeInput) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      // No capture attribute = shows "Take Photo or Choose from Photos" menu
-
-      input.onchange = async (e: any) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const fakeEvent = { target: { files: [file], value: '' } } as any;
-        const image = await handleFileSelect(fakeEvent);
-        if (image) {
-          sessionStorage.setItem('temp_captured_image', image.dataUrl);
-          sessionStorage.setItem('temp_image_captured', 'true');
-          onClose();
-          navigate(route, {
-            state: {
-              imageCaptured: true,
-              imageData: image.dataUrl
-            }
-          });
-        }
-      };
-
-      input.click();
-      return;
-    }
-
-    // For Android/native, use Capacitor Camera API
-    const image = await pickFromGallery();
-    if (image) {
-      sessionStorage.setItem('temp_captured_image', image.dataUrl);
-      sessionStorage.setItem('temp_image_captured', 'true');
-      onClose();
-      navigate(route, {
-        state: {
-          imageCaptured: true,
-          imageData: image.dataUrl
-        }
-      });
-    }
+  const handleGallery = () => {
+    // Trigger native file input instead of Capacitor API
+    fileInputRef.current?.click();
   };
 
   const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    // For iOS, handle file selection directly without the hook's isCapturing state
-    if (useNativeInput) {
-      const file = event.target.files?.[0];
-      if (!file) {
-        // User cancelled
-        event.target.value = '';
-        return;
-      }
-
-      try {
-        const image = await handleFileSelect(event);
-        if (image) {
-          sessionStorage.setItem('temp_captured_image', image.dataUrl);
-          sessionStorage.setItem('temp_image_captured', 'true');
-          onClose();
-          navigate(route, {
-            state: {
-              imageCaptured: true,
-              imageData: image.dataUrl
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error processing image:', error);
-      }
-      return;
-    }
-
-    // For Android, use the hook's flow
     const image = await handleFileSelect(event);
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
@@ -244,13 +133,6 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
         </div>
       </div>
       <div className="text-center text-white px-6 max-w-md">
-        {/* Debug info - always visible */}
-        <div className="mb-4 p-2 bg-red-500/20 rounded text-xs">
-          <p>Platform: {Capacitor.getPlatform()}</p>
-          <p>iOS: {useNativeInput ? 'Yes' : 'No'}</p>
-          <p>isCapturing: {isCapturing ? 'true' : 'false'}</p>
-        </div>
-
         {error ? (
           <>
             <div className={`w-16 h-16 ${colors.primary} rounded-full flex items-center justify-center mx-auto mb-4`}>
@@ -265,33 +147,27 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
               <Camera className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
-            <p className="text-white/80 mb-6 text-sm">{!useNativeInput && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
+            <p className="text-white/80 mb-6 text-sm">{isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
           </>
         )}
         <div className="space-y-3">
-          {useNativeInput ? (
-            <>
-              <button onClick={handleCapture} className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
-                <Camera className="w-5 h-5" />
-                Take Photo
-              </button>
-              <button onClick={handleGallery} className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
-                <Upload className="w-5 h-5" />
-                Choose from Gallery
-              </button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleCapture} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
-                <Camera className="w-5 h-5" />
-                {isCapturing ? 'Loading...' : 'Take Photo'}
-              </button>
-              <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
-                <Upload className="w-5 h-5" />
-                Choose from Gallery
-              </button>
-            </>
-          )}
+          <button onClick={handleGallery} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+            <Camera className="w-5 h-5" />
+            {isCapturing ? 'Loading...' : 'Take Photo'}
+          </button>
+          <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
+            <Upload className="w-5 h-5" />
+            Choose from Gallery
+          </button>
+          {/* Hidden file input for iOS compatibility */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFileChange}
+            className="hidden"
+          />
         </div>
       </div>
     </div>
