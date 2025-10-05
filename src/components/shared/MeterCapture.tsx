@@ -381,6 +381,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
     setCapturedImageData(null);
     setShowImageProcessingAnimation(false);
     setPendingConfirmation(null);
+    processedImageRef.current = null; // Clear processed image ref to allow new capture
 
     // Trigger native file picker (shows Take Photo | Gallery | Browse options)
     fileInputRef.current?.click();
@@ -400,6 +401,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
     setProcessingError(null);
     setProcessingStep('uploading');
     setIsProcessingInProgress(false);
+    processedImageRef.current = null; // Clear processed image ref to allow reprocessing
 
     // Increment attempts when user clicks "Try Again" - don't reset to 0
     const newAttempts = cameraAttempts + 1;
@@ -686,6 +688,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
               <button
                 onClick={() => {
                   setPendingConfirmation(null);
+                  processedImageRef.current = null; // Clear processed image ref
 
                   // Increment attempts when user clicks "Try Again" - don't reset to 0
                   const newAttempts = cameraAttempts + 1;
