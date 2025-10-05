@@ -31,24 +31,21 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     ? { primary: 'bg-amber-500', hover: 'hover:bg-amber-600' }
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
-  const handleCapture = async () => {
-    const image = await capture();
-    if (image) {
-      sessionStorage.setItem('temp_captured_image', image.dataUrl);
-      sessionStorage.setItem('temp_image_captured', 'true');
-      onClose();
-      navigate(route, {
-        state: {
-          imageCaptured: true,
-          imageData: image.dataUrl
-        }
-      });
-    }
+  const handleCapture = () => {
+    // Use native file input with camera capture for better iOS compatibility
+    fileInputRef.current?.click();
   };
 
   const handleGallery = () => {
-    // Trigger native file input instead of Capacitor API
-    fileInputRef.current?.click();
+    // Trigger native file input for gallery selection
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.click();
+      // Re-add capture attribute for next camera use
+      setTimeout(() => {
+        fileInputRef.current?.setAttribute('capture', 'environment');
+      }, 100);
+    }
   };
 
   const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
