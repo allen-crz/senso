@@ -2,7 +2,6 @@
 Database connection and utilities for Supabase
 """
 from typing import Optional, AsyncGenerator
-import asyncpg
 from supabase import create_client, Client
 from app.core.config import settings
 from loguru import logger
@@ -10,11 +9,10 @@ from loguru import logger
 
 class DatabaseManager:
     """Database connection manager for Supabase"""
-    
+
     def __init__(self):
         self.supabase: Optional[Client] = None
         self.service_supabase: Optional[Client] = None
-        self.pool: Optional[asyncpg.Pool] = None
     
     async def init_supabase(self) -> Client:
         """Initialize Supabase client"""
