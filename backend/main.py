@@ -81,6 +81,7 @@ app.include_router(api_router, prefix="/api/v1")
 
 # Health check endpoint
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "message": "Senso API is running"}
