@@ -92,6 +92,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, loading } = useAuth();
   const [hasCompletedAnalysis, setHasCompletedAnalysis] = useState(false);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
@@ -330,28 +331,59 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
   }, [location.state?.imageCaptured, location.state?.imageData, location.state?.showResults, user, config.sessionKeys, processCapturedImage, isProcessingInProgress]);
 
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      // Convert file to base64 data URL
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const imageData = e.target?.result as string;
+        if (imageData) {
+          // Trigger the same processing flow
+          setCapturedImageData(imageData);
+          processedImageRef.current = imageData;
+          sessionStorage.setItem(config.sessionKeys.imageData, imageData);
+
+          // Start processing animation
+          setShowImageProcessingAnimation(true);
+          await processCapturedImage(imageData);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      toast.error('Failed to read image file');
+    }
+
+    event.target.value = '';
+  };
+
   const handleOpenCamera = () => {
     if (!user) {
       toast.error('Please log in to access the camera');
       navigate('/login');
       return;
     }
-    
+
     if (hasConfirmedToday) {
       toast.success('Great job! Your reading for today is already confirmed', {
         description: 'Come back tomorrow for your next reading'
       });
       return;
     }
-    
+
     // Clear any existing image data so the new image shows processing animation
     setCapturedImageData(null);
     setShowImageProcessingAnimation(false);
     setPendingConfirmation(null);
 
-    // Navigate to dedicated camera page instead of overlay
-    const cameraRoute = config.utilityType === 'water' ? '/water-meter-camera' : '/electricity-meter-camera';
-    navigate(cameraRoute);
+    // Trigger native file picker (shows Take Photo | Gallery | Browse options)
+    fileInputRef.current?.click();
   };
 
   const handleCloseCamera = () => {
@@ -378,15 +410,14 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
       setShowManualFallback(true);
     }
 
-    // Navigate to dedicated camera page
-    const cameraRoute = config.utilityType === 'water' ? '/water-meter-camera' : '/electricity-meter-camera';
-    navigate(cameraRoute);
+    // Trigger file picker instead of navigating to camera page
     setPendingConfirmation(null);
     setAnomalyResult(null);
     setShowAnomalyAlert(false);
     setManualDigits(Array(config.inputConfig.digitCount).fill(''));
-    // Force reload the component state
-    navigate(config.routes.monitoring, { replace: true });
+
+    // Open file picker
+    fileInputRef.current?.click();
   };
 
   const getProcessingTitle = () => {
@@ -819,7 +850,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
 
       {/* Anomaly Alert - Show when anomaly is detected */}
       {showAnomalyAlert && anomalyResult && (
-        <UnifiedAnomalyAlert 
+        <UnifiedAnomalyAlert
           anomaly={anomalyResult}
           utilityType={config.utilityType}
           onDismiss={() => setShowAnomalyAlert(false)}
@@ -827,7 +858,15 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
         />
       )}
 
-      
+      {/* Hidden file input for camera/gallery picker */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
     </div>
   );
 };
