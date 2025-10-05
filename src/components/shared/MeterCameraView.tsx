@@ -31,20 +31,33 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     ? { primary: 'bg-amber-500', hover: 'hover:bg-amber-600' }
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
-  const handleCapture = () => {
-    // Use native file input with camera capture for better iOS compatibility
-    fileInputRef.current?.click();
+  const handleCapture = async () => {
+    const image = await capture();
+    if (image) {
+      sessionStorage.setItem('temp_captured_image', image.dataUrl);
+      sessionStorage.setItem('temp_image_captured', 'true');
+      onClose();
+      navigate(route, {
+        state: {
+          imageCaptured: true,
+          imageData: image.dataUrl
+        }
+      });
+    }
   };
 
-  const handleGallery = () => {
-    // Trigger native file input for gallery selection
-    if (fileInputRef.current) {
-      fileInputRef.current.removeAttribute('capture');
-      fileInputRef.current.click();
-      // Re-add capture attribute for next camera use
-      setTimeout(() => {
-        fileInputRef.current?.setAttribute('capture', 'environment');
-      }, 100);
+  const handleGallery = async () => {
+    const image = await pickFromGallery();
+    if (image) {
+      sessionStorage.setItem('temp_captured_image', image.dataUrl);
+      sessionStorage.setItem('temp_image_captured', 'true');
+      onClose();
+      navigate(route, {
+        state: {
+          imageCaptured: true,
+          imageData: image.dataUrl
+        }
+      });
     }
   };
 
@@ -144,27 +157,18 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
               <Camera className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
-            <p className="text-white/80 mb-6 text-sm">Choose how to capture your meter reading</p>
+            <p className="text-white/80 mb-6 text-sm">{isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
           </>
         )}
         <div className="space-y-3">
-          <button onClick={handleCapture} className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+          <button onClick={handleCapture} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
             <Camera className="w-5 h-5" />
-            Take Photo
+            {isCapturing ? 'Loading...' : 'Take Photo'}
           </button>
-          <button onClick={handleGallery} className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
             <Upload className="w-5 h-5" />
             Choose from Gallery
           </button>
-          {/* Hidden file input for iOS compatibility */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={onFileChange}
-            className="hidden"
-          />
         </div>
       </div>
     </div>
