@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMeterCamera } from "@/hooks/useMeterCamera";
 import { X, ArrowLeft, RotateCcw, Check, Camera, Upload } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { isIOSDevice } from '@/utils/deviceDetection';
 
 interface MeterCameraViewProps {
   onClose: () => void;
@@ -14,8 +15,12 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Detect if we're on iOS web (not native app)
-  const isIOSWeb = Capacitor.getPlatform() === 'web' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+  // Detect if we're on iOS (use proper detection from deviceDetection.ts)
+  const isIOS = isIOSDevice();
+  const platform = Capacitor.getPlatform();
+
+  // Use native file input for iOS OR if platform is 'web' (PWA/browser)
+  const useNativeInput = isIOS || platform === 'web';
 
   const {
     capture,
@@ -36,8 +41,8 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
   const handleCapture = async () => {
-    // For iOS web, dynamically create file input (bypasses Safari security)
-    if (isIOSWeb) {
+    // For iOS/web, dynamically create file input (bypasses Safari security)
+    if (useNativeInput) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -83,8 +88,8 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   };
 
   const handleGallery = async () => {
-    // For iOS web, dynamically create file input without capture attribute
-    if (isIOSWeb) {
+    // For iOS/web, dynamically create file input without capture attribute
+    if (useNativeInput) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -130,7 +135,7 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
 
   const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // For iOS, handle file selection directly without the hook's isCapturing state
-    if (isIOSWeb) {
+    if (useNativeInput) {
       const file = event.target.files?.[0];
       if (!file) {
         // User cancelled
@@ -242,7 +247,7 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
         {/* Debug info - always visible */}
         <div className="mb-4 p-2 bg-red-500/20 rounded text-xs">
           <p>Platform: {Capacitor.getPlatform()}</p>
-          <p>iOS: {isIOSWeb ? 'Yes' : 'No'}</p>
+          <p>iOS: {useNativeInput ? 'Yes' : 'No'}</p>
           <p>isCapturing: {isCapturing ? 'true' : 'false'}</p>
         </div>
 
@@ -260,11 +265,11 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
               <Camera className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
-            <p className="text-white/80 mb-6 text-sm">{!isIOSWeb && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
+            <p className="text-white/80 mb-6 text-sm">{!useNativeInput && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
           </>
         )}
         <div className="space-y-3">
-          {isIOSWeb ? (
+          {useNativeInput ? (
             <>
               <button onClick={handleCapture} className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
                 <Camera className="w-5 h-5" />
