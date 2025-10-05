@@ -197,6 +197,85 @@ export function useMeterCamera(options: UseMeterCameraOptions = {}) {
   };
 
   /**
+   * Handle native file input (for iOS web compatibility)
+   */
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>): Promise<CapturedMeterImage | null> => {
+    setIsCapturing(true);
+    setError(null);
+
+    try {
+      const file = event.target.files?.[0];
+      if (!file) {
+        throw new Error('No file selected');
+      }
+
+      // Read file as data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            resolve(e.target.result as string);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+
+      // Preprocess for YOLOv8 if needed
+      let processedDataUrl = dataUrl;
+      let originalDimensions: { width: number; height: number } | undefined;
+      let processedDimensions: { width: number; height: number } | undefined;
+
+      if (preprocessForML) {
+        const result = await preprocessForYOLO(dataUrl, {
+          targetSize: 640,
+          maintainAspectRatio: true,
+          paddingColor: '#000000'
+        });
+
+        processedDataUrl = result.dataURL;
+        originalDimensions = result.originalDimensions;
+        processedDimensions = result.processedDimensions;
+
+        console.log('[Meter Camera] Preprocessed for YOLOv8:', {
+          original: originalDimensions,
+          processed: processedDimensions,
+          platform: 'web-native-input'
+        });
+      }
+
+      const sizeKB = getImageSize(processedDataUrl);
+      const format = file.type.split('/')[1] || 'jpeg';
+
+      const capturedImage: CapturedMeterImage = {
+        dataUrl: processedDataUrl,
+        format,
+        sizeKB,
+        originalDimensions,
+        processedDimensions,
+        platform: 'web'
+      };
+
+      setLastCaptured(capturedImage);
+      console.log(`[Meter Camera] Captured via native input: ${sizeKB}KB, format: ${format}`);
+
+      return capturedImage;
+
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to process photo';
+      setError(errorMessage);
+      console.error('[Meter Camera] File select error:', err);
+      return null;
+    } finally {
+      setIsCapturing(false);
+      // Reset input so same file can be selected again
+      event.target.value = '';
+    }
+  };
+
+  /**
    * Clear last captured image
    */
   const clear = () => {
@@ -214,6 +293,7 @@ export function useMeterCamera(options: UseMeterCameraOptions = {}) {
     // Methods
     capture,
     pickFromGallery,
+    handleFileSelect,
     clear,
 
     // Helpers
