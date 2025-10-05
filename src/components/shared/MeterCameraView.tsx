@@ -144,15 +144,15 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
               <Camera className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
-            <p className="text-white/80 mb-6 text-sm">{isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
+            <p className="text-white/80 mb-6 text-sm">Choose how to capture your meter reading</p>
           </>
         )}
         <div className="space-y-3">
-          <button onClick={handleGallery} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+          <button onClick={handleCapture} className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
             <Camera className="w-5 h-5" />
-            {isCapturing ? 'Loading...' : 'Take Photo'}
+            Take Photo
           </button>
-          <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button onClick={handleGallery} className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
             <Upload className="w-5 h-5" />
             Choose from Gallery
           </button>
