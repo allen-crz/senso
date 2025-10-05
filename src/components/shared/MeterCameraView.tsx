@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMeterCamera } from "@/hooks/useMeterCamera";
 import { X, ArrowLeft, RotateCcw, Check, Camera, Upload } from 'lucide-react';
@@ -11,10 +11,12 @@ interface MeterCameraViewProps {
 
 const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     capture,
     pickFromGallery,
+    handleFileSelect,
     isCapturing,
     error,
     lastCaptured,
@@ -44,8 +46,13 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     }
   };
 
-  const handleGallery = async () => {
-    const image = await pickFromGallery();
+  const handleGallery = () => {
+    // Trigger native file input instead of Capacitor API
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const image = await handleFileSelect(event);
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
       sessionStorage.setItem('temp_image_captured', 'true');
@@ -144,14 +151,23 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
           </>
         )}
         <div className="space-y-3">
-          <button onClick={handleCapture} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+          <button onClick={handleGallery} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
             <Camera className="w-5 h-5" />
-            {isCapturing ? 'Opening Camera...' : 'Take Photo'}
+            {isCapturing ? 'Loading...' : 'Take Photo'}
           </button>
           <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
             <Upload className="w-5 h-5" />
             Choose from Gallery
           </button>
+          {/* Hidden file input for iOS compatibility */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFileChange}
+            className="hidden"
+          />
         </div>
       </div>
     </div>

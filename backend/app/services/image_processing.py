@@ -110,9 +110,11 @@ class ImageProcessingService:
     
     async def process_image(self, image_data: str, utility_type: UtilityType) -> ImageProcessResponse:
         """Process meter image and extract reading using YOLOv8"""
-        
-        
-        await self.load_models(utility_type)
+
+        # Only load models if not already loaded (avoid memory leak)
+        model_type = "electricity" if utility_type == UtilityType.ELECTRICITY else "water"
+        if not self.models_loaded.get(model_type, False):
+            await self.load_models(utility_type)
 
         # Get the appropriate model for the utility type
         current_model = self.electricity_model if utility_type == UtilityType.ELECTRICITY else self.water_model
