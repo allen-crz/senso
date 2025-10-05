@@ -186,23 +186,37 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
           </>
         )}
         <div className="space-y-3">
-          <button onClick={handleCapture} disabled={!isIOSWeb && isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
-            <Camera className="w-5 h-5" />
-            {!isIOSWeb && isCapturing ? 'Loading...' : 'Take Photo'}
-          </button>
-          <button onClick={handleGallery} disabled={!isIOSWeb && isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
-            <Upload className="w-5 h-5" />
-            Choose from Gallery
-          </button>
-          {/* Hidden file input for iOS web compatibility */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={onFileChange}
-            className="hidden"
-          />
+          {isIOSWeb ? (
+            <>
+              <label htmlFor="camera-input" className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer`}>
+                <Camera className="w-5 h-5" />
+                Take Photo
+              </label>
+              <label htmlFor="camera-input" className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                <Upload className="w-5 h-5" />
+                Choose from Gallery
+              </label>
+              <input
+                id="camera-input"
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                className="hidden"
+              />
+            </>
+          ) : (
+            <>
+              <button onClick={handleCapture} disabled={isCapturing} className={`w-full ${colors.primary} ${colors.hover} disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
+                <Camera className="w-5 h-5" />
+                {isCapturing ? 'Loading...' : 'Take Photo'}
+              </button>
+              <button onClick={handleGallery} disabled={isCapturing} className="w-full bg-white/20 hover:bg-white/30 disabled:opacity-50 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
+                <Upload className="w-5 h-5" />
+                Choose from Gallery
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
