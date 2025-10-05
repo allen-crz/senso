@@ -17,13 +17,6 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   // Detect if we're on iOS web (not native app)
   const isIOSWeb = Capacitor.getPlatform() === 'web' && /iPhone|iPad|iPod/.test(navigator.userAgent);
 
-  // Debug logging
-  React.useEffect(() => {
-    console.log('[MeterCameraView] Platform:', Capacitor.getPlatform());
-    console.log('[MeterCameraView] User Agent:', navigator.userAgent);
-    console.log('[MeterCameraView] isIOSWeb:', isIOSWeb);
-  }, [isIOSWeb]);
-
   const {
     capture,
     pickFromGallery,
@@ -45,13 +38,7 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   const handleCapture = async () => {
     // For iOS web, use native file input instead of Capacitor
     if (isIOSWeb) {
-      console.log('[MeterCameraView] iOS detected, triggering file input');
-      if (fileInputRef.current) {
-        fileInputRef.current.setAttribute('capture', 'environment');
-        fileInputRef.current.click();
-      } else {
-        console.error('[MeterCameraView] File input ref is null!');
-      }
+      fileInputRef.current?.click();
       return;
     }
 

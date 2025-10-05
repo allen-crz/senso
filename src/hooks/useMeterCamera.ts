@@ -200,13 +200,14 @@ export function useMeterCamera(options: UseMeterCameraOptions = {}) {
    * Handle native file input (for iOS web compatibility)
    */
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>): Promise<CapturedMeterImage | null> => {
-    setIsCapturing(true);
+    // Don't set isCapturing for file input - it blocks the UI
     setError(null);
 
     try {
       const file = event.target.files?.[0];
       if (!file) {
-        throw new Error('No file selected');
+        // User cancelled - don't throw error
+        return null;
       }
 
       // Read file as data URL
@@ -269,7 +270,6 @@ export function useMeterCamera(options: UseMeterCameraOptions = {}) {
       console.error('[Meter Camera] File select error:', err);
       return null;
     } finally {
-      setIsCapturing(false);
       // Reset input so same file can be selected again
       event.target.value = '';
     }
