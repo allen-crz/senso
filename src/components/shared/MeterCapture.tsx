@@ -363,7 +363,6 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
           // Trigger the same processing flow
           setCapturedImageData(imageData);
           processedImageRef.current = imageData;
-          sessionStorage.setItem(config.sessionKeys.imageData, imageData);
 
           // Start processing animation
           setShowImageProcessingAnimation(true);
@@ -400,6 +399,10 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
     setCapturedImageData(null);
     setShowImageProcessingAnimation(false);
     setPendingConfirmation(null);
+
+    // Clear sessionStorage to prevent useEffect from interfering with file picker flow
+    sessionStorage.removeItem(config.sessionKeys.imageData);
+    sessionStorage.removeItem(config.sessionKeys.analysisCompleted);
 
     // Trigger native file picker (shows Take Photo | Gallery | Browse options)
     fileInputRef.current?.click();
