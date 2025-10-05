@@ -36,9 +36,34 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
     : { primary: 'bg-blue-500', hover: 'hover:bg-blue-600' };
 
   const handleCapture = async () => {
-    // For iOS web, use native file input instead of Capacitor
+    // For iOS web, dynamically create file input (bypasses Safari security)
     if (isIOSWeb) {
-      fileInputRef.current?.click();
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.setAttribute('capture', 'environment'); // Force rear camera
+
+      input.onchange = async (e: any) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Create fake event for handleFileSelect
+        const fakeEvent = { target: { files: [file], value: '' } } as any;
+        const image = await handleFileSelect(fakeEvent);
+        if (image) {
+          sessionStorage.setItem('temp_captured_image', image.dataUrl);
+          sessionStorage.setItem('temp_image_captured', 'true');
+          onClose();
+          navigate(route, {
+            state: {
+              imageCaptured: true,
+              imageData: image.dataUrl
+            }
+          });
+        }
+      };
+
+      input.click();
       return;
     }
 
@@ -58,16 +83,33 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   };
 
   const handleGallery = async () => {
-    // For iOS web, use native file input
+    // For iOS web, dynamically create file input without capture attribute
     if (isIOSWeb) {
-      if (fileInputRef.current) {
-        fileInputRef.current.removeAttribute('capture');
-        fileInputRef.current.click();
-        // Re-add capture for next camera use
-        setTimeout(() => {
-          fileInputRef.current?.setAttribute('capture', 'environment');
-        }, 100);
-      }
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      // No capture attribute = shows "Take Photo or Choose from Photos" menu
+
+      input.onchange = async (e: any) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const fakeEvent = { target: { files: [file], value: '' } } as any;
+        const image = await handleFileSelect(fakeEvent);
+        if (image) {
+          sessionStorage.setItem('temp_captured_image', image.dataUrl);
+          sessionStorage.setItem('temp_image_captured', 'true');
+          onClose();
+          navigate(route, {
+            state: {
+              imageCaptured: true,
+              imageData: image.dataUrl
+            }
+          });
+        }
+      };
+
+      input.click();
       return;
     }
 
@@ -224,22 +266,14 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
         <div className="space-y-3">
           {isIOSWeb ? (
             <>
-              <label htmlFor="camera-input" className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer`}>
+              <button onClick={handleCapture} className={`w-full ${colors.primary} ${colors.hover} text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2`}>
                 <Camera className="w-5 h-5" />
                 Take Photo
-              </label>
-              <label htmlFor="camera-input" className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+              </button>
+              <button onClick={handleGallery} className="w-full bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2">
                 <Upload className="w-5 h-5" />
                 Choose from Gallery
-              </label>
-              <input
-                id="camera-input"
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={onFileChange}
-                className="hidden"
-              />
+              </button>
             </>
           ) : (
             <>
