@@ -87,6 +87,35 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
   };
 
   const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    // For iOS, handle file selection directly without the hook's isCapturing state
+    if (isIOSWeb) {
+      const file = event.target.files?.[0];
+      if (!file) {
+        // User cancelled
+        event.target.value = '';
+        return;
+      }
+
+      try {
+        const image = await handleFileSelect(event);
+        if (image) {
+          sessionStorage.setItem('temp_captured_image', image.dataUrl);
+          sessionStorage.setItem('temp_image_captured', 'true');
+          onClose();
+          navigate(route, {
+            state: {
+              imageCaptured: true,
+              imageData: image.dataUrl
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error processing image:', error);
+      }
+      return;
+    }
+
+    // For Android, use the hook's flow
     const image = await handleFileSelect(event);
     if (image) {
       sessionStorage.setItem('temp_captured_image', image.dataUrl);
@@ -182,7 +211,7 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
               <Camera className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
-            <p className="text-white/80 mb-6 text-sm">{isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
+            <p className="text-white/80 mb-6 text-sm">{!isIOSWeb && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
           </>
         )}
         <div className="space-y-3">
