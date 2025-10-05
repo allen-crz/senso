@@ -197,6 +197,13 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
         </div>
       </div>
       <div className="text-center text-white px-6 max-w-md">
+        {/* Debug info - always visible */}
+        <div className="mb-4 p-2 bg-red-500/20 rounded text-xs">
+          <p>Platform: {Capacitor.getPlatform()}</p>
+          <p>iOS: {isIOSWeb ? 'Yes' : 'No'}</p>
+          <p>isCapturing: {isCapturing ? 'true' : 'false'}</p>
+        </div>
+
         {error ? (
           <>
             <div className={`w-16 h-16 ${colors.primary} rounded-full flex items-center justify-center mx-auto mb-4`}>
@@ -212,7 +219,6 @@ const MeterCameraView = ({ onClose, meterType, route }: MeterCameraViewProps) =>
             </div>
             <h3 className="text-xl font-semibold mb-2">Capture Meter</h3>
             <p className="text-white/80 mb-6 text-sm">{!isIOSWeb && isCapturing ? 'Opening camera...' : 'Choose how to capture your meter reading'}</p>
-            <p className="text-white/60 text-xs mt-2">Platform: {Capacitor.getPlatform()} | iOS: {isIOSWeb ? 'Yes' : 'No'}</p>
           </>
         )}
         <div className="space-y-3">
