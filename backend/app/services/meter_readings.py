@@ -5,10 +5,9 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
-import asyncpg
 from supabase import Client
 
-from app.core.database import get_supabase, get_db_connection
+from app.core.database import get_supabase
 from app.models.schemas import (
     MeterReadingCreate, 
     MeterReadingUpdate, 
