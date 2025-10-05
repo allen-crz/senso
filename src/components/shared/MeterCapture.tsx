@@ -633,10 +633,10 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
               <LoaderCircle className="text-white w-12 h-12 animate-spin" />
               <div className="absolute inset-0 border-4 border-white border-opacity-20 rounded-full animate-pulse" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-3">
+            <h3 className="text-2xl font-bold text-white mb-3 min-h-[2rem]">
               {getProcessingTitle()}
             </h3>
-            <p className="text-white text-opacity-90 mb-6">
+            <p className="text-white text-opacity-90 mb-6 min-h-[1.5rem]">
               {getProcessingSubtitle()}
             </p>
             
