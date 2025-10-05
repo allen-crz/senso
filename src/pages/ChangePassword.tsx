@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from "lucide-react";
-import ChangePasswordForm from '@/components/ChangePasswordForm';
+import ChangePasswordForm from '@/components/forms/ChangePasswordForm';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -17,7 +17,9 @@ const ChangePassword = () => {
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="text-2xl font-bold text-[#212529]">Change Password</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-[#212529] mb-2">Change Password</h1>
+          </div>
         </div>
       </div>
 

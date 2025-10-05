@@ -92,15 +92,53 @@ export default {
 				"slide-in-right": {
 					"0%": { transform: "translateX(100%)" },
 					"100%": { transform: "translateX(0)" }
+				},
+				"ios-slide-in-right": {
+					"0%": { transform: "translateX(100%)" },
+					"100%": { transform: "translateX(0)" }
+				},
+				"ios-slide-in-left": {
+					"0%": { transform: "translateX(-100%)" },
+					"100%": { transform: "translateX(0)" }
+				},
+				"ios-slide-out-left": {
+					"0%": { transform: "translateX(0)" },
+					"100%": { transform: "translateX(-100%)" }
+				},
+				"ios-slide-out-right": {
+					"0%": { transform: "translateX(0)" },
+					"100%": { transform: "translateX(100%)" }
+				},
+				"ios-slide-up": {
+					"0%": { opacity: "0", transform: "translateY(20px)" },
+					"100%": { opacity: "1", transform: "translateY(0)" }
+				},
+				"ios-scale": {
+					"0%": { opacity: "0.8", transform: "scale(0.97)" },
+					"100%": { opacity: "1", transform: "scale(1)" }
+				},
+				"shimmer": {
+					"0%": { backgroundPosition: "-200% 0" },
+					"100%": { backgroundPosition: "200% 0" }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				"slide-out-left": "slide-out-left 0.3s ease-out",
-				"slide-in-right": "slide-in-right 0.3s ease-out"
+				"slide-in-right": "slide-in-right 0.3s ease-out",
+				"ios-slide-in-right": "ios-slide-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+				"ios-slide-in-left": "ios-slide-in-left 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+				"ios-slide-out-left": "ios-slide-out-left 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+				"ios-slide-out-right": "ios-slide-out-right 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+				"ios-slide-up": "ios-slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+				"ios-scale": "ios-scale 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+				"shimmer": "shimmer 2s linear infinite"
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		require("tailwindcss-animate")
+	],
 } satisfies Config;

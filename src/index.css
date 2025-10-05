@@ -103,3 +103,47 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Smooth transitions for interactive elements */
+  .transition-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Card hover lift effect */
+  .card-hover {
+    @apply transition-smooth hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  /* Button press effect */
+  .btn-press {
+    @apply transition-smooth active:scale-95;
+  }
+
+  /* Stagger animations for lists */
+  .animate-stagger-1 {
+    animation-delay: 0.05s;
+  }
+
+  .animate-stagger-2 {
+    animation-delay: 0.1s;
+  }
+
+  .animate-stagger-3 {
+    animation-delay: 0.15s;
+  }
+
+  .animate-stagger-4 {
+    animation-delay: 0.2s;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-sm bg-white/80;
+  }
+
+  /* Smooth scroll */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+}

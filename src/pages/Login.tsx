@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeClosed, AlertTriangle } from "lucide-react";
 import { signInWithEmail } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { apiClient } from "@/services/api";
 import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
 import {
   AlertDialog,
@@ -66,13 +66,26 @@ const Login = () => {
       if (user) {
         console.log("User authenticated:", user.id);
 
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user.id)
-          .maybeSingle();
+        try {
+          const profileData = await apiClient.getProfile() as { full_name?: string } | null;
 
-        if (profileError) {
+          console.log("Profile check result:", profileData);
+
+          const hasCompletedProfile = profileData &&
+                                     profileData.full_name &&
+                                     profileData.full_name.trim() !== '';
+
+          console.log("Has completed profile:", hasCompletedProfile);
+
+          if (hasCompletedProfile) {
+            console.log("User has profile, redirecting to dashboard");
+            transitionAndNavigate(() => navigate("/dashboard"));
+          } else {
+            console.log("New user or incomplete profile, redirecting to profile creation");
+            transitionAndNavigate(() => navigate("/profile"));
+          }
+          // Keep loading state during navigation
+        } catch (profileError) {
           console.error("Profile lookup error:", profileError);
           toast({
             variant: "destructive",
@@ -82,34 +95,30 @@ const Login = () => {
           setIsLoading(false);
           return;
         }
-
-        console.log("Profile check result:", profileData);
-
-        const hasCompletedProfile = profileData && 
-                                   profileData.full_name && 
-                                   profileData.full_name.trim() !== '';
-        
-        console.log("Has completed profile:", hasCompletedProfile);
-
-        if (hasCompletedProfile) {
-          console.log("User has profile, redirecting to dashboard");
-          transitionAndNavigate(() => navigate("/dashboard"));
-        } else {
-          console.log("New user or incomplete profile, redirecting to profile creation");
-          transitionAndNavigate(() => navigate("/profile"));
-        }
       }
     } catch (error) {
       console.error("Login error:", error);
       setErrorMessage("An unexpected error occurred. Please try again.");
       setShowErrorDialog(true);
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12 font-sans relative">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 bg-gradient-to-br from-[#212529] via-gray-800 to-black flex flex-col items-center justify-center">
+          <div className="mb-8">
+            <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-lg">
+              <i className="fa-solid fa-bolt-lightning text-[#212529] text-4xl"></i>
+            </div>
+          </div>
+          <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <p className="text-white/60 mt-8 text-sm animate-pulse">Signing you in...</p>
+        </div>
+      )}
+
       {/* App Logo */}
       <div className="mb-12 flex justify-center">
         <div className="w-16 h-16 bg-[#212529] rounded-2xl flex items-center justify-center">

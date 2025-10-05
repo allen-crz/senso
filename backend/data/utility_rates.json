@@ -1,0 +1,372 @@
+{
+  "electricity": {
+    "generation_charge": {
+      "january": 6.8358,
+      "february": 7.2203,
+      "march": 7.0517,
+      "april": 7.7795,
+      "may": 7.4651,
+      "june": 7.3552,
+      "july": 7.6959,
+      "august": 8.0708,
+      "september": 7.8105
+    },
+    "transmission_charge": {
+      "january":  0.8780,
+      "february": 0.8767,
+      "march": 1.0061,
+      "april": 1.0870,
+      "may": 0.7900,
+      "june": 0.8114,
+      "july": 0.8848,
+      "august": 1.0118,
+      "september": 1.1248
+    },
+    "system_loss_charge": {
+      "january": 0.6360,
+      "february": 0.6707,
+      "march": 0.6704,
+      "april": 0.7358,
+      "may": 0.6715,
+      "june": 0.6506,
+      "july": 0.6706,
+      "august": 0.7066,
+      "september": 0.6873
+    },
+    "distribution_tiers": {
+      "january": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "february": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "march": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "april": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "may": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "june": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "july": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "august": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      },
+      "september": {
+        "tier1_0_200": 0.9803,
+        "tier2_201_300": 1.2908,
+        "tier3_301_400": 1.5837,
+        "tier4_400_plus": 2.0941
+      }
+    },
+    "fixed_metering_charge": {
+      "january": 5.00,
+      "february": 5.00,
+      "march": 5.00,
+      "april": 5.00,
+      "may": 5.00,
+      "june": 5.00,
+      "july": 5.00,
+      "august": 5.00,
+      "september": 5.00
+    },
+    "metering_charge": {
+      "january": 0.3350,
+      "february": 0.3350,
+      "march": 0.3350,
+      "april": 0.3350,
+      "may": 0.3350,
+      "june": 0.3350,
+      "july": 0.3350,
+      "august": 0.3350,
+      "september": 0.3350
+    },
+    "fixed_supply_charge": {
+      "january": 16.38,
+      "february": 16.38,
+      "march": 16.38,
+      "april": 16.38,
+      "may": 16.38,
+      "june": 16.38,
+      "july": 16.38,
+      "august": 16.38,
+      "september": 16.38
+    },
+    "supply_charge": {
+      "january": 0.4979,
+      "february": 0.4979,
+      "march": 0.4979,
+      "april": 0.4979,
+      "may": 0.4979,
+      "june": 0.4979,
+      "july": 0.4979,
+      "august": 0.4979,
+      "september": 0.4979
+    },
+    "awat": {
+      "january": 0.0000,
+      "february": 0.2264,
+      "march": 0.0000,
+      "april": 0.2024,
+      "may": 0.2024,
+      "june": 0.2024,
+      "july": 0.2024,
+      "august": 0.2024,
+      "september": 0.2024
+    },
+    "regulatory_fee": {
+      "january": 0.0000,
+      "february": 0.0023,
+      "march": 0.0023,
+      "april": 0.0023,
+      "may": 0.0023,
+      "june": 0.0023,
+      "july": 0.0023,
+      "august": 0.0023,
+      "september": 0.0023
+    },
+    "lifeline_subsidy": {
+      "january": 0.0008,
+      "february": 0.0008,
+      "march": 0.0008,
+      "april": 0.0008,
+      "may": 0.0024,
+      "june": 0.0045,
+      "july": 0.0050,
+      "august": 0.0035,
+      "september": 0.0017
+    },
+    "senior_citizen_subsidy": {
+      "january": 0.0001,
+      "february": 0.0001,
+      "march": 0.0001,
+      "april": 0.0001,
+      "may": 0.0001,
+      "june": 0.0001,
+      "july": 0.0001,
+      "august": 0.0001,
+      "september": 0.0001
+    },
+    "uc_me_npc_spug": {
+      "january": 0.1805,
+      "february": 0.1949,
+      "march": 0.1949,
+      "april": 0.1949,
+      "may": 0.1949,
+      "june": 0.1949,
+      "july": 0.1949,
+      "august": 0.1949,
+      "september": 0.1949
+    },
+    "uc_me_red_ci": {
+      "january": 0.0017,
+      "february": 0.0044,
+      "march": 0.0044,
+      "april": 0.0044,
+      "may": 0.0044,
+      "june": 0.0044,
+      "july": 0.0044,
+      "august": 0.0044,
+      "september": 0.0044
+    },
+    "uc_sd": {
+      "january": 0.0428,
+      "february": 0.0428,
+      "march": 0.0428,
+      "april": 0.0428,
+      "may": 0.0428,
+      "june": 0.0428,
+      "july": 0.0428,
+      "august": 0.0428,
+      "september": 0.0428
+    },
+    "current_rpt_charge": {
+      "january": 0.0039,
+      "february": 0.0054,
+      "march": 0.0054,
+      "april": 0.0055,
+      "may": 0.0057,
+      "june": 0.0057,
+      "july": 0.0058,
+      "august": 0.0058,
+      "september": 0.0058
+    },
+    "fit_all": {
+      "january": 0.0838,
+      "february": 0.0838,
+      "march": 0.1189,
+      "april": 0.1189,
+      "may": 0.1189,
+      "june": 0.1189,
+      "july": 0.1189,
+      "august": 0.1189,
+      "september": 0.1189
+    },
+    "local_franchise_fee_rate": {
+      "january": 0.0000,
+      "february": 0.0000,
+      "march": 0.0000,
+      "april": 0.0000,
+      "may": 0.0000,
+      "june": 0.0000,
+      "july": 0.0000,
+      "august": 0.0000,
+      "september": 0.0000
+    },
+    "vat_transmission": {
+      "january": 0.1039,
+      "february": 0.1044,
+      "march": 0.1032,
+      "april": 0.1082,
+      "may": 0.1076,
+      "june": 0.1080,
+      "july": 0.1081,
+      "august": 0.1098,
+      "september": 0.1117
+    },
+    "vat_generation": {
+      "january": 0.1122,
+      "february": 0.1126,
+      "march": 0.1153,
+      "april": 0.1113,
+      "may": 0.1122,
+      "june": 0.1143,
+      "july": 0.1147,
+      "august": 0.1172,
+      "september": 0.1170
+    },
+    "vat_system_loss": {
+      "january": 0.1112,
+      "february": 0.1117,
+      "march": 0.1139,
+      "april": 0.1109,
+      "may": 0.1118,
+      "june": 0.1137,
+      "july": 0.1141,
+      "august": 0.1165,
+      "september": 0.1165
+    },
+    "vat_distribution": {
+      "january": 0.12,
+      "february": 0.12,
+      "march": 0.12,
+      "april": 0.12,
+      "may": 0.12,
+      "june": 0.12,
+      "july": 0.12,
+      "august": 0.12,
+      "september": 0.12
+    },
+    "vat_current_rpt": {
+      "january": 0.00,
+      "february": 0.00,
+      "march": 0.00,
+      "april": 0.00,
+      "may": 0.00,
+      "june": 0.00,
+      "july": 0.00,
+      "august": 0.00,
+      "september": 0.00
+    },
+    "vat_subsidies": {
+      "january": 0.12,
+      "february": 0.12,
+      "march": 0.12,
+      "april": 0.12,
+      "may": 0.12,
+      "june": 0.12,
+      "july": 0.12,
+      "august": 0.12,
+      "september": 0.12
+    }
+  },
+  "water": {
+    "base_rate_per_cubic_meter": {
+      "january": 15.00,
+      "february": 15.00,
+      "march": 15.00,
+      "april": 15.00,
+      "may": 15.00,
+      "june": 15.00,
+      "july": 15.00,
+      "august": 15.00,
+      "september": 15.00,
+      "october": 15.00,
+      "november": 15.00,
+      "december": 15.00
+    },
+    "sewerage_charge": {
+      "january": 2.50,
+      "february": 2.50,
+      "march": 2.50,
+      "april": 2.50,
+      "may": 2.50,
+      "june": 2.50,
+      "july": 2.50,
+      "august": 2.50,
+      "september": 2.50,
+      "october": 2.50,
+      "november": 2.50,
+      "december": 2.50
+    },
+    "environmental_fee": {
+      "january": 1.00,
+      "february": 1.00,
+      "march": 1.00,
+      "april": 1.00,
+      "may": 1.00,
+      "june": 1.00,
+      "july": 1.00,
+      "august": 1.00,
+      "september": 1.00,
+      "october": 1.00,
+      "november": 1.00,
+      "december": 1.00
+    },
+    "maintenance_charge": {
+      "january": 5.00,
+      "february": 5.00,
+      "march": 5.00,
+      "april": 5.00,
+      "may": 5.00,
+      "june": 5.00,
+      "july": 5.00,
+      "august": 5.00,
+      "september": 5.00,
+      "october": 5.00,
+      "november": 5.00,
+      "december": 5.00
+    },
+    "note": "Placeholder rates - actual water utility rates vary by local water district and need to be configured per region"
+  }
+}

@@ -59,6 +59,12 @@ const WaterMonitoring: React.FC = () => {
     ? "animate-slide-in-right" 
     : "animate-fade-in";
 
+  const handleProgressBarClick = (index: number) => {
+    if (api) {
+      api.scrollTo(index);
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-[#f5f6f7] relative font-sans pt-8 ${animationClass}`}>
       <div className="px-6">
@@ -79,9 +85,10 @@ const WaterMonitoring: React.FC = () => {
 
         <div className="mb-6 flex gap-2">
           {[0, 1, 2].map((index) => (
-            <div
+            <button
               key={index}
-              className={`h-1.5 flex-1 rounded-full ${
+              onClick={() => handleProgressBarClick(index)}
+              className={`h-1.5 flex-1 rounded-full cursor-pointer transition-colors hover:opacity-80 ${
                 index === current ? "bg-blue-500" : "bg-gray-200"
               }`}
             />

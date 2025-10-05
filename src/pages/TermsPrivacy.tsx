@@ -88,7 +88,7 @@ const TermsPrivacy: React.FC = () => {
                 For questions about these terms, contact us at:{" "}
                 <a
                   href="mailto:support@senso.com"
-                  className="text-purple-500 underline"
+                  className="text-[#212529] underline"
                 >
                   support@senso.com
                 </a>
@@ -109,9 +109,9 @@ const TermsPrivacy: React.FC = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Home className="text-white group-hover:text-white/80" />
+                <Home className="text-gray-400 group-hover:text-white" />
               </div>
-              <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-white transition-colors">Home</span>
             </button>
             <button
               onClick={() => navigate('/water-monitoring')}
@@ -141,10 +141,10 @@ const TermsPrivacy: React.FC = () => {
               type="button"
               tabIndex={0}
             >
-              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
-                <SettingsIcon className="text-gray-400 group-hover:text-gray-600" />
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <SettingsIcon className="text-white" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
+              <span className="text-xs font-medium text-white group-hover:text-white/80 transition-colors">Settings</span>
             </button>
           </div>
         </div>

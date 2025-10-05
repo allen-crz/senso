@@ -1,0 +1,43 @@
+# Senso - Render.com Deployment Configuration
+# Deploys backend API on free tier (512MB RAM)
+# YOLO models hosted separately on Hugging Face
+
+services:
+  # Backend API - FastAPI (WITHOUT local YOLO models for free tier)
+  - type: web
+    name: senso-backend
+    env: python
+    region: singapore  # Change to your preferred region
+    plan: free
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Required - Supabase
+      - key: SUPABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+      # Optional - Logging
+      - key: LOG_LEVEL
+        value: WARNING
+
+      # Required - External YOLO API (Hugging Face Space)
+      # IMPORTANT: Set this to your HF Space URL after creating it
+      - key: YOLO_API_URL
+        sync: false  # Set to: https://your-username-senso-yolo.hf.space
+
+      # Optional - CORS (add frontend URL after deployment)
+      - key: ALLOWED_HOSTS
+        value: http://localhost:5173,https://senso-frontend.vercel.app
+
+      # Optional - Model settings
+      - key: ISOLATION_FOREST_CONTAMINATION
+        value: 0.1
+      - key: TRAINING_WINDOW_DAYS
+        value: 30
+
+    healthCheckPath: /health

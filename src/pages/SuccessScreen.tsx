@@ -19,8 +19,8 @@ const SuccessScreen = () => {
     <div className="min-h-screen bg-[#f5f6f7] px-6 py-12">
       {/* Success Animation */}
       <div className="flex flex-col items-center justify-center mb-12">
-        <div className="w-32 h-32 bg-[#212529] rounded-full flex items-center justify-center mb-6 animate-bounce">
-          <i className="fa-solid fa-check text-white text-5xl"></i>
+        <div className="w-20 h-20 bg-[#212529] rounded-full flex items-center justify-center mb-6 animate-bounce">
+          <i className="fa-solid fa-check text-white text-3xl"></i>
         </div>
         <h1 className="text-3xl font-bold text-[#212529] mb-3 text-center">Account Created!</h1>
         <p className="text-gray-500 text-center mb-4">Your Senso account is ready to use</p>

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
 
 interface ProfileAvatarProps {
@@ -10,12 +9,22 @@ interface ProfileAvatarProps {
 }
 
 const ProfileAvatar = ({ avatarUrl, uploading, onUpload }: ProfileAvatarProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <div className="flex justify-center mb-8">
       <div className="relative">
-        <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center">
+        <div className="w-24 h-24 rounded-full bg-[#f5f6f7] flex items-center justify-center overflow-hidden">
           {avatarUrl ? (
-            <img src={avatarUrl} alt="Profile" className="w-full h-full rounded-full object-cover" />
+            <div className="w-full h-full rounded-full bg-gray-200 overflow-hidden">
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                className="w-full h-full object-cover transition-opacity duration-300"
+                style={{ opacity: imageLoaded ? 1 : 0 }}
+                onLoad={() => setImageLoaded(true)}
+              />
+            </div>
           ) : (
             <i className="fa-regular fa-user text-3xl text-gray-400"></i>
           )}

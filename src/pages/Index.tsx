@@ -1,10 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LoadingScreen from "../components/LoadingScreen";
-import MobileOnlyScreen from "../components/MobileOnlyScreen";
+import LoadingScreen from "../components/app/LoadingScreen";
+import MobileOnlyScreen from "../components/app/MobileOnlyScreen";
 import { isMobileDevice, isStandalone, isIOSDevice } from "../utils/deviceDetection";
-import InstallPrompt from "../components/InstallPrompt";
+import InstallPrompt from "../components/app/InstallPrompt";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
@@ -23,12 +23,10 @@ const Index = () => {
     setIsIOS(ios);
     setIsInstalled(installed);
     
-    // Only proceed to login if it's iOS AND installed as PWA
+    // Navigate to login after loading, bypassing iOS restrictions for dev
     const timer = setTimeout(() => {
       setLoading(false);
-      if (mobile && ios && installed) {
-        navigate('/login');
-      }
+      navigate('/login');
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -39,15 +37,16 @@ const Index = () => {
     return <LoadingScreen />;
   }
 
-  // If not iOS (regardless of mobile or not), show iOS only screen
-  if (!isIOS) {
-    return <MobileOnlyScreen />;
-  }
+  // Mobile blocking commented out for development access
+  // If not mobile device, show mobile only screen
+  // if (!isMobile) {
+  //   return <MobileOnlyScreen />;
+  // }
 
   // If iOS but not installed, show install prompt
-  if (!isInstalled) {
-    return <InstallPrompt />;
-  }
+  // if (!isInstalled) {
+  //   return <InstallPrompt />;
+  // }
 
   return null;
 };
