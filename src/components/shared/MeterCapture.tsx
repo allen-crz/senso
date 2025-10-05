@@ -357,6 +357,9 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
       reader.onload = async (e) => {
         const imageData = e.target?.result as string;
         if (imageData) {
+          // Ensure processing state is cleared before starting new capture
+          setIsProcessingInProgress(false);
+
           // Trigger the same processing flow
           setCapturedImageData(imageData);
           processedImageRef.current = imageData;
@@ -364,6 +367,9 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
 
           // Start processing animation
           setShowImageProcessingAnimation(true);
+
+          // Small delay to ensure state updates
+          await new Promise(resolve => setTimeout(resolve, 100));
           await processCapturedImage(imageData);
         }
       };
