@@ -100,7 +100,7 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
   const [capturedImageData, setCapturedImageData] = useState<string | null>(null);
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [showCamera, setShowCamera] = useState(false);
-  const [processingStep, setProcessingStep] = useState<'uploading' | 'analyzing' | 'extracting' | 'complete'>('uploading');
+  const [processingStep, setProcessingStep] = useState<'uploading' | 'analyzing' | 'extracting' | 'complete' | 'failed'>('uploading');
   const [isProcessingInProgress, setIsProcessingInProgress] = useState(false);
   // Initialize camera attempts from session storage or default to 0
   const [cameraAttempts, setCameraAttempts] = useState(() => {
@@ -198,15 +198,16 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
       
       // Process image with backend CNN + OCR
       const result = await processImage(imageData);
-      
-      setProcessingStep('complete');
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Hide processing animation
-      setShowImageProcessingAnimation(false);
-      
+
       if (result.processing_status === 'processed' && result.reading_value) {
-        // Success - show confirmation directly in place
+        // Success
+        setProcessingStep('complete');
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // Hide processing animation
+        setShowImageProcessingAnimation(false);
+
+        // Show confirmation directly in place
         setPendingConfirmation({
           reading_value: result.reading_value,
           image_data: imageData,
@@ -216,6 +217,13 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
           confidence_score: result.confidence_score
         });
       } else {
+        // Processing failed - show failed state
+        setProcessingStep('failed');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Hide processing animation
+        setShowImageProcessingAnimation(false);
+
         // Camera processing failed - increment attempts
         const newAttempts = cameraAttempts + 1;
         updateCameraAttempts(newAttempts);
@@ -228,6 +236,11 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
       }
     } catch (error: any) {
       console.error('Failed to process image:', error);
+
+      // Show failed state
+      setProcessingStep('failed');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       setShowImageProcessingAnimation(false);
 
       const newAttempts = cameraAttempts + 1;
@@ -431,6 +444,8 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
         return 'Extracting Reading...';
       case 'complete':
         return 'Processing Complete';
+      case 'failed':
+        return 'Processing Failed';
       default:
         return 'Analyzing Meter...';
     }
@@ -446,6 +461,8 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
         return 'Extracting numerical reading with OCR';
       case 'complete':
         return 'Image processing completed';
+      case 'failed':
+        return 'Could not detect meter reading - please try again';
       default:
         return 'Processing with CNN YOLOv8 model...';
     }
