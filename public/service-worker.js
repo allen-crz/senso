@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'senso-app-v3';
-const API_CACHE_NAME = 'senso-api-v3';
-const STATIC_CACHE_NAME = 'senso-static-v3';
+const CACHE_NAME = 'senso-app-v4';
+const API_CACHE_NAME = 'senso-api-v4';
+const STATIC_CACHE_NAME = 'senso-static-v4';
 
 const urlsToCache = [
   '/',
@@ -39,8 +39,9 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle same-origin requests
+  // Skip cross-origin requests
   if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(request));
     return;
   }
 
@@ -54,6 +55,15 @@ self.addEventListener('fetch', event => {
   // API requests - network first with cache fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(handleApiRequest(request, url));
+    return;
+  }
+
+  // Navigation requests - always return index.html for SPA routing
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch('/index.html')
+        .catch(() => caches.match('/index.html'))
+    );
     return;
   }
 
