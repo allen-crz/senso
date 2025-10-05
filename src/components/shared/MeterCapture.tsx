@@ -381,7 +381,6 @@ const MeterCapture: React.FC<MeterCaptureProps> = ({
     setCapturedImageData(null);
     setShowImageProcessingAnimation(false);
     setPendingConfirmation(null);
-    processedImageRef.current = null; // Clear processed image ref to allow new capture
 
     // Trigger native file picker (shows Take Photo | Gallery | Browse options)
     fileInputRef.current?.click();
