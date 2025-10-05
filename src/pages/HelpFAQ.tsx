@@ -1,46 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input } from "@/components/ui/input";
 import { 
-  Search,
   Camera,
   Bell,
   LineChart,
-  Wallet,
   Rocket,
   UserCog,
   Wrench,
   ChevronRight,
   ChevronLeft,
   Home, Droplet, Bolt, Settings as SettingsIcon,
+  HelpCircle
 } from "lucide-react";
 
 const HelpFAQ = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
 
   const popularTopics = [
-    { icon: Camera, label: 'Meter Reading' },
-    { icon: Bell, label: 'Notifications' },
-    { icon: LineChart, label: 'Usage Stats' },
-    { icon: Wallet, label: 'Billing' }
+    { icon: Camera, label: 'Meter Reading', path: '/help/meter-reading' },
+    { icon: Bell, label: 'Notifications', path: '/help/notifications' },
+    { icon: LineChart, label: 'Usage Stats', path: '/help/usage-stats' }
   ];
 
   const faqSections = [
     { 
       icon: Rocket,
       title: 'Getting Started',
-      description: 'Basic guide and tutorials'
+      description: 'Basic guide and tutorials',
+      path: '/help/getting-started'
     },
     {
       icon: UserCog,
       title: 'Account Settings',
-      description: 'Profile and preferences'
+      description: 'Profile and preferences',
+      path: '/help/account-settings'
     },
     {
       icon: Wrench,
       title: 'Troubleshooting',
-      description: 'Common issues and solutions'
+      description: 'Common issues and solutions',
+      path: '/help/troubleshooting'
     }
   ];
 
@@ -51,42 +50,30 @@ const HelpFAQ = () => {
           <div className="flex items-center gap-2">
             <button 
               onClick={() => navigate('/settings')} 
-              className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-purple-200 outline-none"
+              className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-gray-200 outline-none"
               aria-label="Back to Settings"
             >
               <ChevronLeft className="text-[#212529] w-6 h-6" />
             </button>
             <h1 className="text-2xl font-bold text-[#212529]">Help & FAQs</h1>
           </div>
-          <i className="fa-solid fa-circle-question text-purple-500 text-xl"></i>
-        </div>
-
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Search help articles"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white rounded-2xl py-6 pl-12 pr-4 transition focus:ring-2 focus:ring-purple-100"
-            />
-          </div>
+          <HelpCircle className="text-[#212529] w-6 h-6" />
         </div>
 
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Popular Topics</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="text-lg font-semibold mb-4 text-[#212529]">Popular Topics</h2>
+          <div className="grid grid-cols-1 gap-4">
             {popularTopics.map((topic, index) => {
               const TopicIcon = topic.icon;
               return (
                 <button
                   key={index}
-                  className="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-3 transition hover:bg-purple-50 hover:scale-105 hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-purple-100"
+                  onClick={() => navigate(topic.path)}
+                  className="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-3 transition hover:bg-gray-50 hover:scale-105 hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-gray-100"
                   type="button"
                 >
-                  <TopicIcon className="text-purple-500 w-5 h-5 group-hover:text-purple-600 transition" />
-                  <span className="font-medium group-hover:text-purple-700 transition">{topic.label}</span>
+                  <TopicIcon className="text-[#212529] w-5 h-5 group-hover:text-gray-700 transition" />
+                  <span className="font-medium text-[#212529] group-hover:text-gray-700 transition">{topic.label}</span>
                 </button>
               );
             })}
@@ -99,17 +86,18 @@ const HelpFAQ = () => {
             return (
               <div key={index} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <button
-                  className="w-full flex items-center justify-between p-6 transition hover:bg-purple-50 hover:scale-[1.03] hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-purple-100"
+                  onClick={() => navigate(section.path)}
+                  className="w-full flex items-center justify-between p-6 transition hover:bg-gray-50 hover:scale-[1.03] hover:shadow-md active:scale-95 group focus:outline-none focus:ring-2 focus:ring-gray-100"
                   type="button"
                 >
                   <div className="flex items-center gap-4">
-                    <SectionIcon className="text-purple-500 w-5 h-5 group-hover:text-purple-600 transition" />
+                    <SectionIcon className="text-[#212529] w-5 h-5 group-hover:text-gray-700 transition" />
                     <div className="text-left">
-                      <h3 className="font-semibold group-hover:text-purple-700 transition">{section.title}</h3>
+                      <h3 className="font-semibold text-[#212529] group-hover:text-gray-700 transition">{section.title}</h3>
                       <p className="text-sm text-gray-500">{section.description}</p>
                     </div>
                   </div>
-                  <ChevronRight className="text-gray-400 w-5 h-5 group-hover:text-purple-400 transition" />
+                  <ChevronRight className="text-gray-400 w-5 h-5 group-hover:text-gray-700 transition" />
                 </button>
               </div>
             );
@@ -127,9 +115,9 @@ const HelpFAQ = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Home className="text-white group-hover:text-white/80" />
+                <Home className="text-gray-400 group-hover:text-white" />
               </div>
-              <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-white transition-colors">Home</span>
             </button>
             <button
               className="flex flex-col items-center gap-1 group cursor-pointer transition-all duration-200 active:scale-95"
@@ -157,10 +145,10 @@ const HelpFAQ = () => {
               type="button"
               tabIndex={0}
             >
-              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
-                <SettingsIcon className="text-gray-400 group-hover:text-gray-600" />
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <SettingsIcon className="text-white" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
+              <span className="text-xs font-medium text-white group-hover:text-white/80 transition-colors">Settings</span>
             </button>
           </div>
         </div>

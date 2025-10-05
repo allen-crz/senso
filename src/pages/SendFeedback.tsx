@@ -14,14 +14,14 @@ const SendFeedback = () => {
           <button
             aria-label="Back to Settings"
             onClick={() => navigate("/settings")}
-            className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-purple-200 outline-none"
+            className="p-2 -ml-2 rounded-lg transition duration-150 hover:bg-gray-200 hover:scale-110 active:scale-95 focus:ring-2 focus:ring-gray-200 outline-none"
             tabIndex={0}
           >
             <ChevronLeft className="text-[#212529] w-6 h-6" />
           </button>
           <h1 className="text-2xl font-bold text-[#212529]">Send Feedback</h1>
         </div>
-        <Send className="text-purple-500 w-6 h-6" />
+        <Send className="text-[#212529] w-6 h-6" />
       </div>
       {/* Main Content */}
       <div className="px-6 pb-32">
@@ -31,7 +31,7 @@ const SendFeedback = () => {
           </p>
           <a
             href="mailto:support@senso.com"
-            className="block w-full text-center text-purple-500 text-lg font-medium hover:text-purple-600 active:text-purple-700 transition-colors duration-150 focus:underline focus:outline-none"
+            className="block w-full text-center text-[#212529] text-lg font-medium hover:text-gray-700 active:text-gray-800 transition-colors duration-150 focus:underline focus:outline-none"
             tabIndex={0}
           >
             support@senso.com
@@ -49,9 +49,9 @@ const SendFeedback = () => {
               tabIndex={0}
             >
               <div className="w-10 h-10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Home className="text-white group-hover:text-white/80" />
+                <Home className="text-gray-400 group-hover:text-white" />
               </div>
-              <span className="text-xs font-medium text-white group-hover:text-white/80">Home</span>
+              <span className="text-xs text-gray-400 group-hover:text-white transition-colors">Home</span>
             </button>
             <button
               onClick={() => navigate('/water-monitoring')}
@@ -81,10 +81,10 @@ const SendFeedback = () => {
               type="button"
               tabIndex={0}
             >
-              <div className="w-10 h-10 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-150">
-                <Settings className="text-gray-400 group-hover:text-gray-600" />
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center transition-colors duration-150">
+                <Settings className="text-white" />
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">Settings</span>
+              <span className="text-xs font-medium text-white group-hover:text-white/80 transition-colors">Settings</span>
             </button>
           </div>
         </div>

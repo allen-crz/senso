@@ -4,15 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Camera, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserData } from "@/hooks/useUserData";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Image } from 'image-js';
-import PhoneInput from '@/components/PhoneInput';
-import AddressInput from '@/components/AddressInput';
+import PhoneInput from '@/components/forms/PhoneInput';
+import AddressInput from '@/components/forms/AddressInput';
+import { api } from '@/services/api';
 
 const EditProfile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading } = useAuth();
+  const { refreshUserData } = useUserData();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -22,60 +26,41 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    if (loading) return;
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    // Load existing profile data from API
+    const loadProfile = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          navigate('/login');
-          return;
-        }
-
-        setUserId(user.id);
-        setFormData(prev => ({
-          ...prev,
-          fullName: user.user_metadata?.full_name || '',
+        const profile = await api.getProfile();
+        setFormData({
+          fullName: profile.full_name || user.email?.split('@')[0] || '',
           email: user.email || '',
-        }));
-
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('avatar_url, phone, address')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-          return;
-        }
-
-        if (data) {
-          setFormData(prev => ({
-            ...prev,
-            phone: data.phone || '',
-            address: data.address || '',
-          }));
-          
-          if (data.avatar_url) {
-            setAvatarUrl(data.avatar_url);
-          }
-        }
+          phone: profile.phone || '',
+          address: profile.address || '',
+        });
+        setAvatarUrl(profile.avatar_url);
       } catch (error) {
-        console.error('Error in fetchUserData:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load profile data. Please try again.",
+        console.error('Error loading profile:', error);
+        // Fallback to basic user data
+        setFormData({
+          fullName: user.email?.split('@')[0] || '',
+          email: user.email || '',
+          phone: '',
+          address: '',
         });
       }
     };
 
-    fetchUserData();
-  }, [navigate, toast]);
+    loadProfile();
+  }, [user, loading, navigate]);
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -85,7 +70,7 @@ const EditProfile = () => {
         throw new Error('You must select an image to upload.');
       }
 
-      if (!userId) {
+      if (!user) {
         throw new Error('User is not authenticated');
       }
 
@@ -116,24 +101,24 @@ const EditProfile = () => {
           
           const dataUrl = resizedImg.toDataURL();
           
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: userId,
-              avatar_url: dataUrl,
+          // Upload avatar to backend
+          try {
+            await api.updateAvatar(dataUrl);
+            setAvatarUrl(dataUrl);
+            setHasChanges(true);
+
+            toast({
+              title: "Success",
+              description: "Profile photo updated successfully!",
             });
-
-          if (updateError) {
-            throw updateError;
+          } catch (error) {
+            console.error('Error uploading avatar:', error);
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to save profile photo. Please try again.",
+            });
           }
-
-          setAvatarUrl(dataUrl);
-          setHasChanges(true);
-
-          toast({
-            title: "Success",
-            description: "Profile photo updated successfully!",
-          });
         } catch (error) {
           console.error('Error processing image:', error);
           toast({
@@ -162,36 +147,41 @@ const EditProfile = () => {
     setIsLoading(true);
     
     try {
-      if (!userId) {
+      if (!user) {
         throw new Error('User is not authenticated');
       }
 
-      const profileData = {
-        id: userId,
+      // Update profile via API
+      await api.updateProfile({
         full_name: formData.fullName,
         phone: formData.phone,
         address: formData.address,
-        avatar_url: avatarUrl,
-      };
-
-      const { error: upsertError } = await supabase
-        .from('profiles')
-        .upsert(profileData);
-
-      if (upsertError) {
-        throw upsertError;
-      }
-
+        avatar_url: avatarUrl || undefined,
+      });
+      
       toast({
         title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
+        description: "Your profile changes have been saved successfully.",
         duration: 2000,
       });
       
+      // Refresh user data cache
+      await refreshUserData();
+
       setHasChanges(false);
-      navigate('/settings');
+
+      // Check if this is a new user (coming from registration) or existing user
+      const isNewUser = location.pathname === '/profile' && !location.state?.fromSettings;
+
+      if (isNewUser) {
+        // New user flow: go to consumption input
+        navigate('/consumption-input');
+      } else {
+        // Existing user editing profile: go back to settings
+        navigate('/settings');
+      }
     } catch (error) {
-      console.error('Error in handleSubmit:', error);
+      console.error('Error saving profile:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -226,7 +216,7 @@ const EditProfile = () => {
               <AvatarFallback>{avatarFallback}</AvatarFallback>
             </Avatar>
             <label 
-              className="absolute bottom-0 right-0 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-purple-600 transition-colors"
+              className="absolute bottom-0 right-0 w-8 h-8 bg-[#212529] rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-700 transition-colors"
               htmlFor="avatar-upload"
             >
               <Camera className="h-4 w-4 text-white" />
@@ -242,7 +232,7 @@ const EditProfile = () => {
           </div>
           <label 
             htmlFor="avatar-upload"
-            className="text-blue-500 text-sm font-medium cursor-pointer"
+            className="text-[#212529] text-sm font-medium cursor-pointer"
           >
             Change Photo
           </label>
@@ -297,13 +287,13 @@ const EditProfile = () => {
           </div>
         </div>
 
-        <Button 
+        <button 
           onClick={handleSubmit}
-          className="w-full py-4 bg-purple-500 text-white rounded-full font-semibold mb-4 hover:bg-purple-600 transition-colors"
+          className="w-full py-4 px-6 bg-[#212529] text-white rounded-xl font-semibold mb-4 hover:bg-[#303338] active:bg-[#1a1d21] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!hasChanges || isLoading || uploading}
         >
           {isLoading ? 'Saving Changes...' : 'Save Changes'}
-        </Button>
+        </button>
 
         <p className="text-center text-xs text-gray-400">
           Your profile info is used to personalize your experience.

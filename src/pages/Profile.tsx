@@ -1,16 +1,20 @@
 
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserData } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 import { Camera } from "lucide-react";
 import { Image } from "image-js";
-import PhoneInput from "@/components/PhoneInput";
-import AddressInput from "@/components/AddressInput";
+import PhoneInput from "@/components/forms/PhoneInput";
+import AddressInput from "@/components/forms/AddressInput";
+import { api } from "@/services/api";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading } = useAuth();
+  const { refreshUserData } = useUserData();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -20,34 +24,25 @@ const Profile = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
-          navigate("/login");
-          return;
-        }
-        setUserId(user.id);
-        setFormData((prev) => ({
-          ...prev,
-          fullName: user.user_metadata?.full_name || "",
-          email: user.email || "",
-        }));
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load profile data. Please try again.",
-        });
-      }
-    };
-    fetchUserData();
-  }, [navigate, toast]);
+    if (loading) return;
+    
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    // Extract first name from email as fallback
+    const firstName = user.email?.split('@')[0] || '';
+    setFormData((prev) => ({
+      ...prev,
+      fullName: firstName,
+      email: user.email || "",
+      phone: "",
+      address: "",
+    }));
+  }, [user, loading, navigate]);
 
   // Handle avatar image upload, crop to square and resize to 300x300, store as a data url
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,19 +111,18 @@ const Profile = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      if (!userId) throw new Error("User not found");
+      if (!user) throw new Error("User not found");
       
-      // Fixed: Explicitly creating the profile object with the required 'id' field
+      // Create profile data
       const profileData = {
-        id: userId,
         full_name: formData.fullName,
         phone: formData.phone,
         address: formData.address,
-        avatar_url: avatar
+        avatar_url: avatar || undefined
       };
       
-      const { error } = await supabase.from("profiles").upsert(profileData);
-      if (error) throw error;
+      // Use the proper API client method
+      await api.updateProfile(profileData);
 
       toast({
         title: "Profile Created",
@@ -136,9 +130,13 @@ const Profile = () => {
         duration: 2000,
       });
 
-      // Redirect to success page
-      navigate("/success");
+      // Refresh user data cache to sync with all pages
+      await refreshUserData();
+
+      // Redirect to consumption input for new user flow
+      navigate("/consumption-input");
     } catch (error) {
+      console.error('Error saving profile:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -258,19 +256,6 @@ const Profile = () => {
         </button>
       </form>
 
-      {/* Return to Login */}
-      <div className="text-center mt-6">
-        <p className="text-gray-500">
-          Want to go back?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-[#212529] cursor-pointer font-inter"
-            style={{ fontFamily: "inherit" }}
-          >
-            Return to login
-          </Link>
-        </p>
-      </div>
     </div>
   );
 };

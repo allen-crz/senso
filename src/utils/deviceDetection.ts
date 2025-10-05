@@ -4,7 +4,7 @@
  * @returns {boolean} true if the device is mobile, false otherwise
  */
 export const isMobileDevice = (): boolean => {
-  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const userAgent = navigator.userAgent || navigator.vendor || (window as Record<string, unknown>).opera as string;
   
   // Regular expression for mobile devices
   const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -17,7 +17,7 @@ export const isMobileDevice = (): boolean => {
  * @returns {boolean} true if the device is iOS, false otherwise
  */
 export const isIOSDevice = (): boolean => {
-  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const userAgent = navigator.userAgent || navigator.vendor || (window as Record<string, unknown>).opera as string;
   
   // iOS devices include iPhone, iPad, and iPod
   const isIOS = /iPad|iPhone|iPod/.test(userAgent);
@@ -32,7 +32,7 @@ export const isIOSDevice = (): boolean => {
     userAgent: userAgent.substring(0, 100) + "..." 
   });
   
-  return isIOS && !(window as any).MSStream;
+  return isIOS && !(window as Record<string, unknown>).MSStream;
 };
 
 /**
@@ -41,7 +41,7 @@ export const isIOSDevice = (): boolean => {
  */
 export const isStandalone = (): boolean => {
   return (window.matchMedia('(display-mode: standalone)').matches) || 
-    (window.navigator as any).standalone === true || 
+    (window.navigator as Record<string, unknown>).standalone === true || 
     document.referrer.includes('android-app://');
 };
 

@@ -1,166 +1,190 @@
-import React, { useEffect, useState } from "react";
-import { ArrowLeft, Camera, Image } from "lucide-react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
-import { useCamera } from "@/hooks/useCamera";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { usePageTransitionTrigger } from "@/hooks/usePageTransitionTrigger";
+import { useMeterCamera } from "@/hooks/useMeterCamera";
+import { X, ArrowLeft, RotateCcw, Check, Camera, Upload } from 'lucide-react';
 
 const WaterMeterCamera: React.FC = () => {
   const navigate = useNavigate();
-  const { transitionAndNavigate } = usePageTransitionTrigger();
-  const [hasImage, setHasImage] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+
   const {
-    hasPermission,
-    capturedImage,
-    cameraError,
-    isLoading,
-    startCamera,
-    takePicture,
-    selectFromGallery,
-    cleanup,
-    inputRef,
-    galleryRef
-  } = useCamera();
+    capture,
+    pickFromGallery,
+    isCapturing,
+    error,
+    lastCaptured,
+    clear
+  } = useMeterCamera({
+    quality: 85,
+    preprocessForML: true, // Auto-creates 640x640 for YOLOv8
+    allowGallery: true
+  });
 
-  useEffect(() => {
-    startCamera();
-  }, []);
-
-  const handleBack = () => {
-    cleanup();
-    localStorage.removeItem('waterMeterImageCaptured');
-    transitionAndNavigate(() => navigate("/water-monitoring"));
+  const handleClose = () => {
+    navigate("/water-monitoring");
   };
 
-  const handleImageCapture = () => {
-    toast({
-      title: "Success",
-      description: "Image captured successfully",
-    });
-    setHasImage(true);
+  const handleCapture = async () => {
+    await capture();
+    // Don't navigate here - let the image review screen show first
+    // Navigation happens in handleConfirm after user reviews the image
   };
 
-  const handleUseImage = () => {
-    localStorage.setItem('waterMeterImageCaptured', 'true');
-    navigate("/water-monitoring", { 
-      state: { 
-        imageCaptured: true,
-        slideIndex: 0,
-        slideDirection: 'right'
-      } 
-    });
+  const handleGallery = async () => {
+    await pickFromGallery();
+    // Don't navigate here - let the image review screen show first
+    // Navigation happens in handleConfirm after user reviews the image
   };
 
-  const handleCaptureAgain = () => {
-    setHasImage(false);
+  const handleRetake = () => {
+    clear();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          handleImageCapture();
+  const handleConfirm = () => {
+    if (lastCaptured) {
+      // Store the captured image
+      sessionStorage.setItem('temp_captured_image', lastCaptured.dataUrl);
+      sessionStorage.setItem('temp_image_captured', 'true');
+
+      // Navigate back
+      navigate("/water-monitoring", {
+        state: {
+          imageCaptured: true,
+          imageData: lastCaptured.dataUrl,
+          slideIndex: 0,
+          slideDirection: 'right'
         }
-      };
-      reader.readAsDataURL(file);
+      });
     }
   };
 
-  return (
-    <div className={`min-h-screen bg-blue-50 relative flex flex-col ${
-      isTransitioning ? 'animate-slide-out-left' : 'animate-slide-in-right'
-    }`}>
-      <div className="h-safe-top bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40"></div>
+  // Image review screen
+  if (lastCaptured) {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex flex-col">
+        {/* Top bar */}
+        <div className="bg-black safe-area-top">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+            <button
+              onClick={handleRetake}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors active:scale-95"
+            >
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+            <div className="text-center">
+              <h1 className="text-white text-sm sm:text-base font-semibold">Review Capture</h1>
+              <p className="text-white/60 text-xs hidden sm:block">Check image quality</p>
+            </div>
+            <button
+              onClick={handleClose}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors active:scale-95"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+        </div>
 
-      <div className="sticky top-0 z-10 bg-blue-50/80 backdrop-blur-lg border-b border-blue-100/40">
-        <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="text-blue-800">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-blue-900 text-lg font-semibold">
-            {hasImage ? "Review Image" : "Capture Water Meter"}
-          </h1>
-          <div className="w-10"></div>
+        {/* Image area */}
+        <div className="flex-1 relative bg-black overflow-hidden min-h-0">
+          <div className="absolute inset-0 overflow-hidden flex items-center justify-center">
+            <div className="w-full h-full bg-gray-900 overflow-hidden relative flex items-center justify-center">
+              <img
+                src={lastCaptured.dataUrl}
+                alt="Captured water meter"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            {/* Quality indicator */}
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-green-500/90 backdrop-blur-sm text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2">
+              <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="hidden sm:inline">Optimized for YOLOv8</span>
+              <span className="sm:hidden">Ready</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom controls */}
+        <div className="bg-black safe-area-bottom pt-3 sm:pt-4 pb-4 sm:pb-6">
+          <div className="flex gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto px-4 sm:px-6">
+            <button
+              onClick={handleRetake}
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 border border-white/10 backdrop-blur-sm"
+            >
+              <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Retake</span>
+            </button>
+            <button
+              onClick={handleConfirm}
+              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 shadow-lg"
+            >
+              <Check className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Use Image</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Camera capture screen
+  return (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 bg-black safe-area-top z-10">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+          <button
+            onClick={handleClose}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors active:scale-95"
+          >
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+          <div className="text-center">
+            <h1 className="text-white text-sm sm:text-base font-semibold">Water Meter</h1>
+            <p className="text-white/60 text-xs hidden sm:block">Capture or upload</p>
+          </div>
+          <div className="w-10 h-10 sm:w-11 sm:h-11"></div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
-        <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg">
-          <CardContent className="p-6">
-            {hasImage ? (
-              <>
-                <p className="text-blue-900 text-center mb-8">
-                  Would you like to use this image or capture again?
-                </p>
-                <div className="space-y-4">
-                  <Button
-                    onClick={handleUseImage}
-                    className="w-full bg-blue-500 hover:bg-blue-600 transition-all duration-300"
-                    size="lg"
-                  >
-                    Use Image
-                  </Button>
-                  <Button
-                    onClick={handleCaptureAgain}
-                    variant="secondary"
-                    className="w-full transition-all duration-300"
-                    size="lg"
-                  >
-                    Capture Again
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-blue-900 text-center mb-8">
-                  Please capture your water meter reading or select an image from your gallery
-                </p>
-                <div className="space-y-4">
-                  <Button
-                    onClick={takePicture}
-                    className="w-full bg-blue-500 hover:bg-blue-600 transition-all duration-300"
-                    size="lg"
-                  >
-                    <Camera className="mr-2 h-5 w-5" />
-                    Capture Image
-                  </Button>
-                  <Button
-                    onClick={selectFromGallery}
-                    variant="secondary"
-                    className="w-full transition-all duration-300"
-                    size="lg"
-                  >
-                    <Image className="mr-2 h-5 w-5" />
-                    Choose from Gallery
-                  </Button>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+      {/* Main content */}
+      <div className="text-center text-white px-6 max-w-md">
+        {error ? (
+          <>
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Camera className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Camera Access Required</h3>
+            <p className="text-white/80 mb-6 text-sm leading-relaxed">{error}</p>
+          </>
+        ) : (
+          <>
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Camera className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Capture Water Meter</h3>
+            <p className="text-white/80 mb-6 text-sm leading-relaxed">
+              {isCapturing ? 'Opening camera...' : 'Choose how to capture your water meter reading'}
+            </p>
+          </>
+        )}
 
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-
-        <input
-          ref={galleryRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
+        <div className="space-y-3">
+          <button
+            onClick={handleCapture}
+            disabled={isCapturing}
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-500/50 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Camera className="w-5 h-5" />
+            {isCapturing ? 'Opening Camera...' : 'Take Photo'}
+          </button>
+          <button
+            onClick={handleGallery}
+            disabled={isCapturing}
+            className="w-full bg-white/20 hover:bg-white/30 disabled:bg-white/10 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Upload className="w-5 h-5" />
+            Choose from Gallery
+          </button>
+        </div>
       </div>
     </div>
   );

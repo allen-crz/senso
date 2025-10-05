@@ -71,3 +71,14 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+Update Todos
+  ⎿  ☒ Enhanced camera hook with real camera access and file upload fallback 
+     ☒ Updated WaterCapture component to use backend API for image processing
+     ☒ Enhanced CameraView with live camera feed and image preview
+     ☒ Created ImageProcessingResults component for OCR confidence display   
+     ☒ Configured environment variables for API integration
+     ☐ Create electricity monitoring camera integration
+     ☐ Add manual override functionality for low-confidence readings
+     ☐ Implement image upload to backend storage
+     ☐ Add image processing feedback and retry mechanisms

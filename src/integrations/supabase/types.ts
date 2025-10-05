@@ -9,48 +9,508 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      meter_readings: {
         Row: {
-          address: string | null
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          full_name: string | null
           id: string
-          password: string | null
-          phone: string | null
+          user_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          reading_value: number
+          image_url: string | null
+          capture_timestamp: string
+          processing_status: Database['public']['Enums']['reading_status']
+          confidence_score: number | null
+          is_manual: boolean
+          raw_ocr_data: Json | null
+          location_data: Json | null
+          notes: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          address?: string | null
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id: string
-          password?: string | null
-          phone?: string | null
+          id?: string
+          user_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          reading_value: number
+          image_url?: string | null
+          capture_timestamp?: string
+          processing_status?: Database['public']['Enums']['reading_status']
+          confidence_score?: number | null
+          is_manual?: boolean
+          raw_ocr_data?: Json | null
+          location_data?: Json | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          address?: string | null
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
           id?: string
-          password?: string | null
-          phone?: string | null
+          user_id?: string
+          utility_type?: Database['public']['Enums']['utility_type']
+          reading_value?: number
+          image_url?: string | null
+          capture_timestamp?: string
+          processing_status?: Database['public']['Enums']['reading_status']
+          confidence_score?: number | null
+          is_manual?: boolean
+          raw_ocr_data?: Json | null
+          location_data?: Json | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meter_readings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      utility_prices: {
+        Row: {
+          id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          price_per_unit: number
+          effective_date: string
+          region: string | null
+          tier_structure: Json | null
+          seasonal_multiplier: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          utility_type: Database['public']['Enums']['utility_type']
+          price_per_unit: number
+          effective_date: string
+          region?: string | null
+          tier_structure?: Json | null
+          seasonal_multiplier?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          utility_type?: Database['public']['Enums']['utility_type']
+          price_per_unit?: number
+          effective_date?: string
+          region?: string | null
+          tier_structure?: Json | null
+          seasonal_multiplier?: number
+          created_at?: string
         }
         Relationships: []
+      }
+      anomaly_detections: {
+        Row: {
+          id: string
+          user_id: string
+          reading_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          anomaly_score: number
+          is_anomaly: boolean
+          severity: Database['public']['Enums']['anomaly_severity']
+          threshold_used: number
+          contributing_factors: Json | null
+          model_version: string
+          training_window_days: number
+          detected_at: string
+          notification_sent: boolean
+          notification_sent_at: string | null
+          user_feedback: string | null
+          user_feedback_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          reading_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          anomaly_score: number
+          is_anomaly: boolean
+          severity: Database['public']['Enums']['anomaly_severity']
+          threshold_used: number
+          contributing_factors?: Json | null
+          model_version: string
+          training_window_days: number
+          detected_at?: string
+          notification_sent?: boolean
+          notification_sent_at?: string | null
+          user_feedback?: string | null
+          user_feedback_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          reading_id?: string
+          utility_type?: Database['public']['Enums']['utility_type']
+          anomaly_score?: number
+          is_anomaly?: boolean
+          severity?: Database['public']['Enums']['anomaly_severity']
+          threshold_used?: number
+          contributing_factors?: Json | null
+          model_version?: string
+          training_window_days?: number
+          detected_at?: string
+          notification_sent?: boolean
+          notification_sent_at?: string | null
+          user_feedback?: string | null
+          user_feedback_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anomaly_detections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anomaly_detections_reading_id_fkey"
+            columns: ["reading_id"]
+            isOneToOne: false
+            referencedRelation: "meter_readings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      cost_forecasts: {
+        Row: {
+          id: string
+          user_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          forecast_month: string
+          predicted_usage: number
+          predicted_cost: number
+          confidence_interval_lower: number | null
+          confidence_interval_upper: number | null
+          model_accuracy: number | null
+          features_used: Json | null
+          model_version: string
+          training_data_points: number
+          forecast_created_at: string
+          actual_usage: number | null
+          actual_cost: number | null
+          accuracy_error: number | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          utility_type: Database['public']['Enums']['utility_type']
+          forecast_month: string
+          predicted_usage: number
+          predicted_cost: number
+          confidence_interval_lower?: number | null
+          confidence_interval_upper?: number | null
+          model_accuracy?: number | null
+          features_used?: Json | null
+          model_version: string
+          training_data_points: number
+          forecast_created_at?: string
+          actual_usage?: number | null
+          actual_cost?: number | null
+          accuracy_error?: number | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          utility_type?: Database['public']['Enums']['utility_type']
+          forecast_month?: string
+          predicted_usage?: number
+          predicted_cost?: number
+          confidence_interval_lower?: number | null
+          confidence_interval_upper?: number | null
+          model_accuracy?: number | null
+          features_used?: Json | null
+          model_version?: string
+          training_data_points?: number
+          forecast_created_at?: string
+          actual_usage?: number | null
+          actual_cost?: number | null
+          accuracy_error?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_forecasts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      user_preferences: {
+        Row: {
+          user_id: string
+          anomaly_notifications_enabled: boolean
+          anomaly_notification_methods: Json
+          forecast_notifications_enabled: boolean
+          forecast_horizon_months: number
+          reading_reminder_enabled: boolean
+          reading_reminder_time: string
+          reading_reminder_frequency: string
+          timezone: string
+          currency: string
+          units_preference: Json
+          water_billing_date: number | null
+          electricity_billing_date: number | null
+          water_last_bill_reading: number | null
+          electricity_last_bill_reading: number | null
+          water_last_bill_date: string | null
+          electricity_last_bill_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          anomaly_notifications_enabled?: boolean
+          anomaly_notification_methods?: Json
+          forecast_notifications_enabled?: boolean
+          forecast_horizon_months?: number
+          reading_reminder_enabled?: boolean
+          reading_reminder_time?: string
+          reading_reminder_frequency?: string
+          timezone?: string
+          currency?: string
+          units_preference?: Json
+          water_billing_date?: number | null
+          electricity_billing_date?: number | null
+          water_last_bill_reading?: number | null
+          electricity_last_bill_reading?: number | null
+          water_last_bill_date?: string | null
+          electricity_last_bill_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          anomaly_notifications_enabled?: boolean
+          anomaly_notification_methods?: Json
+          forecast_notifications_enabled?: boolean
+          forecast_horizon_months?: number
+          reading_reminder_enabled?: boolean
+          reading_reminder_time?: string
+          reading_reminder_frequency?: string
+          timezone?: string
+          currency?: string
+          units_preference?: Json
+          water_billing_date?: number | null
+          electricity_billing_date?: number | null
+          water_last_bill_reading?: number | null
+          electricity_last_bill_reading?: number | null
+          water_last_bill_date?: string | null
+          electricity_last_bill_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          data: Json | null
+          delivery_method: string
+          sent_at: string | null
+          delivered_at: string | null
+          read_at: string | null
+          clicked_at: string | null
+          status: string
+          error_message: string | null
+          retry_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          data?: Json | null
+          delivery_method: string
+          sent_at?: string | null
+          delivered_at?: string | null
+          read_at?: string | null
+          clicked_at?: string | null
+          status?: string
+          error_message?: string | null
+          retry_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          message?: string
+          data?: Json | null
+          delivery_method?: string
+          sent_at?: string | null
+          delivered_at?: string | null
+          read_at?: string | null
+          clicked_at?: string | null
+          status?: string
+          error_message?: string | null
+          retry_count?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      user_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          full_name: string | null
+          phone: string | null
+          address: string | null
+          avatar_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          full_name?: string | null
+          phone?: string | null
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          full_name?: string | null
+          phone?: string | null
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      model_training_logs: {
+        Row: {
+          id: string
+          user_id: string | null
+          model_type: string
+          utility_type: Database['public']['Enums']['utility_type'] | null
+          version: string
+          training_started_at: string
+          training_completed_at: string | null
+          training_status: string
+          training_data_size: number | null
+          hyperparameters: Json | null
+          performance_metrics: Json | null
+          validation_score: number | null
+          error_message: string | null
+          is_deployed: boolean
+          deployed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          model_type: string
+          utility_type?: Database['public']['Enums']['utility_type'] | null
+          version: string
+          training_started_at: string
+          training_completed_at?: string | null
+          training_status?: string
+          training_data_size?: number | null
+          hyperparameters?: Json | null
+          performance_metrics?: Json | null
+          validation_score?: number | null
+          error_message?: string | null
+          is_deployed?: boolean
+          deployed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          model_type?: string
+          utility_type?: Database['public']['Enums']['utility_type'] | null
+          version?: string
+          training_started_at?: string
+          training_completed_at?: string | null
+          training_status?: string
+          training_data_size?: number | null
+          hyperparameters?: Json | null
+          performance_metrics?: Json | null
+          validation_score?: number | null
+          error_message?: string | null
+          is_deployed?: boolean
+          deployed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_training_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_latest_reading: {
+        Args: {
+          p_user_id: string
+          p_utility_type: Database['public']['Enums']['utility_type']
+        }
+        Returns: Database['public']['Tables']['meter_readings']['Row']
+      }
+      calculate_usage: {
+        Args: {
+          p_user_id: string
+          p_utility_type: Database['public']['Enums']['utility_type']
+          p_start_date: string
+          p_end_date: string
+        }
+        Returns: number
+      }
+      trigger_model_retraining: {
+        Args: {
+          p_user_id: string
+          p_model_type: string
+          p_utility_type?: Database['public']['Enums']['utility_type']
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      utility_type: 'water' | 'electricity'
+      anomaly_severity: 'low' | 'medium' | 'high' | 'critical'
+      reading_status: 'pending' | 'processed' | 'failed' | 'manual'
     }
     CompositeTypes: {
       [_ in never]: never

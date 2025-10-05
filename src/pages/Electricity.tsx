@@ -2,16 +2,93 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserData } from '@/hooks/useUserData';
-import ElectricitySection from '@/components/ElectricitySection';
+import { useElectricityAnomalies } from '@/hooks/useElectricityData';
+import { useUserRates } from '@/hooks/useUserRates';
+import ElectricitySection from '@/components/layout/ElectricitySection';
 import { Card } from "@/components/ui/card";
 import { Home, Droplet, Bolt, Settings } from 'lucide-react';
 
 const Electricity = () => {
   const navigate = useNavigate();
   const { firstName, avatarUrl, isLoading } = useUserData();
+  const { data: anomalies, isLoading: anomaliesLoading, error: anomaliesError } = useElectricityAnomalies(5);
+  const { data: userRates, isLoading: pricingLoading } = useUserRates('electricity');
 
-  const capitalizedFirstName = firstName 
-    ? firstName.charAt(0).toUpperCase() + firstName.slice(1) 
+  // Extract pricing information from user rates
+  const pricing = React.useMemo(() => {
+    if (!userRates?.rates) return null;
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.toLocaleString('en', { month: 'long' }).toLowerCase();
+    const previousDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    const previousMonth = previousDate.toLocaleString('en', { month: 'long' }).toLowerCase();
+
+    // Get generation charge for main display
+    const generationCharge = userRates.rates.find(rate =>
+      rate.rate_type === 'generation_charge' &&
+      (rate.month_applicable === 'all' || rate.month_applicable === currentMonth)
+    ) || userRates.rates.find(rate =>
+      rate.rate_type === 'generation_charge' &&
+      (rate.month_applicable === 'all' || rate.month_applicable === previousMonth)
+    );
+
+    // Get all distribution charges for current or previous month
+    const currentMonthDistribution = userRates.rates.filter(rate =>
+      rate.rate_type === 'distribution_charge' &&
+      (rate.month_applicable === 'all' || rate.month_applicable === currentMonth)
+    );
+
+    // Fallback to previous month if no current month distribution charges
+    const distributionCharges = currentMonthDistribution.length > 0 ? currentMonthDistribution : userRates.rates.filter(rate =>
+      rate.rate_type === 'distribution_charge' &&
+      (rate.month_applicable === 'all' || rate.month_applicable === previousMonth)
+    );
+
+    // Create tiers from distribution charges - use description directly
+    const tiers = distributionCharges.map(charge => {
+      let description = charge.description;
+
+      // If no description, create a clean tier description
+      if (!description && charge.tier_min !== undefined) {
+        description = charge.tier_max === null || charge.tier_max === undefined || charge.tier_max > 9999
+          ? `${charge.tier_min} - above`
+          : `${charge.tier_min}-${charge.tier_max}kWh`;
+      }
+
+      return {
+        description: description || `Distribution Charge`,
+        rate: charge.rate_value,
+        tier_min: charge.tier_min,
+        tier_max: charge.tier_max
+      };
+    }).sort((a, b) => {
+      // Sort by tier_min if available, otherwise by description
+      if (a.tier_min !== undefined && b.tier_min !== undefined) {
+        return a.tier_min - b.tier_min;
+      }
+      return a.description.localeCompare(b.description);
+    });
+
+    // Legacy peak/off-peak for fallback
+    const peakRate = distributionCharges.find(rate =>
+      rate.description?.toLowerCase().includes('peak')
+    );
+    const offPeakRate = distributionCharges.find(rate =>
+      rate.description?.toLowerCase().includes('off-peak')
+    );
+
+    return {
+      base_rate: generationCharge?.rate_value || null,
+      peak_rate: peakRate?.rate_value || null,
+      off_peak_rate: offPeakRate?.rate_value || null,
+      rate_type: generationCharge?.description || 'Generation charge for residential',
+      provider_name: userRates.provider?.name || 'Electric Utility',
+      tiers: tiers
+    };
+  }, [userRates]);
+
+  const capitalizedFirstName = firstName
+    ? firstName.charAt(0).toUpperCase() + firstName.slice(1)
     : 'User';
 
   const handleAddElectricityReading = () => {
@@ -42,44 +119,123 @@ const Electricity = () => {
 
         <div className="space-y-4">
           <ElectricitySection 
-            variant="electricity" 
             onAddReading={handleAddElectricityReading} 
           />
 
-          <Card className="bg-red-500 p-6 rounded-3xl shadow-sm border border-red-400">
-            <div className="flex gap-4 items-center">
-              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-triangle-exclamation text-white" />
+          {anomaliesLoading ? (
+            <Card className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
+              <div className="flex gap-4 items-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center animate-pulse"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-300 rounded mb-2 animate-pulse"></div>
+                  <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">Anomaly Detected</h3>
-                <p className="text-sm text-white text-opacity-90">Unusual spike in electricity consumption</p>
-              </div>
+            </Card>
+          ) : anomalies && Array.isArray(anomalies) && anomalies.length > 0 ? (
+            <div className="space-y-3">
+              {anomalies.slice(0, 3).map((anomaly: any) => (
+                <Card key={anomaly.id} className={`p-6 rounded-3xl shadow-sm border ${
+                  anomaly.severity === 'critical' ? 'bg-red-500 border-red-400' :
+                  anomaly.severity === 'high' ? 'bg-orange-500 border-orange-400' :
+                  anomaly.severity === 'medium' ? 'bg-yellow-500 border-yellow-400' :
+                  'bg-blue-500 border-blue-400'
+                }`}>
+                  <div className="flex gap-4 items-center">
+                    <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                      <i className="fa-solid fa-triangle-exclamation text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white mb-1">
+                        {anomaly.severity.charAt(0).toUpperCase() + anomaly.severity.slice(1)} Anomaly Detected
+                      </h3>
+                      <p className="text-sm text-white text-opacity-90">
+                        {anomaly.contributing_factors?.reason ||
+                         anomaly.contributing_factors?.alert ||
+                         'Unusual consumption pattern detected'}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
-          </Card>
+          ) : anomaliesError ? (
+            <Card className="bg-yellow-50 p-6 rounded-3xl shadow-sm border border-yellow-200">
+              <div className="flex gap-4 items-center">
+                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-exclamation text-yellow-500"></i>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-700 mb-1">Unable to check anomalies</h3>
+                  <p className="text-sm text-yellow-600">Failed to load anomaly data</p>
+                </div>
+              </div>
+            </Card>
+          ) : (
+            <Card className="bg-gray-50 p-6 rounded-3xl shadow-sm border border-gray-100">
+              <div className="flex gap-4 items-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-check text-gray-500"></i>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-700 mb-1">No anomalies detected</h3>
+                  <p className="text-sm text-gray-500">Your electricity usage is within normal range</p>
+                </div>
+              </div>
+            </Card>
+          )}
 
-          <Card className="bg-white p-6 rounded-3xl shadow-sm">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Electricity Rates</h3>
-                <p className="text-2xl font-bold text-[#212529]">₱9.50/kWh</p>
-                <p className="text-sm text-gray-500">Base rate for residential</p>
+          {pricingLoading ? (
+            <Card className="bg-white p-6 rounded-3xl shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <div className="h-5 bg-gray-300 rounded mb-2 animate-pulse"></div>
+                  <div className="h-8 bg-gray-300 rounded mb-1 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="w-10 h-10 bg-gray-100 rounded-full animate-pulse"></div>
               </div>
-              <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-peso-sign text-amber-400" />
+              <div className="bg-gray-100 rounded-xl p-4 mt-4 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
               </div>
-            </div>
-            <div className="bg-amber-50 rounded-xl p-4 mt-4">
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-600">Peak Hours (9AM-9PM)</span>
-                <span className="text-sm font-semibold">₱11.50/kWh</span>
+            </Card>
+          ) : (
+            <Card className="bg-white p-6 rounded-3xl shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#212529] mb-1">Current Electricity Rates</h3>
+                  <p className="text-2xl font-bold text-[#212529]">
+                    ₱{pricing?.base_rate || '9.50'}/kWh
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {pricing?.rate_type || 'Base rate for residential'}
+                  </p>
+                </div>
+                <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-peso-sign text-amber-400" />
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Off-Peak Hours</span>
-                <span className="text-sm font-semibold">₱8.00/kWh</span>
+              <div className="bg-amber-50 rounded-xl p-4 mt-4">
+                {pricing?.tiers && pricing.tiers.length > 0 ? (
+                  pricing.tiers.map((tier: any, index: number) => (
+                    <div key={index} className={`flex justify-between ${index > 0 ? 'mt-2' : ''}`}>
+                      <span className="text-sm text-gray-600">{tier.description}</span>
+                      <span className="text-sm font-semibold">₱{tier.rate}/kWh</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-600">
+                    <div className="flex justify-between mb-2">
+                      <span>Generation Charge</span>
+                      <span className="font-semibold">₱{pricing?.base_rate || '9.50'}/kWh</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">No detailed distribution charges available</p>
+                  </div>
+                )}
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
         </div>
       </div>
 

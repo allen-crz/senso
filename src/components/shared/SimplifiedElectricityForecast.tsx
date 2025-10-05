@@ -1,0 +1,227 @@
+import React from 'react';
+import { Zap, TrendingUp, Brain, Clock, Activity, CheckCircle, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useMonthlyForecast, useModelInfo, useForecastComparison } from '@/hooks/useCostForecasting';
+import { useCurrentCycleConsumption } from '@/hooks/useCurrentCycleConsumption';
+
+const SimplifiedElectricityForecast: React.FC = () => {
+  const { data: forecast, isLoading, error } = useMonthlyForecast('electricity');
+  const { data: modelInfo } = useModelInfo('electricity');
+  const { data: cycleData, isLoading: cycleLoading } = useCurrentCycleConsumption('electricity');
+  const { data: comparison } = useForecastComparison('electricity', 1);
+
+  if (isLoading) {
+    return (
+      <Card className="bg-white shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-lg">Electricity Forecast</CardTitle>
+              <p className="text-gray-400 text-sm">Loading prediction...</p>
+            </div>
+            <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+              <Zap className="text-amber-500 w-5 h-5" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-3">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !forecast) {
+    return (
+      <Card className="bg-white shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-lg">Electricity Forecast</CardTitle>
+              <p className="text-gray-400 text-sm">Add readings for predictions</p>
+            </div>
+            <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+              <Zap className="text-amber-500 w-5 h-5" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Zap className="text-gray-200 w-12 h-12 mb-4" />
+            <p className="text-gray-400 text-center text-sm">
+              Start adding electricity meter readings to see cost predictions
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const totalCost = forecast.predicted_monthly_cost;
+  const totalConsumption = forecast.predicted_monthly_consumption;
+  const avgDailyCost = totalCost / forecast.billing_cycle_days;
+  const confidence = forecast.confidence_score;
+  const hasModel = !!modelInfo;
+
+  // Calculate cycle progress
+  const hasCycleData = cycleData?.has_baseline && cycleData?.cycle_consumption !== null;
+  const cycleProgress = hasCycleData && cycleData.billing_cycle
+    ? (cycleData.billing_cycle.elapsed_days / cycleData.billing_cycle.total_days) * 100
+    : 0;
+
+  // Calculate pace vs forecast
+  const paceVsForecast = hasCycleData && totalConsumption && cycleData.billing_cycle?.total_days
+    ? ((cycleData.daily_average * cycleData.billing_cycle.total_days - totalConsumption) / totalConsumption) * 100
+    : null;
+
+  return (
+    <Card className="bg-white shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg">Electricity Forecast</CardTitle>
+            {hasCycleData && cycleData.billing_cycle ? (
+              <p className="text-gray-400 text-sm">
+                {cycleData.billing_cycle.elapsed_days} of {cycleData.billing_cycle.total_days} days
+              </p>
+            ) : (
+              <p className="text-gray-400 text-sm">Monthly prediction</p>
+            )}
+          </div>
+          <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+            <Zap className="text-amber-500 w-5 h-5" />
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Main Cost Display */}
+        <div className="text-3xl font-bold text-amber-600">
+          ₱{totalCost.toFixed(2)}
+        </div>
+
+        {/* Current Cycle Progress */}
+        {hasCycleData && !cycleLoading && (
+          <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-amber-900">So Far This Cycle</span>
+              <span className="text-lg font-bold text-amber-600">{cycleData.cycle_consumption.toFixed(1)} kWh</span>
+            </div>
+            <div className="w-full bg-amber-200 rounded-full h-2 mb-2">
+              <div
+                className="bg-amber-600 h-2 rounded-full transition-all duration-300"
+                style={{width: `${Math.min(cycleProgress, 100)}%`}}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs text-gray-600">
+              <span>From {cycleData.baseline_reading?.toFixed(1) || '0.0'} ({new Date(cycleData.baseline_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})})</span>
+              <span>→ {cycleData.latest_reading?.toFixed(1) || '0.0'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Smart Prediction Indicator */}
+        {hasModel && (
+          <div className="flex items-center space-x-2 p-3 bg-amber-50 rounded-lg">
+            <Brain className="w-4 h-4 text-amber-600" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-amber-700">
+                Smart Prediction
+              </div>
+              <div className="text-xs text-amber-600">
+                {confidence > 0.8 ? 'High Accuracy' : confidence > 0.6 ? 'Good Accuracy' : 'Learning...'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Forecast Details */}
+        <div className="space-y-2">
+          {hasCycleData && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Daily Average (This Cycle)</span>
+              <span className="font-semibold">{cycleData.daily_average?.toFixed(2) || '0.00'} kWh/day</span>
+            </div>
+          )}
+          {paceVsForecast !== null && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Your Pace</span>
+              <span className={`font-semibold ${Math.abs(paceVsForecast) > 5 ? (paceVsForecast > 0 ? 'text-orange-600' : 'text-green-600') : 'text-gray-900'}`}>
+                {paceVsForecast > 0 ? '+' : ''}{paceVsForecast.toFixed(0)}% {paceVsForecast > 5 ? 'above' : paceVsForecast < -5 ? 'below' : 'on track'}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Predicted Monthly Usage</span>
+            <span className="font-semibold">{totalConsumption.toFixed(1)} kWh</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Predicted Avg Daily Cost</span>
+            <span className="font-semibold">₱{avgDailyCost.toFixed(2)}</span>
+          </div>
+          {hasCycleData && cycleData.billing_cycle && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Remaining Days</span>
+              <span className="font-semibold">{cycleData.billing_cycle.remaining_days} days</span>
+            </div>
+          )}
+        </div>
+
+        {/* Last Month Accuracy - Only show if we have comparison data */}
+        {comparison && comparison.comparisons && comparison.comparisons[0] && comparison.comparisons[0].actual_cost && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-lg border border-orange-100">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-orange-900">Last Month Accuracy</h4>
+              {comparison.comparisons[0].accuracy_percent >= 90 ? (
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-amber-500" />
+              )}
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Predicted:</span>
+                <span className="font-semibold text-gray-900">₱{comparison.comparisons[0].predicted_cost?.toFixed(2) || '0.00'}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Actual:</span>
+                <span className="font-semibold text-gray-900">₱{comparison.comparisons[0].actual_cost?.toFixed(2) || '0.00'}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-orange-200">
+                <span className="text-sm text-gray-600">Accuracy:</span>
+                <span className={`text-lg font-bold ${
+                  comparison.comparisons[0].accuracy_percent >= 90 ? 'text-green-600' :
+                  comparison.comparisons[0].accuracy_percent >= 75 ? 'text-amber-600' :
+                  'text-red-600'
+                }`}>
+                  {comparison.comparisons[0].accuracy_percent?.toFixed(1) || '0'}%
+                </span>
+              </div>
+              {comparison.comparisons[0].variance_type && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {comparison.comparisons[0].variance_type === 'over' ? 'Used more than predicted' :
+                   comparison.comparisons[0].variance_type === 'under' ? 'Used less than predicted' :
+                   'Right on target!'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+
+        {/* Simple Footer */}
+        <div className="pt-2 border-t border-gray-100">
+          <p className="text-xs text-gray-500">
+            {hasModel ? 'Based on your usage patterns' : 'Based on current rates'}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default SimplifiedElectricityForecast;
