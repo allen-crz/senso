@@ -932,18 +932,18 @@ class CostForecastingEngine:
         # Calculate cycle dates - SCENARIO: 15th-15th billing, user starts late
         if target_date.day >= billing_day:
             # We're in the current billing cycle (e.g., Oct 15 - Nov 14)
-            cycle_start = date(target_date.year, target_date.month, billing_day)
+            cycle_start = self._safe_date(target_date.year, target_date.month, billing_day)
             if target_date.month == 12:
-                cycle_end = date(target_date.year + 1, 1, billing_day - 1)
+                cycle_end = self._safe_date(target_date.year + 1, 1, billing_day - 1)
             else:
-                cycle_end = date(target_date.year, target_date.month + 1, billing_day - 1)
+                cycle_end = self._safe_date(target_date.year, target_date.month + 1, billing_day - 1)
         else:
             # We're before the billing day (e.g., Nov 10, still in Oct 15 - Nov 14 cycle)
             if target_date.month == 1:
-                cycle_start = date(target_date.year - 1, 12, billing_day)
+                cycle_start = self._safe_date(target_date.year - 1, 12, billing_day)
             else:
-                cycle_start = date(target_date.year, target_date.month - 1, billing_day)
-            cycle_end = date(target_date.year, target_date.month, billing_day - 1)
+                cycle_start = self._safe_date(target_date.year, target_date.month - 1, billing_day)
+            cycle_end = self._safe_date(target_date.year, target_date.month, billing_day - 1)
 
         elapsed_days = (target_date - cycle_start).days
         total_cycle_days = (cycle_end - cycle_start).days + 1
@@ -966,6 +966,16 @@ class CostForecastingEngine:
         """Get number of days in a specific month"""
         import calendar
         return calendar.monthrange(year, month)[1]
+
+    def _safe_date(self, year: int, month: int, day: int) -> date:
+        """
+        Create a date safely, handling months that don't have the specified day
+        If day is invalid for the month (e.g., Feb 31), use the last day of that month
+        """
+        import calendar
+        max_day_in_month = calendar.monthrange(year, month)[1]
+        safe_day = min(day, max_day_in_month)
+        return date(year, month, safe_day)
 
     async def get_monthly_forecast(
         self,
@@ -1316,12 +1326,12 @@ class CostForecastingEngine:
                 if current_date.day >= billing_day:
                     # Next billing date is next month
                     if current_date.month == 12:
-                        simulated_date = date(current_date.year + 1, 1, billing_day)
+                        simulated_date = self._safe_date(current_date.year + 1, 1, billing_day)
                     else:
-                        simulated_date = date(current_date.year, current_date.month + 1, billing_day)
+                        simulated_date = self._safe_date(current_date.year, current_date.month + 1, billing_day)
                 else:
                     # Next billing date is this month
-                    simulated_date = date(current_date.year, current_date.month, billing_day)
+                    simulated_date = self._safe_date(current_date.year, current_date.month, billing_day)
 
                 logger.info(f"🎬 DEMO MODE: Simulating billing date {simulated_date.isoformat()} (actual: {current_date.isoformat()})")
                 current_date = simulated_date
@@ -1338,9 +1348,9 @@ class CostForecastingEngine:
 
                 # Calculate previous cycle start using actual billing day (not approximation)
                 if current_date.month == 1:
-                    previous_cycle_start = date(current_date.year - 1, 12, billing_day)
+                    previous_cycle_start = self._safe_date(current_date.year - 1, 12, billing_day)
                 else:
-                    previous_cycle_start = date(current_date.year, current_date.month - 1, billing_day)
+                    previous_cycle_start = self._safe_date(current_date.year, current_date.month - 1, billing_day)
 
                 # Convert dates to datetime with timezone for pandas comparison
                 previous_cycle_start_dt = datetime.combine(previous_cycle_start, datetime.min.time()).replace(tzinfo=timezone.utc)
