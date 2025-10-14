@@ -1,0 +1,40 @@
+# Environment variables - NEVER commit secrets!
+.env
+.env.local
+.env.production
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Uploads and temporary files
+uploads/
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models (if not using Git LFS)
+# Uncomment if models are too large and not tracked by LFS
+# models/*.pt
+
+# Test files
+test_*.py
+debug_*.py
+*_test.py
