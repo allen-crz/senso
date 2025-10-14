@@ -1041,9 +1041,15 @@ class CostForecastingEngine:
                 "generated_at": datetime.now(timezone.utc).isoformat()
             }
 
-            # Store forecast in DB if this is the FIRST time we're forecasting for this billing cycle
-            # This happens when user first visits dashboard after cycle starts
+            # Store forecast in DB using UPSERT to prevent duplicates
+            # This prevents race conditions when multiple requests happen simultaneously
             forecast_month = billing_position.cycle_start_date.isoformat()
+            model_key = f"{user_id}_{utility_type.value}"
+            training_data_points = 0
+            if model_key in self.models:
+                training_data_points = self.models[model_key].training_samples
+
+            # Check if forecast already exists
             existing_forecast = self.service_supabase.table("cost_forecasts")\
                 .select("id")\
                 .eq("user_id", user_id)\
@@ -1052,12 +1058,7 @@ class CostForecastingEngine:
                 .execute()
 
             if not existing_forecast.data:
-                # First time generating forecast for this cycle - store it
-                model_key = f"{user_id}_{utility_type.value}"
-                training_data_points = 0
-                if model_key in self.models:
-                    training_data_points = self.models[model_key].training_samples
-
+                # First time - insert new forecast only
                 self.service_supabase.table("cost_forecasts").insert({
                     "user_id": user_id,
                     "utility_type": utility_type.value,

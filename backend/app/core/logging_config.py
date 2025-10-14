@@ -63,12 +63,12 @@ class StructuredLogger:
         if settings.LOG_LEVEL.upper() in ['ERROR', 'WARNING']:
             log_format = (
                 "{"
-                "\"time\": \"{time:YYYY-MM-DD HH:mm:ss.SSS}\", "
-                "\"level\": \"{level}\", "
-                "\"module\": \"{module}\", "
-                "\"function\": \"{function}\", "
-                "\"line\": {line}, "
-                "\"message\": \"{message}\""
+                '"time": "{time:YYYY-MM-DD HH:mm:ss.SSS}", '
+                '"level": "{level}", '
+                '"module": "{module}", '
+                '"function": "{function}", '
+                '"line": {line}, '
+                '"message": "{message}"'
                 "}\n"
             )
         else:
