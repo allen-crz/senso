@@ -326,6 +326,12 @@ class CostForecastingEngine:
                 cost = float(record['actual_bill'])
                 month_date = record['month_date']
 
+                # Ensure month_date is a date object (might be string from database)
+                if isinstance(month_date, str):
+                    month_date = datetime.fromisoformat(month_date).date()
+                elif isinstance(month_date, datetime):
+                    month_date = month_date.date()
+
                 # Feature 1: Month Number (1-12) - Seasonal patterns
                 month_number = month_date.month
 
@@ -930,7 +936,15 @@ class CostForecastingEngine:
         billing_day = await self._get_user_billing_date(user_id, utility_type)
 
         # Calculate cycle dates - SCENARIO: 15th-15th billing, user starts late
-        if target_date.day >= billing_day:
+        # Handle edge case: if billing_day is 1, the cycle end is the last day of the month
+        if billing_day == 1:
+            # Special case: billing day 1 means cycle is full calendar month (1st to end of month)
+            cycle_start = self._safe_date(target_date.year, target_date.month, 1)
+            # Cycle ends on last day of the month
+            import calendar
+            last_day = calendar.monthrange(target_date.year, target_date.month)[1]
+            cycle_end = self._safe_date(target_date.year, target_date.month, last_day)
+        elif target_date.day >= billing_day:
             # We're in the current billing cycle (e.g., Oct 15 - Nov 14)
             cycle_start = self._safe_date(target_date.year, target_date.month, billing_day)
             if target_date.month == 12:
