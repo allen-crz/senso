@@ -247,10 +247,15 @@ class UtilityRatesService:
             if not result.data:
                 raise Exception("Failed to create user-provider association")
 
-            # Get full association with provider details
-            full_result = self.supabase.table("user_utility_providers").select(
+            # Get full association with provider details using service client
+            # Use the same client to avoid RLS issues
+            full_result = self.service_supabase.table("user_utility_providers").select(
                 "*, utility_providers(*)"
             ).eq("id", result.data[0]["id"]).execute()
+
+            if not full_result.data:
+                logger.error(f"Failed to fetch created association with id {result.data[0]['id']}")
+                raise Exception("Created association not found - possible RLS issue")
 
             association = full_result.data[0]
             return UserProviderAssociationResponse(
@@ -276,12 +281,13 @@ class UtilityRatesService:
         await self.init_supabase()
 
         try:
-            if utility_type == UtilityType.ELECTRICITY:
-                # Initialize the database calculator
-                await self.utility_calculator.init_supabase()
+            # Initialize the database calculator
+            await self.utility_calculator.init_supabase()
 
-                # Try to get user's provider first
-                user_rates = await self.get_user_rates(user_id, utility_type)
+            # Get user's provider for both water and electricity
+            user_rates = await self.get_user_rates(user_id, utility_type)
+
+            if utility_type == UtilityType.ELECTRICITY:
                 if user_rates and user_rates.provider:
                     # Use user's specific provider
                     result = await self.utility_calculator.calculate_simple_bill_from_db(
@@ -293,44 +299,21 @@ class UtilityRatesService:
                     meralco_result = await self.utility_calculator.calculate_meralco_bill(billing_month, consumption)
                     return meralco_result['totalBill']
             else:
-                # Get user's rates for water
-                user_rates = await self.get_user_rates(user_id, utility_type)
-                if user_rates:
-                    return self._calculate_water_bill(consumption, billing_month, user_rates.rates)
+                # Use database calculator for water as well
+                if user_rates and user_rates.provider:
+                    result = await self.utility_calculator.calculate_water_bill_simple(
+                        user_rates.provider.id, billing_month, consumption
+                    )
+                    return result
                 else:
-                    return consumption * 15.0  # Fallback for water
+                    # Fallback to Maynilad as default (like MERALCO for electricity)
+                    maynilad_result = await self.utility_calculator.calculate_maynilad_bill(billing_month, consumption)
+                    return maynilad_result
 
         except Exception as e:
             logger.error(f"Failed to calculate bill: {e}")
             # Fallback calculation
             return consumption * (10.0 if utility_type == UtilityType.ELECTRICITY else 15.0)
-
-
-    def _calculate_water_bill(self, cubic_meters: float, month: str, rates: List[RateStructureResponse]) -> float:
-        """Calculate water bill using database rates"""
-
-        try:
-            total_bill = 0.0
-
-            # Group rates by type
-            rate_map = {}
-            for rate in rates:
-                if rate.month_applicable in ['all', month]:
-                    rate_map[rate.rate_type] = rate.rate_value
-
-            # Base rate
-            total_bill += cubic_meters * rate_map.get('base_rate_per_cubic_meter', 15.0)
-
-            # Additional charges
-            total_bill += cubic_meters * rate_map.get('sewerage_charge', 2.5)
-            total_bill += cubic_meters * rate_map.get('environmental_fee', 1.0)
-            total_bill += rate_map.get('maintenance_charge', 5.0)  # Fixed charge
-
-            return max(0, total_bill)
-
-        except Exception as e:
-            logger.error(f"Error in water bill calculation: {e}")
-            return cubic_meters * 15.0  # Fallback
 
     # ====================================
     # MIGRATION UTILITIES

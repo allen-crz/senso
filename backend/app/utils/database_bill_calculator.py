@@ -395,6 +395,31 @@ class DatabaseUtilityCalculator:
 
         return await self.calculate_monthly_bill_from_db(meralco_id, bill_month, kwh)
 
+    async def get_maynilad_provider_id(self) -> Optional[str]:
+        """Get Maynilad provider ID"""
+        await self.init_supabase()
+
+        try:
+            result = self.supabase.table("utility_providers").select("id").ilike(
+                "name", "%Maynilad%"
+            ).eq("utility_type", "water").eq("is_active", True).single().execute()
+
+            return result.data["id"] if result.data else None
+
+        except Exception as e:
+            logger.error(f"Error fetching Maynilad provider ID: {e}")
+            return None
+
+    async def calculate_maynilad_bill(self, bill_month: str, consumption: float) -> float:
+        """Calculate Maynilad water bill using database rates"""
+        maynilad_id = await self.get_maynilad_provider_id()
+
+        if not maynilad_id:
+            raise ValueError("Maynilad provider not found in database")
+
+        result = await self.calculate_water_bill_from_db(maynilad_id, bill_month, consumption)
+        return result['totalBasicCharge']
+
     async def calculate_water_bill_from_db(
         self,
         provider_id: str,
@@ -452,9 +477,10 @@ class DatabaseUtilityCalculator:
                     rate_value = tier_info.get("rate_value")
                     rate_unit = tier_info.get("rate_unit")
 
-                    if tier_min is not None and rate_value is not None:
+                    # tier_min can be None for the first tier (treat as 0)
+                    if rate_value is not None:
                         water_tiers.append({
-                            "min": tier_min,
+                            "min": tier_min if tier_min is not None else 0,  # Default to 0 if None
                             "max": tier_max if tier_max != 999999 else None,  # Convert large number to None
                             "rate": rate_value,
                             "unit": rate_unit
@@ -483,7 +509,6 @@ class DatabaseUtilityCalculator:
         """Calculate water basic charge using progressive tiered billing"""
 
         total_cost = 0.0
-        remaining_consumption = consumption
 
         for tier in tiers:
             tier_min = tier["min"]
@@ -491,31 +516,37 @@ class DatabaseUtilityCalculator:
             rate = tier["rate"]
             unit = tier.get("unit", "PHP_per_cum")
 
-            # Calculate consumption for this tier
-            if tier_max is None:
-                # No upper limit - use all remaining consumption
-                tier_consumption = remaining_consumption
-            else:
-                # Calculate tier range
-                tier_range = tier_max - tier_min + 1
-                tier_consumption = min(remaining_consumption, tier_range)
-
-            if tier_consumption <= 0:
-                break
+            # Check if consumption reaches this tier
+            if consumption <= tier_min:
+                # Consumption doesn't reach this tier
+                continue
 
             # Calculate cost for this tier
             if unit == "PHP":
                 # Fixed charge (e.g., first 10 cu.m.)
+                # This is a minimum charge - just add it once
                 tier_cost = rate
             else:
                 # Per cubic meter charge
-                tier_cost = tier_consumption * rate
+                # Calculate how much consumption falls in this tier
+                # For tier 11-20: if consumption is 27, we want 10 m³ (20 - 11 + 1)
+                #                 if consumption is 15, we want 5 m³ (15 - 11 + 1)
+                if tier_max is None:
+                    # No upper limit - all consumption above tier_min
+                    consumption_in_tier = consumption - tier_min
+                else:
+                    # Consumption within this tier range
+                    #  Example: tier 11-20, consumption 27
+                    #  min(27, 20) = 20
+                    #  20 - 11 + 1 = 10 ✓
+                    consumption_in_tier = min(consumption, tier_max) - tier_min + 1
+
+                if consumption_in_tier > 0:
+                    tier_cost = consumption_in_tier * rate
+                else:
+                    continue
 
             total_cost += tier_cost
-            remaining_consumption -= tier_consumption
-
-            if remaining_consumption <= 0:
-                break
 
         return total_cost
 
@@ -523,7 +554,6 @@ class DatabaseUtilityCalculator:
         """Get detailed breakdown of tier calculations for transparency"""
 
         breakdown = []
-        remaining_consumption = consumption
 
         for tier in tiers:
             tier_min = tier["min"]
@@ -531,25 +561,36 @@ class DatabaseUtilityCalculator:
             rate = tier["rate"]
             unit = tier.get("unit", "PHP_per_cum")
 
-            # Calculate consumption for this tier
+            # Check if consumption reaches this tier
+            if consumption <= tier_min:
+                continue
+
+            # Calculate tier label
             if tier_max is None:
-                tier_consumption = remaining_consumption
                 tier_label = f"Above {tier_min} cu.m."
             else:
-                tier_range = tier_max - tier_min + 1
-                tier_consumption = min(remaining_consumption, tier_range)
                 tier_label = f"{tier_min}-{tier_max} cu.m."
-
-            if tier_consumption <= 0:
-                break
 
             # Calculate cost for this tier
             if unit == "PHP":
+                # Fixed charge
                 tier_cost = rate
-                calculation = f"₱{rate}"
+                tier_consumption = tier_max - tier_min + 1 if tier_max else 0
+                calculation = f"₱{rate} (minimum charge)"
             else:
-                tier_cost = tier_consumption * rate
-                calculation = f"{tier_consumption} × ₱{rate} = ₱{tier_cost:.2f}"
+                # Per cubic meter charge
+                if tier_max is None:
+                    # No upper limit
+                    tier_consumption = consumption - tier_min
+                else:
+                    # Consumption within this tier range
+                    tier_consumption = min(consumption, tier_max) - tier_min + 1
+
+                if tier_consumption > 0:
+                    tier_cost = tier_consumption * rate
+                    calculation = f"{tier_consumption} × ₱{rate} = ₱{tier_cost:.2f}"
+                else:
+                    continue
 
             breakdown.append({
                 "tier": tier_label,
@@ -559,11 +600,6 @@ class DatabaseUtilityCalculator:
                 "cost": round(tier_cost, 2),
                 "calculation": calculation
             })
-
-            remaining_consumption -= tier_consumption
-
-            if remaining_consumption <= 0:
-                break
 
         return breakdown
 
