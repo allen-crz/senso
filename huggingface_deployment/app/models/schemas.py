@@ -49,6 +49,7 @@ class MeterReadingBase(BaseSchema):
 class MeterReadingCreate(MeterReadingBase):
     image_data: Optional[str] = None  # Base64 encoded image
     location_data: Optional[Dict[str, Any]] = None
+    capture_timestamp: Optional[datetime] = None  # Allow override for testing/backfilling
 
 
 class MeterReadingUpdate(BaseSchema):

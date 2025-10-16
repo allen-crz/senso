@@ -75,6 +75,9 @@ class MeterReadingService:
                     processing_status = ReadingStatus.FAILED
             
             # Insert into database
+            # Use provided capture_timestamp if available (for backfilling/testing), otherwise use current time
+            capture_timestamp = reading_data.capture_timestamp if reading_data.capture_timestamp else datetime.utcnow()
+
             reading_data_dict = {
                 "user_id": user_id,
                 "utility_type": reading_data.utility_type.value,
@@ -86,7 +89,7 @@ class MeterReadingService:
                 "raw_ocr_data": raw_ocr_data,
                 "location_data": reading_data.location_data,
                 "notes": reading_data.notes,
-                "capture_timestamp": datetime.utcnow().isoformat(),
+                "capture_timestamp": capture_timestamp.isoformat(),
             }
             
             result = self.supabase.table("meter_readings").insert(reading_data_dict).execute()
