@@ -86,7 +86,7 @@ class MeterReadingService:
                 "raw_ocr_data": raw_ocr_data,
                 "location_data": reading_data.location_data,
                 "notes": reading_data.notes,
-                "capture_timestamp": datetime.utcnow().isoformat(),
+                "capture_timestamp": (reading_data.capture_timestamp or datetime.utcnow()).isoformat(),
             }
             
             result = self.supabase.table("meter_readings").insert(reading_data_dict).execute()

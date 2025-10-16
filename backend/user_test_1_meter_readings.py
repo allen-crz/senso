@@ -19,7 +19,7 @@ import httpx
 from loguru import logger
 
 # Configuration
-API_BASE_URL = "http://localhost:8000/api/v1"
+API_BASE_URL = "https://allencrz-senso-api.hf.space/api/v1"
 TEST_EMAIL = "test@gmail.com"
 TEST_PASSWORD = "Test@123"
 
@@ -49,8 +49,8 @@ class MeterReadingSimulator:
             logger.error(f"✗ Login error: {e}")
             return False
 
-    async def create_reading(self, utility_type: str, reading_value: float, notes: str = "") -> dict:
-        """Create a meter reading"""
+    async def create_reading(self, utility_type: str, reading_value: float, notes: str = "", capture_timestamp: Optional[datetime] = None) -> dict:
+        """Create a meter reading with optional custom capture timestamp"""
         headers = {"Authorization": f"Bearer {self.auth_token}"}
 
         reading_data = {
@@ -59,6 +59,13 @@ class MeterReadingSimulator:
             "is_manual": True,
             "notes": notes
         }
+
+        # Add custom capture timestamp if provided (for backfilling historical data)
+        if capture_timestamp:
+            reading_data["capture_timestamp"] = capture_timestamp.isoformat()
+            logger.debug(f"Sending capture_timestamp: {reading_data['capture_timestamp']}")
+
+        logger.debug(f"Sending reading data: {reading_data}")
 
         try:
             response = await self.client.post(
@@ -69,7 +76,14 @@ class MeterReadingSimulator:
 
             if response.status_code == 201:
                 result = response.json()
-                logger.success(f"✓ Created {utility_type} reading: {reading_value}")
+                timestamp_info = f" at {capture_timestamp.strftime('%Y-%m-%d')}" if capture_timestamp else ""
+                logger.success(f"✓ Created {utility_type} reading: {reading_value}{timestamp_info}")
+
+                # Debug: Print the actual capture_timestamp returned by API
+                if 'reading' in result:
+                    api_capture = result['reading'].get('capture_timestamp')
+                    logger.info(f"  API returned capture_timestamp: {api_capture}")
+
                 return result
             else:
                 logger.error(f"✗ Error creating reading: {response.status_code} - {response.text}")
@@ -99,53 +113,62 @@ class MeterReadingSimulator:
             return []
 
     async def simulate_water_readings(self):
-        """Simulate realistic water meter readings over time"""
+        """Simulate realistic water meter readings over time with custom dates"""
         logger.info("\n" + "="*60)
         logger.info("SIMULATING WATER METER READINGS")
         logger.info("="*60)
 
-        # Simulate 10 days of water readings with normal consumption (~10-15 m³ per day)
+        # Simulate 10 days of water readings from September 1-10, 2025
         base_reading = 1000.0
         daily_consumption = [12.5, 11.8, 13.2, 12.0, 14.1, 11.5, 13.8, 12.3, 11.9, 13.5]
 
         for day, consumption in enumerate(daily_consumption, 1):
             current_reading = round(base_reading + consumption, 3)
 
+            # Create reading for September 1-10, 2025
+            reading_date = datetime(2025, 9, day, 8, 0, 0)  # 8:00 AM each day
+
             result = await self.create_reading(
                 utility_type="water",
                 reading_value=current_reading,
-                notes=f"Day {day} - Normal consumption pattern"
+                notes=f"September {day}, 2025 - Normal consumption pattern",
+                capture_timestamp=reading_date
             )
 
             if result:
-                logger.info(f"  Day {day}: {current_reading:.2f} m³ (Δ {consumption:.2f} m³)")
+                logger.info(f"  Sep {day}, 2025: {current_reading:.2f} m³ (Δ {consumption:.2f} m³)")
 
             base_reading = current_reading
             await asyncio.sleep(1)  # Space out requests
 
-        logger.success(f"✓ Water readings simulation complete: 10 readings created")
+        logger.success(f"✓ Water readings simulation complete: 10 readings created (Sep 1-10, 2025)")
         logger.info(f"  Total consumption: {sum(daily_consumption):.2f} m³")
         logger.info(f"  Average daily: {sum(daily_consumption)/len(daily_consumption):.2f} m³")
 
         return base_reading
 
     async def simulate_electricity_readings(self):
-        """Simulate realistic electricity meter readings over time"""
+        """Simulate realistic electricity meter readings over time with custom dates"""
         logger.info("\n" + "="*60)
         logger.info("SIMULATING ELECTRICITY METER READINGS")
         logger.info("="*60)
 
         # Simulate 10 days of electricity readings with normal consumption (~20-30 kWh per day)
+        # Start from 10 days ago
         base_reading = 1000.0
         daily_consumption = [25.3, 28.7, 24.5, 26.8, 29.2, 23.9, 27.4, 25.8, 28.1, 26.5]
 
         for day, consumption in enumerate(daily_consumption, 1):
             current_reading = round(base_reading + consumption, 3)
 
+            # Create reading with custom timestamp (10 days ago + day)
+            reading_date = datetime.now() - timedelta(days=10-day)
+
             result = await self.create_reading(
                 utility_type="electricity",
                 reading_value=current_reading,
-                notes=f"Day {day} - Normal consumption pattern"
+                notes=f"Day {day} - Normal consumption pattern",
+                capture_timestamp=reading_date
             )
 
             if result:
@@ -206,12 +229,12 @@ async def main():
             return
 
         # Simulate water readings
-        logger.info("\nStep 2: Creating water meter readings...")
+        logger.info("\nStep 2: Creating water meter readings for Sep 1-10, 2025...")
         final_water = await simulator.simulate_water_readings()
 
-        # Simulate electricity readings
-        logger.info("\nStep 3: Creating electricity meter readings...")
-        final_electricity = await simulator.simulate_electricity_readings()
+        # # Simulate electricity readings (commented out for now)
+        # logger.info("\nStep 3: Creating electricity meter readings...")
+        # final_electricity = await simulator.simulate_electricity_readings()
 
         # Display summary
         await simulator.display_summary()
@@ -219,9 +242,9 @@ async def main():
         logger.info("\n" + "="*60)
         logger.success("✓ TEST 1 COMPLETED SUCCESSFULLY")
         logger.info("="*60)
-        logger.info("Next: Run user_test_2_anomaly_detection.py")
+        logger.info("Water readings for September 1-10, 2025 have been created")
         logger.info(f"  Final Water Reading: {final_water:.2f} m³")
-        logger.info(f"  Final Electricity Reading: {final_electricity:.2f} kWh")
+        # logger.info(f"  Final Electricity Reading: {final_electricity:.2f} kWh")
 
     except Exception as e:
         logger.error(f"\n✗ Test failed: {e}")

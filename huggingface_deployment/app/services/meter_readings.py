@@ -78,6 +78,9 @@ class MeterReadingService:
             # Use provided capture_timestamp if available (for backfilling/testing), otherwise use current time
             capture_timestamp = reading_data.capture_timestamp if reading_data.capture_timestamp else datetime.utcnow()
 
+            logger.info(f"DEBUG: reading_data.capture_timestamp = {reading_data.capture_timestamp}")
+            logger.info(f"DEBUG: Using capture_timestamp = {capture_timestamp}")
+
             reading_data_dict = {
                 "user_id": user_id,
                 "utility_type": reading_data.utility_type.value,
@@ -91,6 +94,8 @@ class MeterReadingService:
                 "notes": reading_data.notes,
                 "capture_timestamp": capture_timestamp.isoformat(),
             }
+
+            logger.info(f"DEBUG: Inserting capture_timestamp = {reading_data_dict['capture_timestamp']}")
             
             result = self.supabase.table("meter_readings").insert(reading_data_dict).execute()
             
